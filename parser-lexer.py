@@ -171,6 +171,26 @@ def p_id(p):
     p[0] = p[1]
 
 
+def p_id1(p):
+    'id1 : L_SB expression R_SB id2 | empty'
+    p[0] = p[1]
+
+
+def p_id2(p):
+    'id2 : L_SB expression R_SB | empty'
+    p[0] = p[1]
+
+
+def p_var_type(p):
+    'var_type :  type'
+    p[0] = p[1]
+
+
+def p_function(p):
+    'function : func_type FUNC ID L_P params R_P var_declaration L_B statements R_B'
+    p[0] = p[1]
+
+
 def p_empty(p):
     '''
         empty :
