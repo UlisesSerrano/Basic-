@@ -1,0 +1,4286 @@
+Created by PLY version 3.11 (http://www.dabeaz.com/ply)
+
+Unused terminals:
+
+    CTE_BOOLEAN
+    NOT
+
+Grammar
+
+Rule 0     S' -> program
+Rule 1     program -> PROGRAM ID SEMICOLON g_var funcs main
+Rule 2     main -> MAIN L_P params R_P var_declaration L_B statements R_B
+Rule 3     g_var -> var_declaration
+Rule 4     g_var -> empty
+Rule 5     funcs -> function funcs
+Rule 6     funcs -> empty
+Rule 7     var_declaration -> VAR var1
+Rule 8     var_declaration -> empty
+Rule 9     var1 -> var_type id var2 SEMICOLON var4
+Rule 10    var2 -> COMA id var3
+Rule 11    var2 -> empty
+Rule 12    var3 -> var2
+Rule 13    var3 -> empty
+Rule 14    var4 -> var1
+Rule 15    var4 -> empty
+Rule 16    id -> ID id1
+Rule 17    id1 -> L_SB expression R_SB id2
+Rule 18    id1 -> empty
+Rule 19    id2 -> L_SB expression R_SB
+Rule 20    id2 -> empty
+Rule 21    type -> INT
+Rule 22    type -> FLOAT
+Rule 23    type -> CHAR
+Rule 24    var_type -> type
+Rule 25    function -> func_type FUNC ID L_P params R_P var_declaration L_B statements R_B
+Rule 26    func_type -> VOID
+Rule 27    func_type -> type
+Rule 28    params -> var_type id params1
+Rule 29    params -> empty
+Rule 30    params1 -> COMA params
+Rule 31    params1 -> empty
+Rule 32    statements -> statement statements
+Rule 33    statements -> empty
+Rule 34    statement -> assignation
+Rule 35    statement -> call_func
+Rule 36    statement -> return_func
+Rule 37    statement -> read
+Rule 38    statement -> write
+Rule 39    statement -> decision_statement
+Rule 40    statement -> repetition_statement
+Rule 41    statement -> expression
+Rule 42    assignation -> id EQUAL expression SEMICOLON
+Rule 43    args -> args1
+Rule 44    args -> empty
+Rule 45    args1 -> expression args2
+Rule 46    args2 -> COMA args1
+Rule 47    args2 -> empty
+Rule 48    call_func -> ID L_P args R_P SEMICOLON
+Rule 49    return_func -> RETURN L_P expression R_P SEMICOLON
+Rule 50    read -> READ L_P read_args R_P SEMICOLON
+Rule 51    read_args -> expression read_args1
+Rule 52    read_args1 -> COMA expression read_args1
+Rule 53    read_args1 -> empty
+Rule 54    write -> PRINT L_P write_args R_P SEMICOLON
+Rule 55    write_args -> write_args2 write_args1
+Rule 56    write_args1 -> COMA write_args2 write_args1
+Rule 57    write_args1 -> empty
+Rule 58    write_args2 -> expression
+Rule 59    write_args2 -> CTE_STRING
+Rule 60    decision_statement -> IF L_P expression R_P L_B statements R_B decision_statement1
+Rule 61    decision_statement1 -> ELSE L_B statements R_B
+Rule 62    decision_statement1 -> empty
+Rule 63    repetition_statement -> while_statement
+Rule 64    repetition_statement -> for_statement
+Rule 65    for_statement -> FOR id EQUAL expression TO expression do_statement
+Rule 66    while_statement -> WHILE L_P expression R_P do_statement
+Rule 67    do_statement -> DO L_B statements R_B
+Rule 68    expression -> texp op1
+Rule 69    texp -> gexp op2
+Rule 70    gexp -> nexp op3aux
+Rule 71    nexp -> term op4aux
+Rule 72    term -> fact op5aux
+Rule 73    fact -> ID fact1
+Rule 74    fact -> L_P expression R_P
+Rule 75    fact -> cte
+Rule 76    fact1 -> L_P args R_P
+Rule 77    fact1 -> id1
+Rule 78    fact1 -> empty
+Rule 79    cte -> CTE_I
+Rule 80    cte -> CTE_F
+Rule 81    cte -> CTE_CHAR
+Rule 82    op1 -> OR expression
+Rule 83    op1 -> empty
+Rule 84    op2 -> AND texp
+Rule 85    op2 -> empty
+Rule 86    op3 -> LESSTHAN
+Rule 87    op3 -> LESSTHANEQ
+Rule 88    op3 -> GREATERTHAN
+Rule 89    op3 -> GREATERTHANEQ
+Rule 90    op3 -> EQ
+Rule 91    op3 -> DIFERENT
+Rule 92    op3aux -> op3 gexp
+Rule 93    op3aux -> empty
+Rule 94    op4 -> PLUS
+Rule 95    op4 -> MINUS
+Rule 96    op4aux -> op4 nexp
+Rule 97    op4aux -> empty
+Rule 98    op5 -> MULT
+Rule 99    op5 -> DIV
+Rule 100   op5 -> MOD
+Rule 101   op5aux -> op5 term
+Rule 102   op5aux -> empty
+Rule 103   empty -> <empty>
+
+Terminals, with rules where they appear
+
+AND                  : 84
+CHAR                 : 23
+COMA                 : 10 30 46 52 56
+CTE_BOOLEAN          : 
+CTE_CHAR             : 81
+CTE_F                : 80
+CTE_I                : 79
+CTE_STRING           : 59
+DIFERENT             : 91
+DIV                  : 99
+DO                   : 67
+ELSE                 : 61
+EQ                   : 90
+EQUAL                : 42 65
+FLOAT                : 22
+FOR                  : 65
+FUNC                 : 25
+GREATERTHAN          : 88
+GREATERTHANEQ        : 89
+ID                   : 1 16 25 48 73
+IF                   : 60
+INT                  : 21
+LESSTHAN             : 86
+LESSTHANEQ           : 87
+L_B                  : 2 25 60 61 67
+L_P                  : 2 25 48 49 50 54 60 66 74 76
+L_SB                 : 17 19
+MAIN                 : 2
+MINUS                : 95
+MOD                  : 100
+MULT                 : 98
+NOT                  : 
+OR                   : 82
+PLUS                 : 94
+PRINT                : 54
+PROGRAM              : 1
+READ                 : 50
+RETURN               : 49
+R_B                  : 2 25 60 61 67
+R_P                  : 2 25 48 49 50 54 60 66 74 76
+R_SB                 : 17 19
+SEMICOLON            : 1 9 42 48 49 50 54
+TO                   : 65
+VAR                  : 7
+VOID                 : 26
+WHILE                : 66
+error                : 
+
+Nonterminals, with rules where they appear
+
+args                 : 48 76
+args1                : 43 46
+args2                : 45
+assignation          : 34
+call_func            : 35
+cte                  : 75
+decision_statement   : 39
+decision_statement1  : 60
+do_statement         : 65 66
+empty                : 4 6 8 11 13 15 18 20 29 31 33 44 47 53 57 62 78 83 85 93 97 102
+expression           : 17 19 41 42 45 49 51 52 58 60 65 65 66 74 82
+fact                 : 72
+fact1                : 73
+for_statement        : 64
+func_type            : 25
+funcs                : 1 5
+function             : 5
+g_var                : 1
+gexp                 : 69 92
+id                   : 9 10 28 42 65
+id1                  : 16 77
+id2                  : 17
+main                 : 1
+nexp                 : 70 96
+op1                  : 68
+op2                  : 69
+op3                  : 92
+op3aux               : 70
+op4                  : 96
+op4aux               : 71
+op5                  : 101
+op5aux               : 72
+params               : 2 25 30
+params1              : 28
+program              : 0
+read                 : 37
+read_args            : 50
+read_args1           : 51 52
+repetition_statement : 40
+return_func          : 36
+statement            : 32
+statements           : 2 25 32 60 61 67
+term                 : 71 101
+texp                 : 68 84
+type                 : 24 27
+var1                 : 7 14
+var2                 : 9 12
+var3                 : 10
+var4                 : 9
+var_declaration      : 2 3 25
+var_type             : 9 28
+while_statement      : 63
+write                : 38
+write_args           : 54
+write_args1          : 55 56
+write_args2          : 55 56
+
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . program
+    (1) program -> . PROGRAM ID SEMICOLON g_var funcs main
+
+    PROGRAM         shift and go to state 2
+
+    program                        shift and go to state 1
+
+state 1
+
+    (0) S' -> program .
+
+
+
+state 2
+
+    (1) program -> PROGRAM . ID SEMICOLON g_var funcs main
+
+    ID              shift and go to state 3
+
+
+state 3
+
+    (1) program -> PROGRAM ID . SEMICOLON g_var funcs main
+
+    SEMICOLON       shift and go to state 4
+
+
+state 4
+
+    (1) program -> PROGRAM ID SEMICOLON . g_var funcs main
+    (3) g_var -> . var_declaration
+    (4) g_var -> . empty
+    (7) var_declaration -> . VAR var1
+    (8) var_declaration -> . empty
+    (103) empty -> .
+
+    VAR             shift and go to state 8
+    VOID            reduce using rule 103 (empty -> .)
+    INT             reduce using rule 103 (empty -> .)
+    FLOAT           reduce using rule 103 (empty -> .)
+    CHAR            reduce using rule 103 (empty -> .)
+    MAIN            reduce using rule 103 (empty -> .)
+
+    g_var                          shift and go to state 5
+    var_declaration                shift and go to state 6
+    empty                          shift and go to state 7
+
+state 5
+
+    (1) program -> PROGRAM ID SEMICOLON g_var . funcs main
+    (5) funcs -> . function funcs
+    (6) funcs -> . empty
+    (25) function -> . func_type FUNC ID L_P params R_P var_declaration L_B statements R_B
+    (103) empty -> .
+    (26) func_type -> . VOID
+    (27) func_type -> . type
+    (21) type -> . INT
+    (22) type -> . FLOAT
+    (23) type -> . CHAR
+
+    MAIN            reduce using rule 103 (empty -> .)
+    VOID            shift and go to state 13
+    INT             shift and go to state 15
+    FLOAT           shift and go to state 16
+    CHAR            shift and go to state 17
+
+    funcs                          shift and go to state 9
+    function                       shift and go to state 10
+    empty                          shift and go to state 11
+    func_type                      shift and go to state 12
+    type                           shift and go to state 14
+
+state 6
+
+    (3) g_var -> var_declaration .
+
+    VOID            reduce using rule 3 (g_var -> var_declaration .)
+    INT             reduce using rule 3 (g_var -> var_declaration .)
+    FLOAT           reduce using rule 3 (g_var -> var_declaration .)
+    CHAR            reduce using rule 3 (g_var -> var_declaration .)
+    MAIN            reduce using rule 3 (g_var -> var_declaration .)
+
+
+state 7
+
+    (4) g_var -> empty .
+    (8) var_declaration -> empty .
+
+  ! reduce/reduce conflict for VOID resolved using rule 4 (g_var -> empty .)
+  ! reduce/reduce conflict for INT resolved using rule 4 (g_var -> empty .)
+  ! reduce/reduce conflict for FLOAT resolved using rule 4 (g_var -> empty .)
+  ! reduce/reduce conflict for CHAR resolved using rule 4 (g_var -> empty .)
+  ! reduce/reduce conflict for MAIN resolved using rule 4 (g_var -> empty .)
+    VOID            reduce using rule 4 (g_var -> empty .)
+    INT             reduce using rule 4 (g_var -> empty .)
+    FLOAT           reduce using rule 4 (g_var -> empty .)
+    CHAR            reduce using rule 4 (g_var -> empty .)
+    MAIN            reduce using rule 4 (g_var -> empty .)
+
+  ! VOID            [ reduce using rule 8 (var_declaration -> empty .) ]
+  ! INT             [ reduce using rule 8 (var_declaration -> empty .) ]
+  ! FLOAT           [ reduce using rule 8 (var_declaration -> empty .) ]
+  ! CHAR            [ reduce using rule 8 (var_declaration -> empty .) ]
+  ! MAIN            [ reduce using rule 8 (var_declaration -> empty .) ]
+
+
+state 8
+
+    (7) var_declaration -> VAR . var1
+    (9) var1 -> . var_type id var2 SEMICOLON var4
+    (24) var_type -> . type
+    (21) type -> . INT
+    (22) type -> . FLOAT
+    (23) type -> . CHAR
+
+    INT             shift and go to state 15
+    FLOAT           shift and go to state 16
+    CHAR            shift and go to state 17
+
+    var1                           shift and go to state 18
+    var_type                       shift and go to state 19
+    type                           shift and go to state 20
+
+state 9
+
+    (1) program -> PROGRAM ID SEMICOLON g_var funcs . main
+    (2) main -> . MAIN L_P params R_P var_declaration L_B statements R_B
+
+    MAIN            shift and go to state 22
+
+    main                           shift and go to state 21
+
+state 10
+
+    (5) funcs -> function . funcs
+    (5) funcs -> . function funcs
+    (6) funcs -> . empty
+    (25) function -> . func_type FUNC ID L_P params R_P var_declaration L_B statements R_B
+    (103) empty -> .
+    (26) func_type -> . VOID
+    (27) func_type -> . type
+    (21) type -> . INT
+    (22) type -> . FLOAT
+    (23) type -> . CHAR
+
+    MAIN            reduce using rule 103 (empty -> .)
+    VOID            shift and go to state 13
+    INT             shift and go to state 15
+    FLOAT           shift and go to state 16
+    CHAR            shift and go to state 17
+
+    function                       shift and go to state 10
+    funcs                          shift and go to state 23
+    empty                          shift and go to state 11
+    func_type                      shift and go to state 12
+    type                           shift and go to state 14
+
+state 11
+
+    (6) funcs -> empty .
+
+    MAIN            reduce using rule 6 (funcs -> empty .)
+
+
+state 12
+
+    (25) function -> func_type . FUNC ID L_P params R_P var_declaration L_B statements R_B
+
+    FUNC            shift and go to state 24
+
+
+state 13
+
+    (26) func_type -> VOID .
+
+    FUNC            reduce using rule 26 (func_type -> VOID .)
+
+
+state 14
+
+    (27) func_type -> type .
+
+    FUNC            reduce using rule 27 (func_type -> type .)
+
+
+state 15
+
+    (21) type -> INT .
+
+    FUNC            reduce using rule 21 (type -> INT .)
+    ID              reduce using rule 21 (type -> INT .)
+
+
+state 16
+
+    (22) type -> FLOAT .
+
+    FUNC            reduce using rule 22 (type -> FLOAT .)
+    ID              reduce using rule 22 (type -> FLOAT .)
+
+
+state 17
+
+    (23) type -> CHAR .
+
+    FUNC            reduce using rule 23 (type -> CHAR .)
+    ID              reduce using rule 23 (type -> CHAR .)
+
+
+state 18
+
+    (7) var_declaration -> VAR var1 .
+
+    VOID            reduce using rule 7 (var_declaration -> VAR var1 .)
+    INT             reduce using rule 7 (var_declaration -> VAR var1 .)
+    FLOAT           reduce using rule 7 (var_declaration -> VAR var1 .)
+    CHAR            reduce using rule 7 (var_declaration -> VAR var1 .)
+    MAIN            reduce using rule 7 (var_declaration -> VAR var1 .)
+    L_B             reduce using rule 7 (var_declaration -> VAR var1 .)
+
+
+state 19
+
+    (9) var1 -> var_type . id var2 SEMICOLON var4
+    (16) id -> . ID id1
+
+    ID              shift and go to state 26
+
+    id                             shift and go to state 25
+
+state 20
+
+    (24) var_type -> type .
+
+    ID              reduce using rule 24 (var_type -> type .)
+
+
+state 21
+
+    (1) program -> PROGRAM ID SEMICOLON g_var funcs main .
+
+    $end            reduce using rule 1 (program -> PROGRAM ID SEMICOLON g_var funcs main .)
+
+
+state 22
+
+    (2) main -> MAIN . L_P params R_P var_declaration L_B statements R_B
+
+    L_P             shift and go to state 27
+
+
+state 23
+
+    (5) funcs -> function funcs .
+
+    MAIN            reduce using rule 5 (funcs -> function funcs .)
+
+
+state 24
+
+    (25) function -> func_type FUNC . ID L_P params R_P var_declaration L_B statements R_B
+
+    ID              shift and go to state 28
+
+
+state 25
+
+    (9) var1 -> var_type id . var2 SEMICOLON var4
+    (10) var2 -> . COMA id var3
+    (11) var2 -> . empty
+    (103) empty -> .
+
+    COMA            shift and go to state 30
+    SEMICOLON       reduce using rule 103 (empty -> .)
+
+    var2                           shift and go to state 29
+    empty                          shift and go to state 31
+
+state 26
+
+    (16) id -> ID . id1
+    (17) id1 -> . L_SB expression R_SB id2
+    (18) id1 -> . empty
+    (103) empty -> .
+
+    L_SB            shift and go to state 33
+    COMA            reduce using rule 103 (empty -> .)
+    SEMICOLON       reduce using rule 103 (empty -> .)
+    R_P             reduce using rule 103 (empty -> .)
+    EQUAL           reduce using rule 103 (empty -> .)
+
+    id1                            shift and go to state 32
+    empty                          shift and go to state 34
+
+state 27
+
+    (2) main -> MAIN L_P . params R_P var_declaration L_B statements R_B
+    (28) params -> . var_type id params1
+    (29) params -> . empty
+    (24) var_type -> . type
+    (103) empty -> .
+    (21) type -> . INT
+    (22) type -> . FLOAT
+    (23) type -> . CHAR
+
+    R_P             reduce using rule 103 (empty -> .)
+    INT             shift and go to state 15
+    FLOAT           shift and go to state 16
+    CHAR            shift and go to state 17
+
+    params                         shift and go to state 35
+    var_type                       shift and go to state 36
+    empty                          shift and go to state 37
+    type                           shift and go to state 20
+
+state 28
+
+    (25) function -> func_type FUNC ID . L_P params R_P var_declaration L_B statements R_B
+
+    L_P             shift and go to state 38
+
+
+state 29
+
+    (9) var1 -> var_type id var2 . SEMICOLON var4
+
+    SEMICOLON       shift and go to state 39
+
+
+state 30
+
+    (10) var2 -> COMA . id var3
+    (16) id -> . ID id1
+
+    ID              shift and go to state 26
+
+    id                             shift and go to state 40
+
+state 31
+
+    (11) var2 -> empty .
+
+    SEMICOLON       reduce using rule 11 (var2 -> empty .)
+
+
+state 32
+
+    (16) id -> ID id1 .
+
+    COMA            reduce using rule 16 (id -> ID id1 .)
+    SEMICOLON       reduce using rule 16 (id -> ID id1 .)
+    R_P             reduce using rule 16 (id -> ID id1 .)
+    EQUAL           reduce using rule 16 (id -> ID id1 .)
+
+
+state 33
+
+    (17) id1 -> L_SB . expression R_SB id2
+    (68) expression -> . texp op1
+    (69) texp -> . gexp op2
+    (70) gexp -> . nexp op3aux
+    (71) nexp -> . term op4aux
+    (72) term -> . fact op5aux
+    (73) fact -> . ID fact1
+    (74) fact -> . L_P expression R_P
+    (75) fact -> . cte
+    (79) cte -> . CTE_I
+    (80) cte -> . CTE_F
+    (81) cte -> . CTE_CHAR
+
+    ID              shift and go to state 47
+    L_P             shift and go to state 48
+    CTE_I           shift and go to state 50
+    CTE_F           shift and go to state 51
+    CTE_CHAR        shift and go to state 52
+
+    expression                     shift and go to state 41
+    texp                           shift and go to state 42
+    gexp                           shift and go to state 43
+    nexp                           shift and go to state 44
+    term                           shift and go to state 45
+    fact                           shift and go to state 46
+    cte                            shift and go to state 49
+
+state 34
+
+    (18) id1 -> empty .
+
+    COMA            reduce using rule 18 (id1 -> empty .)
+    SEMICOLON       reduce using rule 18 (id1 -> empty .)
+    R_P             reduce using rule 18 (id1 -> empty .)
+    EQUAL           reduce using rule 18 (id1 -> empty .)
+
+
+state 35
+
+    (2) main -> MAIN L_P params . R_P var_declaration L_B statements R_B
+
+    R_P             shift and go to state 53
+
+
+state 36
+
+    (28) params -> var_type . id params1
+    (16) id -> . ID id1
+
+    ID              shift and go to state 26
+
+    id                             shift and go to state 54
+
+state 37
+
+    (29) params -> empty .
+
+    R_P             reduce using rule 29 (params -> empty .)
+
+
+state 38
+
+    (25) function -> func_type FUNC ID L_P . params R_P var_declaration L_B statements R_B
+    (28) params -> . var_type id params1
+    (29) params -> . empty
+    (24) var_type -> . type
+    (103) empty -> .
+    (21) type -> . INT
+    (22) type -> . FLOAT
+    (23) type -> . CHAR
+
+    R_P             reduce using rule 103 (empty -> .)
+    INT             shift and go to state 15
+    FLOAT           shift and go to state 16
+    CHAR            shift and go to state 17
+
+    params                         shift and go to state 55
+    var_type                       shift and go to state 36
+    empty                          shift and go to state 37
+    type                           shift and go to state 20
+
+state 39
+
+    (9) var1 -> var_type id var2 SEMICOLON . var4
+    (14) var4 -> . var1
+    (15) var4 -> . empty
+    (9) var1 -> . var_type id var2 SEMICOLON var4
+    (103) empty -> .
+    (24) var_type -> . type
+    (21) type -> . INT
+    (22) type -> . FLOAT
+    (23) type -> . CHAR
+
+  ! shift/reduce conflict for INT resolved as shift
+  ! shift/reduce conflict for FLOAT resolved as shift
+  ! shift/reduce conflict for CHAR resolved as shift
+    VOID            reduce using rule 103 (empty -> .)
+    MAIN            reduce using rule 103 (empty -> .)
+    L_B             reduce using rule 103 (empty -> .)
+    INT             shift and go to state 15
+    FLOAT           shift and go to state 16
+    CHAR            shift and go to state 17
+
+  ! INT             [ reduce using rule 103 (empty -> .) ]
+  ! FLOAT           [ reduce using rule 103 (empty -> .) ]
+  ! CHAR            [ reduce using rule 103 (empty -> .) ]
+
+    var_type                       shift and go to state 19
+    var4                           shift and go to state 56
+    var1                           shift and go to state 57
+    empty                          shift and go to state 58
+    type                           shift and go to state 20
+
+state 40
+
+    (10) var2 -> COMA id . var3
+    (12) var3 -> . var2
+    (13) var3 -> . empty
+    (10) var2 -> . COMA id var3
+    (11) var2 -> . empty
+    (103) empty -> .
+
+    COMA            shift and go to state 30
+    SEMICOLON       reduce using rule 103 (empty -> .)
+
+    var3                           shift and go to state 59
+    var2                           shift and go to state 60
+    empty                          shift and go to state 61
+
+state 41
+
+    (17) id1 -> L_SB expression . R_SB id2
+
+    R_SB            shift and go to state 62
+
+
+state 42
+
+    (68) expression -> texp . op1
+    (82) op1 -> . OR expression
+    (83) op1 -> . empty
+    (103) empty -> .
+
+    OR              shift and go to state 64
+    R_SB            reduce using rule 103 (empty -> .)
+    R_P             reduce using rule 103 (empty -> .)
+    COMA            reduce using rule 103 (empty -> .)
+    ID              reduce using rule 103 (empty -> .)
+    RETURN          reduce using rule 103 (empty -> .)
+    READ            reduce using rule 103 (empty -> .)
+    PRINT           reduce using rule 103 (empty -> .)
+    IF              reduce using rule 103 (empty -> .)
+    WHILE           reduce using rule 103 (empty -> .)
+    FOR             reduce using rule 103 (empty -> .)
+    L_P             reduce using rule 103 (empty -> .)
+    CTE_I           reduce using rule 103 (empty -> .)
+    CTE_F           reduce using rule 103 (empty -> .)
+    CTE_CHAR        reduce using rule 103 (empty -> .)
+    R_B             reduce using rule 103 (empty -> .)
+    SEMICOLON       reduce using rule 103 (empty -> .)
+    TO              reduce using rule 103 (empty -> .)
+    DO              reduce using rule 103 (empty -> .)
+
+    op1                            shift and go to state 63
+    empty                          shift and go to state 65
+
+state 43
+
+    (69) texp -> gexp . op2
+    (84) op2 -> . AND texp
+    (85) op2 -> . empty
+    (103) empty -> .
+
+    AND             shift and go to state 67
+    OR              reduce using rule 103 (empty -> .)
+    R_SB            reduce using rule 103 (empty -> .)
+    R_P             reduce using rule 103 (empty -> .)
+    COMA            reduce using rule 103 (empty -> .)
+    ID              reduce using rule 103 (empty -> .)
+    RETURN          reduce using rule 103 (empty -> .)
+    READ            reduce using rule 103 (empty -> .)
+    PRINT           reduce using rule 103 (empty -> .)
+    IF              reduce using rule 103 (empty -> .)
+    WHILE           reduce using rule 103 (empty -> .)
+    FOR             reduce using rule 103 (empty -> .)
+    L_P             reduce using rule 103 (empty -> .)
+    CTE_I           reduce using rule 103 (empty -> .)
+    CTE_F           reduce using rule 103 (empty -> .)
+    CTE_CHAR        reduce using rule 103 (empty -> .)
+    R_B             reduce using rule 103 (empty -> .)
+    SEMICOLON       reduce using rule 103 (empty -> .)
+    TO              reduce using rule 103 (empty -> .)
+    DO              reduce using rule 103 (empty -> .)
+
+    op2                            shift and go to state 66
+    empty                          shift and go to state 68
+
+state 44
+
+    (70) gexp -> nexp . op3aux
+    (92) op3aux -> . op3 gexp
+    (93) op3aux -> . empty
+    (86) op3 -> . LESSTHAN
+    (87) op3 -> . LESSTHANEQ
+    (88) op3 -> . GREATERTHAN
+    (89) op3 -> . GREATERTHANEQ
+    (90) op3 -> . EQ
+    (91) op3 -> . DIFERENT
+    (103) empty -> .
+
+    LESSTHAN        shift and go to state 72
+    LESSTHANEQ      shift and go to state 73
+    GREATERTHAN     shift and go to state 74
+    GREATERTHANEQ   shift and go to state 75
+    EQ              shift and go to state 76
+    DIFERENT        shift and go to state 77
+    AND             reduce using rule 103 (empty -> .)
+    OR              reduce using rule 103 (empty -> .)
+    R_SB            reduce using rule 103 (empty -> .)
+    R_P             reduce using rule 103 (empty -> .)
+    COMA            reduce using rule 103 (empty -> .)
+    ID              reduce using rule 103 (empty -> .)
+    RETURN          reduce using rule 103 (empty -> .)
+    READ            reduce using rule 103 (empty -> .)
+    PRINT           reduce using rule 103 (empty -> .)
+    IF              reduce using rule 103 (empty -> .)
+    WHILE           reduce using rule 103 (empty -> .)
+    FOR             reduce using rule 103 (empty -> .)
+    L_P             reduce using rule 103 (empty -> .)
+    CTE_I           reduce using rule 103 (empty -> .)
+    CTE_F           reduce using rule 103 (empty -> .)
+    CTE_CHAR        reduce using rule 103 (empty -> .)
+    R_B             reduce using rule 103 (empty -> .)
+    SEMICOLON       reduce using rule 103 (empty -> .)
+    TO              reduce using rule 103 (empty -> .)
+    DO              reduce using rule 103 (empty -> .)
+
+    op3aux                         shift and go to state 69
+    op3                            shift and go to state 70
+    empty                          shift and go to state 71
+
+state 45
+
+    (71) nexp -> term . op4aux
+    (96) op4aux -> . op4 nexp
+    (97) op4aux -> . empty
+    (94) op4 -> . PLUS
+    (95) op4 -> . MINUS
+    (103) empty -> .
+
+    PLUS            shift and go to state 81
+    MINUS           shift and go to state 82
+    LESSTHAN        reduce using rule 103 (empty -> .)
+    LESSTHANEQ      reduce using rule 103 (empty -> .)
+    GREATERTHAN     reduce using rule 103 (empty -> .)
+    GREATERTHANEQ   reduce using rule 103 (empty -> .)
+    EQ              reduce using rule 103 (empty -> .)
+    DIFERENT        reduce using rule 103 (empty -> .)
+    AND             reduce using rule 103 (empty -> .)
+    OR              reduce using rule 103 (empty -> .)
+    R_SB            reduce using rule 103 (empty -> .)
+    R_P             reduce using rule 103 (empty -> .)
+    COMA            reduce using rule 103 (empty -> .)
+    ID              reduce using rule 103 (empty -> .)
+    RETURN          reduce using rule 103 (empty -> .)
+    READ            reduce using rule 103 (empty -> .)
+    PRINT           reduce using rule 103 (empty -> .)
+    IF              reduce using rule 103 (empty -> .)
+    WHILE           reduce using rule 103 (empty -> .)
+    FOR             reduce using rule 103 (empty -> .)
+    L_P             reduce using rule 103 (empty -> .)
+    CTE_I           reduce using rule 103 (empty -> .)
+    CTE_F           reduce using rule 103 (empty -> .)
+    CTE_CHAR        reduce using rule 103 (empty -> .)
+    R_B             reduce using rule 103 (empty -> .)
+    SEMICOLON       reduce using rule 103 (empty -> .)
+    TO              reduce using rule 103 (empty -> .)
+    DO              reduce using rule 103 (empty -> .)
+
+    op4aux                         shift and go to state 78
+    op4                            shift and go to state 79
+    empty                          shift and go to state 80
+
+state 46
+
+    (72) term -> fact . op5aux
+    (101) op5aux -> . op5 term
+    (102) op5aux -> . empty
+    (98) op5 -> . MULT
+    (99) op5 -> . DIV
+    (100) op5 -> . MOD
+    (103) empty -> .
+
+    MULT            shift and go to state 86
+    DIV             shift and go to state 87
+    MOD             shift and go to state 88
+    PLUS            reduce using rule 103 (empty -> .)
+    MINUS           reduce using rule 103 (empty -> .)
+    LESSTHAN        reduce using rule 103 (empty -> .)
+    LESSTHANEQ      reduce using rule 103 (empty -> .)
+    GREATERTHAN     reduce using rule 103 (empty -> .)
+    GREATERTHANEQ   reduce using rule 103 (empty -> .)
+    EQ              reduce using rule 103 (empty -> .)
+    DIFERENT        reduce using rule 103 (empty -> .)
+    AND             reduce using rule 103 (empty -> .)
+    OR              reduce using rule 103 (empty -> .)
+    R_SB            reduce using rule 103 (empty -> .)
+    R_P             reduce using rule 103 (empty -> .)
+    COMA            reduce using rule 103 (empty -> .)
+    ID              reduce using rule 103 (empty -> .)
+    RETURN          reduce using rule 103 (empty -> .)
+    READ            reduce using rule 103 (empty -> .)
+    PRINT           reduce using rule 103 (empty -> .)
+    IF              reduce using rule 103 (empty -> .)
+    WHILE           reduce using rule 103 (empty -> .)
+    FOR             reduce using rule 103 (empty -> .)
+    L_P             reduce using rule 103 (empty -> .)
+    CTE_I           reduce using rule 103 (empty -> .)
+    CTE_F           reduce using rule 103 (empty -> .)
+    CTE_CHAR        reduce using rule 103 (empty -> .)
+    R_B             reduce using rule 103 (empty -> .)
+    SEMICOLON       reduce using rule 103 (empty -> .)
+    TO              reduce using rule 103 (empty -> .)
+    DO              reduce using rule 103 (empty -> .)
+
+    op5aux                         shift and go to state 83
+    op5                            shift and go to state 84
+    empty                          shift and go to state 85
+
+state 47
+
+    (73) fact -> ID . fact1
+    (76) fact1 -> . L_P args R_P
+    (77) fact1 -> . id1
+    (78) fact1 -> . empty
+    (17) id1 -> . L_SB expression R_SB id2
+    (18) id1 -> . empty
+    (103) empty -> .
+
+  ! shift/reduce conflict for L_P resolved as shift
+    L_P             shift and go to state 90
+    L_SB            shift and go to state 33
+    MULT            reduce using rule 103 (empty -> .)
+    DIV             reduce using rule 103 (empty -> .)
+    MOD             reduce using rule 103 (empty -> .)
+    PLUS            reduce using rule 103 (empty -> .)
+    MINUS           reduce using rule 103 (empty -> .)
+    LESSTHAN        reduce using rule 103 (empty -> .)
+    LESSTHANEQ      reduce using rule 103 (empty -> .)
+    GREATERTHAN     reduce using rule 103 (empty -> .)
+    GREATERTHANEQ   reduce using rule 103 (empty -> .)
+    EQ              reduce using rule 103 (empty -> .)
+    DIFERENT        reduce using rule 103 (empty -> .)
+    AND             reduce using rule 103 (empty -> .)
+    OR              reduce using rule 103 (empty -> .)
+    R_SB            reduce using rule 103 (empty -> .)
+    R_P             reduce using rule 103 (empty -> .)
+    COMA            reduce using rule 103 (empty -> .)
+    ID              reduce using rule 103 (empty -> .)
+    RETURN          reduce using rule 103 (empty -> .)
+    READ            reduce using rule 103 (empty -> .)
+    PRINT           reduce using rule 103 (empty -> .)
+    IF              reduce using rule 103 (empty -> .)
+    WHILE           reduce using rule 103 (empty -> .)
+    FOR             reduce using rule 103 (empty -> .)
+    CTE_I           reduce using rule 103 (empty -> .)
+    CTE_F           reduce using rule 103 (empty -> .)
+    CTE_CHAR        reduce using rule 103 (empty -> .)
+    R_B             reduce using rule 103 (empty -> .)
+    SEMICOLON       reduce using rule 103 (empty -> .)
+    TO              reduce using rule 103 (empty -> .)
+    DO              reduce using rule 103 (empty -> .)
+
+  ! L_P             [ reduce using rule 103 (empty -> .) ]
+
+    fact1                          shift and go to state 89
+    id1                            shift and go to state 91
+    empty                          shift and go to state 92
+
+state 48
+
+    (74) fact -> L_P . expression R_P
+    (68) expression -> . texp op1
+    (69) texp -> . gexp op2
+    (70) gexp -> . nexp op3aux
+    (71) nexp -> . term op4aux
+    (72) term -> . fact op5aux
+    (73) fact -> . ID fact1
+    (74) fact -> . L_P expression R_P
+    (75) fact -> . cte
+    (79) cte -> . CTE_I
+    (80) cte -> . CTE_F
+    (81) cte -> . CTE_CHAR
+
+    ID              shift and go to state 47
+    L_P             shift and go to state 48
+    CTE_I           shift and go to state 50
+    CTE_F           shift and go to state 51
+    CTE_CHAR        shift and go to state 52
+
+    expression                     shift and go to state 93
+    texp                           shift and go to state 42
+    gexp                           shift and go to state 43
+    nexp                           shift and go to state 44
+    term                           shift and go to state 45
+    fact                           shift and go to state 46
+    cte                            shift and go to state 49
+
+state 49
+
+    (75) fact -> cte .
+
+    MULT            reduce using rule 75 (fact -> cte .)
+    DIV             reduce using rule 75 (fact -> cte .)
+    MOD             reduce using rule 75 (fact -> cte .)
+    PLUS            reduce using rule 75 (fact -> cte .)
+    MINUS           reduce using rule 75 (fact -> cte .)
+    LESSTHAN        reduce using rule 75 (fact -> cte .)
+    LESSTHANEQ      reduce using rule 75 (fact -> cte .)
+    GREATERTHAN     reduce using rule 75 (fact -> cte .)
+    GREATERTHANEQ   reduce using rule 75 (fact -> cte .)
+    EQ              reduce using rule 75 (fact -> cte .)
+    DIFERENT        reduce using rule 75 (fact -> cte .)
+    AND             reduce using rule 75 (fact -> cte .)
+    OR              reduce using rule 75 (fact -> cte .)
+    R_SB            reduce using rule 75 (fact -> cte .)
+    R_P             reduce using rule 75 (fact -> cte .)
+    COMA            reduce using rule 75 (fact -> cte .)
+    ID              reduce using rule 75 (fact -> cte .)
+    RETURN          reduce using rule 75 (fact -> cte .)
+    READ            reduce using rule 75 (fact -> cte .)
+    PRINT           reduce using rule 75 (fact -> cte .)
+    IF              reduce using rule 75 (fact -> cte .)
+    WHILE           reduce using rule 75 (fact -> cte .)
+    FOR             reduce using rule 75 (fact -> cte .)
+    L_P             reduce using rule 75 (fact -> cte .)
+    CTE_I           reduce using rule 75 (fact -> cte .)
+    CTE_F           reduce using rule 75 (fact -> cte .)
+    CTE_CHAR        reduce using rule 75 (fact -> cte .)
+    R_B             reduce using rule 75 (fact -> cte .)
+    SEMICOLON       reduce using rule 75 (fact -> cte .)
+    TO              reduce using rule 75 (fact -> cte .)
+    DO              reduce using rule 75 (fact -> cte .)
+
+
+state 50
+
+    (79) cte -> CTE_I .
+
+    MULT            reduce using rule 79 (cte -> CTE_I .)
+    DIV             reduce using rule 79 (cte -> CTE_I .)
+    MOD             reduce using rule 79 (cte -> CTE_I .)
+    PLUS            reduce using rule 79 (cte -> CTE_I .)
+    MINUS           reduce using rule 79 (cte -> CTE_I .)
+    LESSTHAN        reduce using rule 79 (cte -> CTE_I .)
+    LESSTHANEQ      reduce using rule 79 (cte -> CTE_I .)
+    GREATERTHAN     reduce using rule 79 (cte -> CTE_I .)
+    GREATERTHANEQ   reduce using rule 79 (cte -> CTE_I .)
+    EQ              reduce using rule 79 (cte -> CTE_I .)
+    DIFERENT        reduce using rule 79 (cte -> CTE_I .)
+    AND             reduce using rule 79 (cte -> CTE_I .)
+    OR              reduce using rule 79 (cte -> CTE_I .)
+    R_SB            reduce using rule 79 (cte -> CTE_I .)
+    R_P             reduce using rule 79 (cte -> CTE_I .)
+    COMA            reduce using rule 79 (cte -> CTE_I .)
+    ID              reduce using rule 79 (cte -> CTE_I .)
+    RETURN          reduce using rule 79 (cte -> CTE_I .)
+    READ            reduce using rule 79 (cte -> CTE_I .)
+    PRINT           reduce using rule 79 (cte -> CTE_I .)
+    IF              reduce using rule 79 (cte -> CTE_I .)
+    WHILE           reduce using rule 79 (cte -> CTE_I .)
+    FOR             reduce using rule 79 (cte -> CTE_I .)
+    L_P             reduce using rule 79 (cte -> CTE_I .)
+    CTE_I           reduce using rule 79 (cte -> CTE_I .)
+    CTE_F           reduce using rule 79 (cte -> CTE_I .)
+    CTE_CHAR        reduce using rule 79 (cte -> CTE_I .)
+    R_B             reduce using rule 79 (cte -> CTE_I .)
+    SEMICOLON       reduce using rule 79 (cte -> CTE_I .)
+    TO              reduce using rule 79 (cte -> CTE_I .)
+    DO              reduce using rule 79 (cte -> CTE_I .)
+
+
+state 51
+
+    (80) cte -> CTE_F .
+
+    MULT            reduce using rule 80 (cte -> CTE_F .)
+    DIV             reduce using rule 80 (cte -> CTE_F .)
+    MOD             reduce using rule 80 (cte -> CTE_F .)
+    PLUS            reduce using rule 80 (cte -> CTE_F .)
+    MINUS           reduce using rule 80 (cte -> CTE_F .)
+    LESSTHAN        reduce using rule 80 (cte -> CTE_F .)
+    LESSTHANEQ      reduce using rule 80 (cte -> CTE_F .)
+    GREATERTHAN     reduce using rule 80 (cte -> CTE_F .)
+    GREATERTHANEQ   reduce using rule 80 (cte -> CTE_F .)
+    EQ              reduce using rule 80 (cte -> CTE_F .)
+    DIFERENT        reduce using rule 80 (cte -> CTE_F .)
+    AND             reduce using rule 80 (cte -> CTE_F .)
+    OR              reduce using rule 80 (cte -> CTE_F .)
+    R_SB            reduce using rule 80 (cte -> CTE_F .)
+    R_P             reduce using rule 80 (cte -> CTE_F .)
+    COMA            reduce using rule 80 (cte -> CTE_F .)
+    ID              reduce using rule 80 (cte -> CTE_F .)
+    RETURN          reduce using rule 80 (cte -> CTE_F .)
+    READ            reduce using rule 80 (cte -> CTE_F .)
+    PRINT           reduce using rule 80 (cte -> CTE_F .)
+    IF              reduce using rule 80 (cte -> CTE_F .)
+    WHILE           reduce using rule 80 (cte -> CTE_F .)
+    FOR             reduce using rule 80 (cte -> CTE_F .)
+    L_P             reduce using rule 80 (cte -> CTE_F .)
+    CTE_I           reduce using rule 80 (cte -> CTE_F .)
+    CTE_F           reduce using rule 80 (cte -> CTE_F .)
+    CTE_CHAR        reduce using rule 80 (cte -> CTE_F .)
+    R_B             reduce using rule 80 (cte -> CTE_F .)
+    SEMICOLON       reduce using rule 80 (cte -> CTE_F .)
+    TO              reduce using rule 80 (cte -> CTE_F .)
+    DO              reduce using rule 80 (cte -> CTE_F .)
+
+
+state 52
+
+    (81) cte -> CTE_CHAR .
+
+    MULT            reduce using rule 81 (cte -> CTE_CHAR .)
+    DIV             reduce using rule 81 (cte -> CTE_CHAR .)
+    MOD             reduce using rule 81 (cte -> CTE_CHAR .)
+    PLUS            reduce using rule 81 (cte -> CTE_CHAR .)
+    MINUS           reduce using rule 81 (cte -> CTE_CHAR .)
+    LESSTHAN        reduce using rule 81 (cte -> CTE_CHAR .)
+    LESSTHANEQ      reduce using rule 81 (cte -> CTE_CHAR .)
+    GREATERTHAN     reduce using rule 81 (cte -> CTE_CHAR .)
+    GREATERTHANEQ   reduce using rule 81 (cte -> CTE_CHAR .)
+    EQ              reduce using rule 81 (cte -> CTE_CHAR .)
+    DIFERENT        reduce using rule 81 (cte -> CTE_CHAR .)
+    AND             reduce using rule 81 (cte -> CTE_CHAR .)
+    OR              reduce using rule 81 (cte -> CTE_CHAR .)
+    R_SB            reduce using rule 81 (cte -> CTE_CHAR .)
+    R_P             reduce using rule 81 (cte -> CTE_CHAR .)
+    COMA            reduce using rule 81 (cte -> CTE_CHAR .)
+    ID              reduce using rule 81 (cte -> CTE_CHAR .)
+    RETURN          reduce using rule 81 (cte -> CTE_CHAR .)
+    READ            reduce using rule 81 (cte -> CTE_CHAR .)
+    PRINT           reduce using rule 81 (cte -> CTE_CHAR .)
+    IF              reduce using rule 81 (cte -> CTE_CHAR .)
+    WHILE           reduce using rule 81 (cte -> CTE_CHAR .)
+    FOR             reduce using rule 81 (cte -> CTE_CHAR .)
+    L_P             reduce using rule 81 (cte -> CTE_CHAR .)
+    CTE_I           reduce using rule 81 (cte -> CTE_CHAR .)
+    CTE_F           reduce using rule 81 (cte -> CTE_CHAR .)
+    CTE_CHAR        reduce using rule 81 (cte -> CTE_CHAR .)
+    R_B             reduce using rule 81 (cte -> CTE_CHAR .)
+    SEMICOLON       reduce using rule 81 (cte -> CTE_CHAR .)
+    TO              reduce using rule 81 (cte -> CTE_CHAR .)
+    DO              reduce using rule 81 (cte -> CTE_CHAR .)
+
+
+state 53
+
+    (2) main -> MAIN L_P params R_P . var_declaration L_B statements R_B
+    (7) var_declaration -> . VAR var1
+    (8) var_declaration -> . empty
+    (103) empty -> .
+
+    VAR             shift and go to state 8
+    L_B             reduce using rule 103 (empty -> .)
+
+    var_declaration                shift and go to state 94
+    empty                          shift and go to state 95
+
+state 54
+
+    (28) params -> var_type id . params1
+    (30) params1 -> . COMA params
+    (31) params1 -> . empty
+    (103) empty -> .
+
+    COMA            shift and go to state 97
+    R_P             reduce using rule 103 (empty -> .)
+
+    params1                        shift and go to state 96
+    empty                          shift and go to state 98
+
+state 55
+
+    (25) function -> func_type FUNC ID L_P params . R_P var_declaration L_B statements R_B
+
+    R_P             shift and go to state 99
+
+
+state 56
+
+    (9) var1 -> var_type id var2 SEMICOLON var4 .
+
+    VOID            reduce using rule 9 (var1 -> var_type id var2 SEMICOLON var4 .)
+    INT             reduce using rule 9 (var1 -> var_type id var2 SEMICOLON var4 .)
+    FLOAT           reduce using rule 9 (var1 -> var_type id var2 SEMICOLON var4 .)
+    CHAR            reduce using rule 9 (var1 -> var_type id var2 SEMICOLON var4 .)
+    MAIN            reduce using rule 9 (var1 -> var_type id var2 SEMICOLON var4 .)
+    L_B             reduce using rule 9 (var1 -> var_type id var2 SEMICOLON var4 .)
+
+
+state 57
+
+    (14) var4 -> var1 .
+
+    VOID            reduce using rule 14 (var4 -> var1 .)
+    INT             reduce using rule 14 (var4 -> var1 .)
+    FLOAT           reduce using rule 14 (var4 -> var1 .)
+    CHAR            reduce using rule 14 (var4 -> var1 .)
+    MAIN            reduce using rule 14 (var4 -> var1 .)
+    L_B             reduce using rule 14 (var4 -> var1 .)
+
+
+state 58
+
+    (15) var4 -> empty .
+
+    VOID            reduce using rule 15 (var4 -> empty .)
+    INT             reduce using rule 15 (var4 -> empty .)
+    FLOAT           reduce using rule 15 (var4 -> empty .)
+    CHAR            reduce using rule 15 (var4 -> empty .)
+    MAIN            reduce using rule 15 (var4 -> empty .)
+    L_B             reduce using rule 15 (var4 -> empty .)
+
+
+state 59
+
+    (10) var2 -> COMA id var3 .
+
+    SEMICOLON       reduce using rule 10 (var2 -> COMA id var3 .)
+
+
+state 60
+
+    (12) var3 -> var2 .
+
+    SEMICOLON       reduce using rule 12 (var3 -> var2 .)
+
+
+state 61
+
+    (13) var3 -> empty .
+    (11) var2 -> empty .
+
+  ! reduce/reduce conflict for SEMICOLON resolved using rule 11 (var2 -> empty .)
+    SEMICOLON       reduce using rule 11 (var2 -> empty .)
+
+  ! SEMICOLON       [ reduce using rule 13 (var3 -> empty .) ]
+
+
+state 62
+
+    (17) id1 -> L_SB expression R_SB . id2
+    (19) id2 -> . L_SB expression R_SB
+    (20) id2 -> . empty
+    (103) empty -> .
+
+    L_SB            shift and go to state 100
+    COMA            reduce using rule 103 (empty -> .)
+    SEMICOLON       reduce using rule 103 (empty -> .)
+    R_P             reduce using rule 103 (empty -> .)
+    EQUAL           reduce using rule 103 (empty -> .)
+    MULT            reduce using rule 103 (empty -> .)
+    DIV             reduce using rule 103 (empty -> .)
+    MOD             reduce using rule 103 (empty -> .)
+    PLUS            reduce using rule 103 (empty -> .)
+    MINUS           reduce using rule 103 (empty -> .)
+    LESSTHAN        reduce using rule 103 (empty -> .)
+    LESSTHANEQ      reduce using rule 103 (empty -> .)
+    GREATERTHAN     reduce using rule 103 (empty -> .)
+    GREATERTHANEQ   reduce using rule 103 (empty -> .)
+    EQ              reduce using rule 103 (empty -> .)
+    DIFERENT        reduce using rule 103 (empty -> .)
+    AND             reduce using rule 103 (empty -> .)
+    OR              reduce using rule 103 (empty -> .)
+    R_SB            reduce using rule 103 (empty -> .)
+    ID              reduce using rule 103 (empty -> .)
+    RETURN          reduce using rule 103 (empty -> .)
+    READ            reduce using rule 103 (empty -> .)
+    PRINT           reduce using rule 103 (empty -> .)
+    IF              reduce using rule 103 (empty -> .)
+    WHILE           reduce using rule 103 (empty -> .)
+    FOR             reduce using rule 103 (empty -> .)
+    L_P             reduce using rule 103 (empty -> .)
+    CTE_I           reduce using rule 103 (empty -> .)
+    CTE_F           reduce using rule 103 (empty -> .)
+    CTE_CHAR        reduce using rule 103 (empty -> .)
+    R_B             reduce using rule 103 (empty -> .)
+    TO              reduce using rule 103 (empty -> .)
+    DO              reduce using rule 103 (empty -> .)
+
+    id2                            shift and go to state 101
+    empty                          shift and go to state 102
+
+state 63
+
+    (68) expression -> texp op1 .
+
+    R_SB            reduce using rule 68 (expression -> texp op1 .)
+    R_P             reduce using rule 68 (expression -> texp op1 .)
+    COMA            reduce using rule 68 (expression -> texp op1 .)
+    ID              reduce using rule 68 (expression -> texp op1 .)
+    RETURN          reduce using rule 68 (expression -> texp op1 .)
+    READ            reduce using rule 68 (expression -> texp op1 .)
+    PRINT           reduce using rule 68 (expression -> texp op1 .)
+    IF              reduce using rule 68 (expression -> texp op1 .)
+    WHILE           reduce using rule 68 (expression -> texp op1 .)
+    FOR             reduce using rule 68 (expression -> texp op1 .)
+    L_P             reduce using rule 68 (expression -> texp op1 .)
+    CTE_I           reduce using rule 68 (expression -> texp op1 .)
+    CTE_F           reduce using rule 68 (expression -> texp op1 .)
+    CTE_CHAR        reduce using rule 68 (expression -> texp op1 .)
+    R_B             reduce using rule 68 (expression -> texp op1 .)
+    SEMICOLON       reduce using rule 68 (expression -> texp op1 .)
+    TO              reduce using rule 68 (expression -> texp op1 .)
+    DO              reduce using rule 68 (expression -> texp op1 .)
+
+
+state 64
+
+    (82) op1 -> OR . expression
+    (68) expression -> . texp op1
+    (69) texp -> . gexp op2
+    (70) gexp -> . nexp op3aux
+    (71) nexp -> . term op4aux
+    (72) term -> . fact op5aux
+    (73) fact -> . ID fact1
+    (74) fact -> . L_P expression R_P
+    (75) fact -> . cte
+    (79) cte -> . CTE_I
+    (80) cte -> . CTE_F
+    (81) cte -> . CTE_CHAR
+
+    ID              shift and go to state 47
+    L_P             shift and go to state 48
+    CTE_I           shift and go to state 50
+    CTE_F           shift and go to state 51
+    CTE_CHAR        shift and go to state 52
+
+    expression                     shift and go to state 103
+    texp                           shift and go to state 42
+    gexp                           shift and go to state 43
+    nexp                           shift and go to state 44
+    term                           shift and go to state 45
+    fact                           shift and go to state 46
+    cte                            shift and go to state 49
+
+state 65
+
+    (83) op1 -> empty .
+
+    R_SB            reduce using rule 83 (op1 -> empty .)
+    R_P             reduce using rule 83 (op1 -> empty .)
+    COMA            reduce using rule 83 (op1 -> empty .)
+    ID              reduce using rule 83 (op1 -> empty .)
+    RETURN          reduce using rule 83 (op1 -> empty .)
+    READ            reduce using rule 83 (op1 -> empty .)
+    PRINT           reduce using rule 83 (op1 -> empty .)
+    IF              reduce using rule 83 (op1 -> empty .)
+    WHILE           reduce using rule 83 (op1 -> empty .)
+    FOR             reduce using rule 83 (op1 -> empty .)
+    L_P             reduce using rule 83 (op1 -> empty .)
+    CTE_I           reduce using rule 83 (op1 -> empty .)
+    CTE_F           reduce using rule 83 (op1 -> empty .)
+    CTE_CHAR        reduce using rule 83 (op1 -> empty .)
+    R_B             reduce using rule 83 (op1 -> empty .)
+    SEMICOLON       reduce using rule 83 (op1 -> empty .)
+    TO              reduce using rule 83 (op1 -> empty .)
+    DO              reduce using rule 83 (op1 -> empty .)
+
+
+state 66
+
+    (69) texp -> gexp op2 .
+
+    OR              reduce using rule 69 (texp -> gexp op2 .)
+    R_SB            reduce using rule 69 (texp -> gexp op2 .)
+    R_P             reduce using rule 69 (texp -> gexp op2 .)
+    COMA            reduce using rule 69 (texp -> gexp op2 .)
+    ID              reduce using rule 69 (texp -> gexp op2 .)
+    RETURN          reduce using rule 69 (texp -> gexp op2 .)
+    READ            reduce using rule 69 (texp -> gexp op2 .)
+    PRINT           reduce using rule 69 (texp -> gexp op2 .)
+    IF              reduce using rule 69 (texp -> gexp op2 .)
+    WHILE           reduce using rule 69 (texp -> gexp op2 .)
+    FOR             reduce using rule 69 (texp -> gexp op2 .)
+    L_P             reduce using rule 69 (texp -> gexp op2 .)
+    CTE_I           reduce using rule 69 (texp -> gexp op2 .)
+    CTE_F           reduce using rule 69 (texp -> gexp op2 .)
+    CTE_CHAR        reduce using rule 69 (texp -> gexp op2 .)
+    R_B             reduce using rule 69 (texp -> gexp op2 .)
+    SEMICOLON       reduce using rule 69 (texp -> gexp op2 .)
+    TO              reduce using rule 69 (texp -> gexp op2 .)
+    DO              reduce using rule 69 (texp -> gexp op2 .)
+
+
+state 67
+
+    (84) op2 -> AND . texp
+    (69) texp -> . gexp op2
+    (70) gexp -> . nexp op3aux
+    (71) nexp -> . term op4aux
+    (72) term -> . fact op5aux
+    (73) fact -> . ID fact1
+    (74) fact -> . L_P expression R_P
+    (75) fact -> . cte
+    (79) cte -> . CTE_I
+    (80) cte -> . CTE_F
+    (81) cte -> . CTE_CHAR
+
+    ID              shift and go to state 47
+    L_P             shift and go to state 48
+    CTE_I           shift and go to state 50
+    CTE_F           shift and go to state 51
+    CTE_CHAR        shift and go to state 52
+
+    texp                           shift and go to state 104
+    gexp                           shift and go to state 43
+    nexp                           shift and go to state 44
+    term                           shift and go to state 45
+    fact                           shift and go to state 46
+    cte                            shift and go to state 49
+
+state 68
+
+    (85) op2 -> empty .
+
+    OR              reduce using rule 85 (op2 -> empty .)
+    R_SB            reduce using rule 85 (op2 -> empty .)
+    R_P             reduce using rule 85 (op2 -> empty .)
+    COMA            reduce using rule 85 (op2 -> empty .)
+    ID              reduce using rule 85 (op2 -> empty .)
+    RETURN          reduce using rule 85 (op2 -> empty .)
+    READ            reduce using rule 85 (op2 -> empty .)
+    PRINT           reduce using rule 85 (op2 -> empty .)
+    IF              reduce using rule 85 (op2 -> empty .)
+    WHILE           reduce using rule 85 (op2 -> empty .)
+    FOR             reduce using rule 85 (op2 -> empty .)
+    L_P             reduce using rule 85 (op2 -> empty .)
+    CTE_I           reduce using rule 85 (op2 -> empty .)
+    CTE_F           reduce using rule 85 (op2 -> empty .)
+    CTE_CHAR        reduce using rule 85 (op2 -> empty .)
+    R_B             reduce using rule 85 (op2 -> empty .)
+    SEMICOLON       reduce using rule 85 (op2 -> empty .)
+    TO              reduce using rule 85 (op2 -> empty .)
+    DO              reduce using rule 85 (op2 -> empty .)
+
+
+state 69
+
+    (70) gexp -> nexp op3aux .
+
+    AND             reduce using rule 70 (gexp -> nexp op3aux .)
+    OR              reduce using rule 70 (gexp -> nexp op3aux .)
+    R_SB            reduce using rule 70 (gexp -> nexp op3aux .)
+    R_P             reduce using rule 70 (gexp -> nexp op3aux .)
+    COMA            reduce using rule 70 (gexp -> nexp op3aux .)
+    ID              reduce using rule 70 (gexp -> nexp op3aux .)
+    RETURN          reduce using rule 70 (gexp -> nexp op3aux .)
+    READ            reduce using rule 70 (gexp -> nexp op3aux .)
+    PRINT           reduce using rule 70 (gexp -> nexp op3aux .)
+    IF              reduce using rule 70 (gexp -> nexp op3aux .)
+    WHILE           reduce using rule 70 (gexp -> nexp op3aux .)
+    FOR             reduce using rule 70 (gexp -> nexp op3aux .)
+    L_P             reduce using rule 70 (gexp -> nexp op3aux .)
+    CTE_I           reduce using rule 70 (gexp -> nexp op3aux .)
+    CTE_F           reduce using rule 70 (gexp -> nexp op3aux .)
+    CTE_CHAR        reduce using rule 70 (gexp -> nexp op3aux .)
+    R_B             reduce using rule 70 (gexp -> nexp op3aux .)
+    SEMICOLON       reduce using rule 70 (gexp -> nexp op3aux .)
+    TO              reduce using rule 70 (gexp -> nexp op3aux .)
+    DO              reduce using rule 70 (gexp -> nexp op3aux .)
+
+
+state 70
+
+    (92) op3aux -> op3 . gexp
+    (70) gexp -> . nexp op3aux
+    (71) nexp -> . term op4aux
+    (72) term -> . fact op5aux
+    (73) fact -> . ID fact1
+    (74) fact -> . L_P expression R_P
+    (75) fact -> . cte
+    (79) cte -> . CTE_I
+    (80) cte -> . CTE_F
+    (81) cte -> . CTE_CHAR
+
+    ID              shift and go to state 47
+    L_P             shift and go to state 48
+    CTE_I           shift and go to state 50
+    CTE_F           shift and go to state 51
+    CTE_CHAR        shift and go to state 52
+
+    gexp                           shift and go to state 105
+    nexp                           shift and go to state 44
+    term                           shift and go to state 45
+    fact                           shift and go to state 46
+    cte                            shift and go to state 49
+
+state 71
+
+    (93) op3aux -> empty .
+
+    AND             reduce using rule 93 (op3aux -> empty .)
+    OR              reduce using rule 93 (op3aux -> empty .)
+    R_SB            reduce using rule 93 (op3aux -> empty .)
+    R_P             reduce using rule 93 (op3aux -> empty .)
+    COMA            reduce using rule 93 (op3aux -> empty .)
+    ID              reduce using rule 93 (op3aux -> empty .)
+    RETURN          reduce using rule 93 (op3aux -> empty .)
+    READ            reduce using rule 93 (op3aux -> empty .)
+    PRINT           reduce using rule 93 (op3aux -> empty .)
+    IF              reduce using rule 93 (op3aux -> empty .)
+    WHILE           reduce using rule 93 (op3aux -> empty .)
+    FOR             reduce using rule 93 (op3aux -> empty .)
+    L_P             reduce using rule 93 (op3aux -> empty .)
+    CTE_I           reduce using rule 93 (op3aux -> empty .)
+    CTE_F           reduce using rule 93 (op3aux -> empty .)
+    CTE_CHAR        reduce using rule 93 (op3aux -> empty .)
+    R_B             reduce using rule 93 (op3aux -> empty .)
+    SEMICOLON       reduce using rule 93 (op3aux -> empty .)
+    TO              reduce using rule 93 (op3aux -> empty .)
+    DO              reduce using rule 93 (op3aux -> empty .)
+
+
+state 72
+
+    (86) op3 -> LESSTHAN .
+
+    ID              reduce using rule 86 (op3 -> LESSTHAN .)
+    L_P             reduce using rule 86 (op3 -> LESSTHAN .)
+    CTE_I           reduce using rule 86 (op3 -> LESSTHAN .)
+    CTE_F           reduce using rule 86 (op3 -> LESSTHAN .)
+    CTE_CHAR        reduce using rule 86 (op3 -> LESSTHAN .)
+
+
+state 73
+
+    (87) op3 -> LESSTHANEQ .
+
+    ID              reduce using rule 87 (op3 -> LESSTHANEQ .)
+    L_P             reduce using rule 87 (op3 -> LESSTHANEQ .)
+    CTE_I           reduce using rule 87 (op3 -> LESSTHANEQ .)
+    CTE_F           reduce using rule 87 (op3 -> LESSTHANEQ .)
+    CTE_CHAR        reduce using rule 87 (op3 -> LESSTHANEQ .)
+
+
+state 74
+
+    (88) op3 -> GREATERTHAN .
+
+    ID              reduce using rule 88 (op3 -> GREATERTHAN .)
+    L_P             reduce using rule 88 (op3 -> GREATERTHAN .)
+    CTE_I           reduce using rule 88 (op3 -> GREATERTHAN .)
+    CTE_F           reduce using rule 88 (op3 -> GREATERTHAN .)
+    CTE_CHAR        reduce using rule 88 (op3 -> GREATERTHAN .)
+
+
+state 75
+
+    (89) op3 -> GREATERTHANEQ .
+
+    ID              reduce using rule 89 (op3 -> GREATERTHANEQ .)
+    L_P             reduce using rule 89 (op3 -> GREATERTHANEQ .)
+    CTE_I           reduce using rule 89 (op3 -> GREATERTHANEQ .)
+    CTE_F           reduce using rule 89 (op3 -> GREATERTHANEQ .)
+    CTE_CHAR        reduce using rule 89 (op3 -> GREATERTHANEQ .)
+
+
+state 76
+
+    (90) op3 -> EQ .
+
+    ID              reduce using rule 90 (op3 -> EQ .)
+    L_P             reduce using rule 90 (op3 -> EQ .)
+    CTE_I           reduce using rule 90 (op3 -> EQ .)
+    CTE_F           reduce using rule 90 (op3 -> EQ .)
+    CTE_CHAR        reduce using rule 90 (op3 -> EQ .)
+
+
+state 77
+
+    (91) op3 -> DIFERENT .
+
+    ID              reduce using rule 91 (op3 -> DIFERENT .)
+    L_P             reduce using rule 91 (op3 -> DIFERENT .)
+    CTE_I           reduce using rule 91 (op3 -> DIFERENT .)
+    CTE_F           reduce using rule 91 (op3 -> DIFERENT .)
+    CTE_CHAR        reduce using rule 91 (op3 -> DIFERENT .)
+
+
+state 78
+
+    (71) nexp -> term op4aux .
+
+    LESSTHAN        reduce using rule 71 (nexp -> term op4aux .)
+    LESSTHANEQ      reduce using rule 71 (nexp -> term op4aux .)
+    GREATERTHAN     reduce using rule 71 (nexp -> term op4aux .)
+    GREATERTHANEQ   reduce using rule 71 (nexp -> term op4aux .)
+    EQ              reduce using rule 71 (nexp -> term op4aux .)
+    DIFERENT        reduce using rule 71 (nexp -> term op4aux .)
+    AND             reduce using rule 71 (nexp -> term op4aux .)
+    OR              reduce using rule 71 (nexp -> term op4aux .)
+    R_SB            reduce using rule 71 (nexp -> term op4aux .)
+    R_P             reduce using rule 71 (nexp -> term op4aux .)
+    COMA            reduce using rule 71 (nexp -> term op4aux .)
+    ID              reduce using rule 71 (nexp -> term op4aux .)
+    RETURN          reduce using rule 71 (nexp -> term op4aux .)
+    READ            reduce using rule 71 (nexp -> term op4aux .)
+    PRINT           reduce using rule 71 (nexp -> term op4aux .)
+    IF              reduce using rule 71 (nexp -> term op4aux .)
+    WHILE           reduce using rule 71 (nexp -> term op4aux .)
+    FOR             reduce using rule 71 (nexp -> term op4aux .)
+    L_P             reduce using rule 71 (nexp -> term op4aux .)
+    CTE_I           reduce using rule 71 (nexp -> term op4aux .)
+    CTE_F           reduce using rule 71 (nexp -> term op4aux .)
+    CTE_CHAR        reduce using rule 71 (nexp -> term op4aux .)
+    R_B             reduce using rule 71 (nexp -> term op4aux .)
+    SEMICOLON       reduce using rule 71 (nexp -> term op4aux .)
+    TO              reduce using rule 71 (nexp -> term op4aux .)
+    DO              reduce using rule 71 (nexp -> term op4aux .)
+
+
+state 79
+
+    (96) op4aux -> op4 . nexp
+    (71) nexp -> . term op4aux
+    (72) term -> . fact op5aux
+    (73) fact -> . ID fact1
+    (74) fact -> . L_P expression R_P
+    (75) fact -> . cte
+    (79) cte -> . CTE_I
+    (80) cte -> . CTE_F
+    (81) cte -> . CTE_CHAR
+
+    ID              shift and go to state 47
+    L_P             shift and go to state 48
+    CTE_I           shift and go to state 50
+    CTE_F           shift and go to state 51
+    CTE_CHAR        shift and go to state 52
+
+    nexp                           shift and go to state 106
+    term                           shift and go to state 45
+    fact                           shift and go to state 46
+    cte                            shift and go to state 49
+
+state 80
+
+    (97) op4aux -> empty .
+
+    LESSTHAN        reduce using rule 97 (op4aux -> empty .)
+    LESSTHANEQ      reduce using rule 97 (op4aux -> empty .)
+    GREATERTHAN     reduce using rule 97 (op4aux -> empty .)
+    GREATERTHANEQ   reduce using rule 97 (op4aux -> empty .)
+    EQ              reduce using rule 97 (op4aux -> empty .)
+    DIFERENT        reduce using rule 97 (op4aux -> empty .)
+    AND             reduce using rule 97 (op4aux -> empty .)
+    OR              reduce using rule 97 (op4aux -> empty .)
+    R_SB            reduce using rule 97 (op4aux -> empty .)
+    R_P             reduce using rule 97 (op4aux -> empty .)
+    COMA            reduce using rule 97 (op4aux -> empty .)
+    ID              reduce using rule 97 (op4aux -> empty .)
+    RETURN          reduce using rule 97 (op4aux -> empty .)
+    READ            reduce using rule 97 (op4aux -> empty .)
+    PRINT           reduce using rule 97 (op4aux -> empty .)
+    IF              reduce using rule 97 (op4aux -> empty .)
+    WHILE           reduce using rule 97 (op4aux -> empty .)
+    FOR             reduce using rule 97 (op4aux -> empty .)
+    L_P             reduce using rule 97 (op4aux -> empty .)
+    CTE_I           reduce using rule 97 (op4aux -> empty .)
+    CTE_F           reduce using rule 97 (op4aux -> empty .)
+    CTE_CHAR        reduce using rule 97 (op4aux -> empty .)
+    R_B             reduce using rule 97 (op4aux -> empty .)
+    SEMICOLON       reduce using rule 97 (op4aux -> empty .)
+    TO              reduce using rule 97 (op4aux -> empty .)
+    DO              reduce using rule 97 (op4aux -> empty .)
+
+
+state 81
+
+    (94) op4 -> PLUS .
+
+    ID              reduce using rule 94 (op4 -> PLUS .)
+    L_P             reduce using rule 94 (op4 -> PLUS .)
+    CTE_I           reduce using rule 94 (op4 -> PLUS .)
+    CTE_F           reduce using rule 94 (op4 -> PLUS .)
+    CTE_CHAR        reduce using rule 94 (op4 -> PLUS .)
+
+
+state 82
+
+    (95) op4 -> MINUS .
+
+    ID              reduce using rule 95 (op4 -> MINUS .)
+    L_P             reduce using rule 95 (op4 -> MINUS .)
+    CTE_I           reduce using rule 95 (op4 -> MINUS .)
+    CTE_F           reduce using rule 95 (op4 -> MINUS .)
+    CTE_CHAR        reduce using rule 95 (op4 -> MINUS .)
+
+
+state 83
+
+    (72) term -> fact op5aux .
+
+    PLUS            reduce using rule 72 (term -> fact op5aux .)
+    MINUS           reduce using rule 72 (term -> fact op5aux .)
+    LESSTHAN        reduce using rule 72 (term -> fact op5aux .)
+    LESSTHANEQ      reduce using rule 72 (term -> fact op5aux .)
+    GREATERTHAN     reduce using rule 72 (term -> fact op5aux .)
+    GREATERTHANEQ   reduce using rule 72 (term -> fact op5aux .)
+    EQ              reduce using rule 72 (term -> fact op5aux .)
+    DIFERENT        reduce using rule 72 (term -> fact op5aux .)
+    AND             reduce using rule 72 (term -> fact op5aux .)
+    OR              reduce using rule 72 (term -> fact op5aux .)
+    R_SB            reduce using rule 72 (term -> fact op5aux .)
+    R_P             reduce using rule 72 (term -> fact op5aux .)
+    COMA            reduce using rule 72 (term -> fact op5aux .)
+    ID              reduce using rule 72 (term -> fact op5aux .)
+    RETURN          reduce using rule 72 (term -> fact op5aux .)
+    READ            reduce using rule 72 (term -> fact op5aux .)
+    PRINT           reduce using rule 72 (term -> fact op5aux .)
+    IF              reduce using rule 72 (term -> fact op5aux .)
+    WHILE           reduce using rule 72 (term -> fact op5aux .)
+    FOR             reduce using rule 72 (term -> fact op5aux .)
+    L_P             reduce using rule 72 (term -> fact op5aux .)
+    CTE_I           reduce using rule 72 (term -> fact op5aux .)
+    CTE_F           reduce using rule 72 (term -> fact op5aux .)
+    CTE_CHAR        reduce using rule 72 (term -> fact op5aux .)
+    R_B             reduce using rule 72 (term -> fact op5aux .)
+    SEMICOLON       reduce using rule 72 (term -> fact op5aux .)
+    TO              reduce using rule 72 (term -> fact op5aux .)
+    DO              reduce using rule 72 (term -> fact op5aux .)
+
+
+state 84
+
+    (101) op5aux -> op5 . term
+    (72) term -> . fact op5aux
+    (73) fact -> . ID fact1
+    (74) fact -> . L_P expression R_P
+    (75) fact -> . cte
+    (79) cte -> . CTE_I
+    (80) cte -> . CTE_F
+    (81) cte -> . CTE_CHAR
+
+    ID              shift and go to state 47
+    L_P             shift and go to state 48
+    CTE_I           shift and go to state 50
+    CTE_F           shift and go to state 51
+    CTE_CHAR        shift and go to state 52
+
+    term                           shift and go to state 107
+    fact                           shift and go to state 46
+    cte                            shift and go to state 49
+
+state 85
+
+    (102) op5aux -> empty .
+
+    PLUS            reduce using rule 102 (op5aux -> empty .)
+    MINUS           reduce using rule 102 (op5aux -> empty .)
+    LESSTHAN        reduce using rule 102 (op5aux -> empty .)
+    LESSTHANEQ      reduce using rule 102 (op5aux -> empty .)
+    GREATERTHAN     reduce using rule 102 (op5aux -> empty .)
+    GREATERTHANEQ   reduce using rule 102 (op5aux -> empty .)
+    EQ              reduce using rule 102 (op5aux -> empty .)
+    DIFERENT        reduce using rule 102 (op5aux -> empty .)
+    AND             reduce using rule 102 (op5aux -> empty .)
+    OR              reduce using rule 102 (op5aux -> empty .)
+    R_SB            reduce using rule 102 (op5aux -> empty .)
+    R_P             reduce using rule 102 (op5aux -> empty .)
+    COMA            reduce using rule 102 (op5aux -> empty .)
+    ID              reduce using rule 102 (op5aux -> empty .)
+    RETURN          reduce using rule 102 (op5aux -> empty .)
+    READ            reduce using rule 102 (op5aux -> empty .)
+    PRINT           reduce using rule 102 (op5aux -> empty .)
+    IF              reduce using rule 102 (op5aux -> empty .)
+    WHILE           reduce using rule 102 (op5aux -> empty .)
+    FOR             reduce using rule 102 (op5aux -> empty .)
+    L_P             reduce using rule 102 (op5aux -> empty .)
+    CTE_I           reduce using rule 102 (op5aux -> empty .)
+    CTE_F           reduce using rule 102 (op5aux -> empty .)
+    CTE_CHAR        reduce using rule 102 (op5aux -> empty .)
+    R_B             reduce using rule 102 (op5aux -> empty .)
+    SEMICOLON       reduce using rule 102 (op5aux -> empty .)
+    TO              reduce using rule 102 (op5aux -> empty .)
+    DO              reduce using rule 102 (op5aux -> empty .)
+
+
+state 86
+
+    (98) op5 -> MULT .
+
+    ID              reduce using rule 98 (op5 -> MULT .)
+    L_P             reduce using rule 98 (op5 -> MULT .)
+    CTE_I           reduce using rule 98 (op5 -> MULT .)
+    CTE_F           reduce using rule 98 (op5 -> MULT .)
+    CTE_CHAR        reduce using rule 98 (op5 -> MULT .)
+
+
+state 87
+
+    (99) op5 -> DIV .
+
+    ID              reduce using rule 99 (op5 -> DIV .)
+    L_P             reduce using rule 99 (op5 -> DIV .)
+    CTE_I           reduce using rule 99 (op5 -> DIV .)
+    CTE_F           reduce using rule 99 (op5 -> DIV .)
+    CTE_CHAR        reduce using rule 99 (op5 -> DIV .)
+
+
+state 88
+
+    (100) op5 -> MOD .
+
+    ID              reduce using rule 100 (op5 -> MOD .)
+    L_P             reduce using rule 100 (op5 -> MOD .)
+    CTE_I           reduce using rule 100 (op5 -> MOD .)
+    CTE_F           reduce using rule 100 (op5 -> MOD .)
+    CTE_CHAR        reduce using rule 100 (op5 -> MOD .)
+
+
+state 89
+
+    (73) fact -> ID fact1 .
+
+    MULT            reduce using rule 73 (fact -> ID fact1 .)
+    DIV             reduce using rule 73 (fact -> ID fact1 .)
+    MOD             reduce using rule 73 (fact -> ID fact1 .)
+    PLUS            reduce using rule 73 (fact -> ID fact1 .)
+    MINUS           reduce using rule 73 (fact -> ID fact1 .)
+    LESSTHAN        reduce using rule 73 (fact -> ID fact1 .)
+    LESSTHANEQ      reduce using rule 73 (fact -> ID fact1 .)
+    GREATERTHAN     reduce using rule 73 (fact -> ID fact1 .)
+    GREATERTHANEQ   reduce using rule 73 (fact -> ID fact1 .)
+    EQ              reduce using rule 73 (fact -> ID fact1 .)
+    DIFERENT        reduce using rule 73 (fact -> ID fact1 .)
+    AND             reduce using rule 73 (fact -> ID fact1 .)
+    OR              reduce using rule 73 (fact -> ID fact1 .)
+    R_SB            reduce using rule 73 (fact -> ID fact1 .)
+    R_P             reduce using rule 73 (fact -> ID fact1 .)
+    COMA            reduce using rule 73 (fact -> ID fact1 .)
+    ID              reduce using rule 73 (fact -> ID fact1 .)
+    RETURN          reduce using rule 73 (fact -> ID fact1 .)
+    READ            reduce using rule 73 (fact -> ID fact1 .)
+    PRINT           reduce using rule 73 (fact -> ID fact1 .)
+    IF              reduce using rule 73 (fact -> ID fact1 .)
+    WHILE           reduce using rule 73 (fact -> ID fact1 .)
+    FOR             reduce using rule 73 (fact -> ID fact1 .)
+    L_P             reduce using rule 73 (fact -> ID fact1 .)
+    CTE_I           reduce using rule 73 (fact -> ID fact1 .)
+    CTE_F           reduce using rule 73 (fact -> ID fact1 .)
+    CTE_CHAR        reduce using rule 73 (fact -> ID fact1 .)
+    R_B             reduce using rule 73 (fact -> ID fact1 .)
+    SEMICOLON       reduce using rule 73 (fact -> ID fact1 .)
+    TO              reduce using rule 73 (fact -> ID fact1 .)
+    DO              reduce using rule 73 (fact -> ID fact1 .)
+
+
+state 90
+
+    (76) fact1 -> L_P . args R_P
+    (43) args -> . args1
+    (44) args -> . empty
+    (45) args1 -> . expression args2
+    (103) empty -> .
+    (68) expression -> . texp op1
+    (69) texp -> . gexp op2
+    (70) gexp -> . nexp op3aux
+    (71) nexp -> . term op4aux
+    (72) term -> . fact op5aux
+    (73) fact -> . ID fact1
+    (74) fact -> . L_P expression R_P
+    (75) fact -> . cte
+    (79) cte -> . CTE_I
+    (80) cte -> . CTE_F
+    (81) cte -> . CTE_CHAR
+
+    R_P             reduce using rule 103 (empty -> .)
+    ID              shift and go to state 47
+    L_P             shift and go to state 48
+    CTE_I           shift and go to state 50
+    CTE_F           shift and go to state 51
+    CTE_CHAR        shift and go to state 52
+
+    args                           shift and go to state 108
+    args1                          shift and go to state 109
+    empty                          shift and go to state 110
+    expression                     shift and go to state 111
+    texp                           shift and go to state 42
+    gexp                           shift and go to state 43
+    nexp                           shift and go to state 44
+    term                           shift and go to state 45
+    fact                           shift and go to state 46
+    cte                            shift and go to state 49
+
+state 91
+
+    (77) fact1 -> id1 .
+
+    MULT            reduce using rule 77 (fact1 -> id1 .)
+    DIV             reduce using rule 77 (fact1 -> id1 .)
+    MOD             reduce using rule 77 (fact1 -> id1 .)
+    PLUS            reduce using rule 77 (fact1 -> id1 .)
+    MINUS           reduce using rule 77 (fact1 -> id1 .)
+    LESSTHAN        reduce using rule 77 (fact1 -> id1 .)
+    LESSTHANEQ      reduce using rule 77 (fact1 -> id1 .)
+    GREATERTHAN     reduce using rule 77 (fact1 -> id1 .)
+    GREATERTHANEQ   reduce using rule 77 (fact1 -> id1 .)
+    EQ              reduce using rule 77 (fact1 -> id1 .)
+    DIFERENT        reduce using rule 77 (fact1 -> id1 .)
+    AND             reduce using rule 77 (fact1 -> id1 .)
+    OR              reduce using rule 77 (fact1 -> id1 .)
+    R_SB            reduce using rule 77 (fact1 -> id1 .)
+    R_P             reduce using rule 77 (fact1 -> id1 .)
+    COMA            reduce using rule 77 (fact1 -> id1 .)
+    ID              reduce using rule 77 (fact1 -> id1 .)
+    RETURN          reduce using rule 77 (fact1 -> id1 .)
+    READ            reduce using rule 77 (fact1 -> id1 .)
+    PRINT           reduce using rule 77 (fact1 -> id1 .)
+    IF              reduce using rule 77 (fact1 -> id1 .)
+    WHILE           reduce using rule 77 (fact1 -> id1 .)
+    FOR             reduce using rule 77 (fact1 -> id1 .)
+    L_P             reduce using rule 77 (fact1 -> id1 .)
+    CTE_I           reduce using rule 77 (fact1 -> id1 .)
+    CTE_F           reduce using rule 77 (fact1 -> id1 .)
+    CTE_CHAR        reduce using rule 77 (fact1 -> id1 .)
+    R_B             reduce using rule 77 (fact1 -> id1 .)
+    SEMICOLON       reduce using rule 77 (fact1 -> id1 .)
+    TO              reduce using rule 77 (fact1 -> id1 .)
+    DO              reduce using rule 77 (fact1 -> id1 .)
+
+
+state 92
+
+    (78) fact1 -> empty .
+    (18) id1 -> empty .
+
+  ! reduce/reduce conflict for MULT resolved using rule 18 (id1 -> empty .)
+  ! reduce/reduce conflict for DIV resolved using rule 18 (id1 -> empty .)
+  ! reduce/reduce conflict for MOD resolved using rule 18 (id1 -> empty .)
+  ! reduce/reduce conflict for PLUS resolved using rule 18 (id1 -> empty .)
+  ! reduce/reduce conflict for MINUS resolved using rule 18 (id1 -> empty .)
+  ! reduce/reduce conflict for LESSTHAN resolved using rule 18 (id1 -> empty .)
+  ! reduce/reduce conflict for LESSTHANEQ resolved using rule 18 (id1 -> empty .)
+  ! reduce/reduce conflict for GREATERTHAN resolved using rule 18 (id1 -> empty .)
+  ! reduce/reduce conflict for GREATERTHANEQ resolved using rule 18 (id1 -> empty .)
+  ! reduce/reduce conflict for EQ resolved using rule 18 (id1 -> empty .)
+  ! reduce/reduce conflict for DIFERENT resolved using rule 18 (id1 -> empty .)
+  ! reduce/reduce conflict for AND resolved using rule 18 (id1 -> empty .)
+  ! reduce/reduce conflict for OR resolved using rule 18 (id1 -> empty .)
+  ! reduce/reduce conflict for R_SB resolved using rule 18 (id1 -> empty .)
+  ! reduce/reduce conflict for R_P resolved using rule 18 (id1 -> empty .)
+  ! reduce/reduce conflict for COMA resolved using rule 18 (id1 -> empty .)
+  ! reduce/reduce conflict for ID resolved using rule 18 (id1 -> empty .)
+  ! reduce/reduce conflict for RETURN resolved using rule 18 (id1 -> empty .)
+  ! reduce/reduce conflict for READ resolved using rule 18 (id1 -> empty .)
+  ! reduce/reduce conflict for PRINT resolved using rule 18 (id1 -> empty .)
+  ! reduce/reduce conflict for IF resolved using rule 18 (id1 -> empty .)
+  ! reduce/reduce conflict for WHILE resolved using rule 18 (id1 -> empty .)
+  ! reduce/reduce conflict for FOR resolved using rule 18 (id1 -> empty .)
+  ! reduce/reduce conflict for L_P resolved using rule 18 (id1 -> empty .)
+  ! reduce/reduce conflict for CTE_I resolved using rule 18 (id1 -> empty .)
+  ! reduce/reduce conflict for CTE_F resolved using rule 18 (id1 -> empty .)
+  ! reduce/reduce conflict for CTE_CHAR resolved using rule 18 (id1 -> empty .)
+  ! reduce/reduce conflict for R_B resolved using rule 18 (id1 -> empty .)
+  ! reduce/reduce conflict for SEMICOLON resolved using rule 18 (id1 -> empty .)
+  ! reduce/reduce conflict for TO resolved using rule 18 (id1 -> empty .)
+  ! reduce/reduce conflict for DO resolved using rule 18 (id1 -> empty .)
+    MULT            reduce using rule 18 (id1 -> empty .)
+    DIV             reduce using rule 18 (id1 -> empty .)
+    MOD             reduce using rule 18 (id1 -> empty .)
+    PLUS            reduce using rule 18 (id1 -> empty .)
+    MINUS           reduce using rule 18 (id1 -> empty .)
+    LESSTHAN        reduce using rule 18 (id1 -> empty .)
+    LESSTHANEQ      reduce using rule 18 (id1 -> empty .)
+    GREATERTHAN     reduce using rule 18 (id1 -> empty .)
+    GREATERTHANEQ   reduce using rule 18 (id1 -> empty .)
+    EQ              reduce using rule 18 (id1 -> empty .)
+    DIFERENT        reduce using rule 18 (id1 -> empty .)
+    AND             reduce using rule 18 (id1 -> empty .)
+    OR              reduce using rule 18 (id1 -> empty .)
+    R_SB            reduce using rule 18 (id1 -> empty .)
+    R_P             reduce using rule 18 (id1 -> empty .)
+    COMA            reduce using rule 18 (id1 -> empty .)
+    ID              reduce using rule 18 (id1 -> empty .)
+    RETURN          reduce using rule 18 (id1 -> empty .)
+    READ            reduce using rule 18 (id1 -> empty .)
+    PRINT           reduce using rule 18 (id1 -> empty .)
+    IF              reduce using rule 18 (id1 -> empty .)
+    WHILE           reduce using rule 18 (id1 -> empty .)
+    FOR             reduce using rule 18 (id1 -> empty .)
+    L_P             reduce using rule 18 (id1 -> empty .)
+    CTE_I           reduce using rule 18 (id1 -> empty .)
+    CTE_F           reduce using rule 18 (id1 -> empty .)
+    CTE_CHAR        reduce using rule 18 (id1 -> empty .)
+    R_B             reduce using rule 18 (id1 -> empty .)
+    SEMICOLON       reduce using rule 18 (id1 -> empty .)
+    TO              reduce using rule 18 (id1 -> empty .)
+    DO              reduce using rule 18 (id1 -> empty .)
+
+  ! MULT            [ reduce using rule 78 (fact1 -> empty .) ]
+  ! DIV             [ reduce using rule 78 (fact1 -> empty .) ]
+  ! MOD             [ reduce using rule 78 (fact1 -> empty .) ]
+  ! PLUS            [ reduce using rule 78 (fact1 -> empty .) ]
+  ! MINUS           [ reduce using rule 78 (fact1 -> empty .) ]
+  ! LESSTHAN        [ reduce using rule 78 (fact1 -> empty .) ]
+  ! LESSTHANEQ      [ reduce using rule 78 (fact1 -> empty .) ]
+  ! GREATERTHAN     [ reduce using rule 78 (fact1 -> empty .) ]
+  ! GREATERTHANEQ   [ reduce using rule 78 (fact1 -> empty .) ]
+  ! EQ              [ reduce using rule 78 (fact1 -> empty .) ]
+  ! DIFERENT        [ reduce using rule 78 (fact1 -> empty .) ]
+  ! AND             [ reduce using rule 78 (fact1 -> empty .) ]
+  ! OR              [ reduce using rule 78 (fact1 -> empty .) ]
+  ! R_SB            [ reduce using rule 78 (fact1 -> empty .) ]
+  ! R_P             [ reduce using rule 78 (fact1 -> empty .) ]
+  ! COMA            [ reduce using rule 78 (fact1 -> empty .) ]
+  ! ID              [ reduce using rule 78 (fact1 -> empty .) ]
+  ! RETURN          [ reduce using rule 78 (fact1 -> empty .) ]
+  ! READ            [ reduce using rule 78 (fact1 -> empty .) ]
+  ! PRINT           [ reduce using rule 78 (fact1 -> empty .) ]
+  ! IF              [ reduce using rule 78 (fact1 -> empty .) ]
+  ! WHILE           [ reduce using rule 78 (fact1 -> empty .) ]
+  ! FOR             [ reduce using rule 78 (fact1 -> empty .) ]
+  ! L_P             [ reduce using rule 78 (fact1 -> empty .) ]
+  ! CTE_I           [ reduce using rule 78 (fact1 -> empty .) ]
+  ! CTE_F           [ reduce using rule 78 (fact1 -> empty .) ]
+  ! CTE_CHAR        [ reduce using rule 78 (fact1 -> empty .) ]
+  ! R_B             [ reduce using rule 78 (fact1 -> empty .) ]
+  ! SEMICOLON       [ reduce using rule 78 (fact1 -> empty .) ]
+  ! TO              [ reduce using rule 78 (fact1 -> empty .) ]
+  ! DO              [ reduce using rule 78 (fact1 -> empty .) ]
+
+
+state 93
+
+    (74) fact -> L_P expression . R_P
+
+    R_P             shift and go to state 112
+
+
+state 94
+
+    (2) main -> MAIN L_P params R_P var_declaration . L_B statements R_B
+
+    L_B             shift and go to state 113
+
+
+state 95
+
+    (8) var_declaration -> empty .
+
+    L_B             reduce using rule 8 (var_declaration -> empty .)
+
+
+state 96
+
+    (28) params -> var_type id params1 .
+
+    R_P             reduce using rule 28 (params -> var_type id params1 .)
+
+
+state 97
+
+    (30) params1 -> COMA . params
+    (28) params -> . var_type id params1
+    (29) params -> . empty
+    (24) var_type -> . type
+    (103) empty -> .
+    (21) type -> . INT
+    (22) type -> . FLOAT
+    (23) type -> . CHAR
+
+    R_P             reduce using rule 103 (empty -> .)
+    INT             shift and go to state 15
+    FLOAT           shift and go to state 16
+    CHAR            shift and go to state 17
+
+    params                         shift and go to state 114
+    var_type                       shift and go to state 36
+    empty                          shift and go to state 37
+    type                           shift and go to state 20
+
+state 98
+
+    (31) params1 -> empty .
+
+    R_P             reduce using rule 31 (params1 -> empty .)
+
+
+state 99
+
+    (25) function -> func_type FUNC ID L_P params R_P . var_declaration L_B statements R_B
+    (7) var_declaration -> . VAR var1
+    (8) var_declaration -> . empty
+    (103) empty -> .
+
+    VAR             shift and go to state 8
+    L_B             reduce using rule 103 (empty -> .)
+
+    var_declaration                shift and go to state 115
+    empty                          shift and go to state 95
+
+state 100
+
+    (19) id2 -> L_SB . expression R_SB
+    (68) expression -> . texp op1
+    (69) texp -> . gexp op2
+    (70) gexp -> . nexp op3aux
+    (71) nexp -> . term op4aux
+    (72) term -> . fact op5aux
+    (73) fact -> . ID fact1
+    (74) fact -> . L_P expression R_P
+    (75) fact -> . cte
+    (79) cte -> . CTE_I
+    (80) cte -> . CTE_F
+    (81) cte -> . CTE_CHAR
+
+    ID              shift and go to state 47
+    L_P             shift and go to state 48
+    CTE_I           shift and go to state 50
+    CTE_F           shift and go to state 51
+    CTE_CHAR        shift and go to state 52
+
+    expression                     shift and go to state 116
+    texp                           shift and go to state 42
+    gexp                           shift and go to state 43
+    nexp                           shift and go to state 44
+    term                           shift and go to state 45
+    fact                           shift and go to state 46
+    cte                            shift and go to state 49
+
+state 101
+
+    (17) id1 -> L_SB expression R_SB id2 .
+
+    COMA            reduce using rule 17 (id1 -> L_SB expression R_SB id2 .)
+    SEMICOLON       reduce using rule 17 (id1 -> L_SB expression R_SB id2 .)
+    R_P             reduce using rule 17 (id1 -> L_SB expression R_SB id2 .)
+    EQUAL           reduce using rule 17 (id1 -> L_SB expression R_SB id2 .)
+    MULT            reduce using rule 17 (id1 -> L_SB expression R_SB id2 .)
+    DIV             reduce using rule 17 (id1 -> L_SB expression R_SB id2 .)
+    MOD             reduce using rule 17 (id1 -> L_SB expression R_SB id2 .)
+    PLUS            reduce using rule 17 (id1 -> L_SB expression R_SB id2 .)
+    MINUS           reduce using rule 17 (id1 -> L_SB expression R_SB id2 .)
+    LESSTHAN        reduce using rule 17 (id1 -> L_SB expression R_SB id2 .)
+    LESSTHANEQ      reduce using rule 17 (id1 -> L_SB expression R_SB id2 .)
+    GREATERTHAN     reduce using rule 17 (id1 -> L_SB expression R_SB id2 .)
+    GREATERTHANEQ   reduce using rule 17 (id1 -> L_SB expression R_SB id2 .)
+    EQ              reduce using rule 17 (id1 -> L_SB expression R_SB id2 .)
+    DIFERENT        reduce using rule 17 (id1 -> L_SB expression R_SB id2 .)
+    AND             reduce using rule 17 (id1 -> L_SB expression R_SB id2 .)
+    OR              reduce using rule 17 (id1 -> L_SB expression R_SB id2 .)
+    R_SB            reduce using rule 17 (id1 -> L_SB expression R_SB id2 .)
+    ID              reduce using rule 17 (id1 -> L_SB expression R_SB id2 .)
+    RETURN          reduce using rule 17 (id1 -> L_SB expression R_SB id2 .)
+    READ            reduce using rule 17 (id1 -> L_SB expression R_SB id2 .)
+    PRINT           reduce using rule 17 (id1 -> L_SB expression R_SB id2 .)
+    IF              reduce using rule 17 (id1 -> L_SB expression R_SB id2 .)
+    WHILE           reduce using rule 17 (id1 -> L_SB expression R_SB id2 .)
+    FOR             reduce using rule 17 (id1 -> L_SB expression R_SB id2 .)
+    L_P             reduce using rule 17 (id1 -> L_SB expression R_SB id2 .)
+    CTE_I           reduce using rule 17 (id1 -> L_SB expression R_SB id2 .)
+    CTE_F           reduce using rule 17 (id1 -> L_SB expression R_SB id2 .)
+    CTE_CHAR        reduce using rule 17 (id1 -> L_SB expression R_SB id2 .)
+    R_B             reduce using rule 17 (id1 -> L_SB expression R_SB id2 .)
+    TO              reduce using rule 17 (id1 -> L_SB expression R_SB id2 .)
+    DO              reduce using rule 17 (id1 -> L_SB expression R_SB id2 .)
+
+
+state 102
+
+    (20) id2 -> empty .
+
+    COMA            reduce using rule 20 (id2 -> empty .)
+    SEMICOLON       reduce using rule 20 (id2 -> empty .)
+    R_P             reduce using rule 20 (id2 -> empty .)
+    EQUAL           reduce using rule 20 (id2 -> empty .)
+    MULT            reduce using rule 20 (id2 -> empty .)
+    DIV             reduce using rule 20 (id2 -> empty .)
+    MOD             reduce using rule 20 (id2 -> empty .)
+    PLUS            reduce using rule 20 (id2 -> empty .)
+    MINUS           reduce using rule 20 (id2 -> empty .)
+    LESSTHAN        reduce using rule 20 (id2 -> empty .)
+    LESSTHANEQ      reduce using rule 20 (id2 -> empty .)
+    GREATERTHAN     reduce using rule 20 (id2 -> empty .)
+    GREATERTHANEQ   reduce using rule 20 (id2 -> empty .)
+    EQ              reduce using rule 20 (id2 -> empty .)
+    DIFERENT        reduce using rule 20 (id2 -> empty .)
+    AND             reduce using rule 20 (id2 -> empty .)
+    OR              reduce using rule 20 (id2 -> empty .)
+    R_SB            reduce using rule 20 (id2 -> empty .)
+    ID              reduce using rule 20 (id2 -> empty .)
+    RETURN          reduce using rule 20 (id2 -> empty .)
+    READ            reduce using rule 20 (id2 -> empty .)
+    PRINT           reduce using rule 20 (id2 -> empty .)
+    IF              reduce using rule 20 (id2 -> empty .)
+    WHILE           reduce using rule 20 (id2 -> empty .)
+    FOR             reduce using rule 20 (id2 -> empty .)
+    L_P             reduce using rule 20 (id2 -> empty .)
+    CTE_I           reduce using rule 20 (id2 -> empty .)
+    CTE_F           reduce using rule 20 (id2 -> empty .)
+    CTE_CHAR        reduce using rule 20 (id2 -> empty .)
+    R_B             reduce using rule 20 (id2 -> empty .)
+    TO              reduce using rule 20 (id2 -> empty .)
+    DO              reduce using rule 20 (id2 -> empty .)
+
+
+state 103
+
+    (82) op1 -> OR expression .
+
+    R_SB            reduce using rule 82 (op1 -> OR expression .)
+    R_P             reduce using rule 82 (op1 -> OR expression .)
+    COMA            reduce using rule 82 (op1 -> OR expression .)
+    ID              reduce using rule 82 (op1 -> OR expression .)
+    RETURN          reduce using rule 82 (op1 -> OR expression .)
+    READ            reduce using rule 82 (op1 -> OR expression .)
+    PRINT           reduce using rule 82 (op1 -> OR expression .)
+    IF              reduce using rule 82 (op1 -> OR expression .)
+    WHILE           reduce using rule 82 (op1 -> OR expression .)
+    FOR             reduce using rule 82 (op1 -> OR expression .)
+    L_P             reduce using rule 82 (op1 -> OR expression .)
+    CTE_I           reduce using rule 82 (op1 -> OR expression .)
+    CTE_F           reduce using rule 82 (op1 -> OR expression .)
+    CTE_CHAR        reduce using rule 82 (op1 -> OR expression .)
+    R_B             reduce using rule 82 (op1 -> OR expression .)
+    SEMICOLON       reduce using rule 82 (op1 -> OR expression .)
+    TO              reduce using rule 82 (op1 -> OR expression .)
+    DO              reduce using rule 82 (op1 -> OR expression .)
+
+
+state 104
+
+    (84) op2 -> AND texp .
+
+    OR              reduce using rule 84 (op2 -> AND texp .)
+    R_SB            reduce using rule 84 (op2 -> AND texp .)
+    R_P             reduce using rule 84 (op2 -> AND texp .)
+    COMA            reduce using rule 84 (op2 -> AND texp .)
+    ID              reduce using rule 84 (op2 -> AND texp .)
+    RETURN          reduce using rule 84 (op2 -> AND texp .)
+    READ            reduce using rule 84 (op2 -> AND texp .)
+    PRINT           reduce using rule 84 (op2 -> AND texp .)
+    IF              reduce using rule 84 (op2 -> AND texp .)
+    WHILE           reduce using rule 84 (op2 -> AND texp .)
+    FOR             reduce using rule 84 (op2 -> AND texp .)
+    L_P             reduce using rule 84 (op2 -> AND texp .)
+    CTE_I           reduce using rule 84 (op2 -> AND texp .)
+    CTE_F           reduce using rule 84 (op2 -> AND texp .)
+    CTE_CHAR        reduce using rule 84 (op2 -> AND texp .)
+    R_B             reduce using rule 84 (op2 -> AND texp .)
+    SEMICOLON       reduce using rule 84 (op2 -> AND texp .)
+    TO              reduce using rule 84 (op2 -> AND texp .)
+    DO              reduce using rule 84 (op2 -> AND texp .)
+
+
+state 105
+
+    (92) op3aux -> op3 gexp .
+
+    AND             reduce using rule 92 (op3aux -> op3 gexp .)
+    OR              reduce using rule 92 (op3aux -> op3 gexp .)
+    R_SB            reduce using rule 92 (op3aux -> op3 gexp .)
+    R_P             reduce using rule 92 (op3aux -> op3 gexp .)
+    COMA            reduce using rule 92 (op3aux -> op3 gexp .)
+    ID              reduce using rule 92 (op3aux -> op3 gexp .)
+    RETURN          reduce using rule 92 (op3aux -> op3 gexp .)
+    READ            reduce using rule 92 (op3aux -> op3 gexp .)
+    PRINT           reduce using rule 92 (op3aux -> op3 gexp .)
+    IF              reduce using rule 92 (op3aux -> op3 gexp .)
+    WHILE           reduce using rule 92 (op3aux -> op3 gexp .)
+    FOR             reduce using rule 92 (op3aux -> op3 gexp .)
+    L_P             reduce using rule 92 (op3aux -> op3 gexp .)
+    CTE_I           reduce using rule 92 (op3aux -> op3 gexp .)
+    CTE_F           reduce using rule 92 (op3aux -> op3 gexp .)
+    CTE_CHAR        reduce using rule 92 (op3aux -> op3 gexp .)
+    R_B             reduce using rule 92 (op3aux -> op3 gexp .)
+    SEMICOLON       reduce using rule 92 (op3aux -> op3 gexp .)
+    TO              reduce using rule 92 (op3aux -> op3 gexp .)
+    DO              reduce using rule 92 (op3aux -> op3 gexp .)
+
+
+state 106
+
+    (96) op4aux -> op4 nexp .
+
+    LESSTHAN        reduce using rule 96 (op4aux -> op4 nexp .)
+    LESSTHANEQ      reduce using rule 96 (op4aux -> op4 nexp .)
+    GREATERTHAN     reduce using rule 96 (op4aux -> op4 nexp .)
+    GREATERTHANEQ   reduce using rule 96 (op4aux -> op4 nexp .)
+    EQ              reduce using rule 96 (op4aux -> op4 nexp .)
+    DIFERENT        reduce using rule 96 (op4aux -> op4 nexp .)
+    AND             reduce using rule 96 (op4aux -> op4 nexp .)
+    OR              reduce using rule 96 (op4aux -> op4 nexp .)
+    R_SB            reduce using rule 96 (op4aux -> op4 nexp .)
+    R_P             reduce using rule 96 (op4aux -> op4 nexp .)
+    COMA            reduce using rule 96 (op4aux -> op4 nexp .)
+    ID              reduce using rule 96 (op4aux -> op4 nexp .)
+    RETURN          reduce using rule 96 (op4aux -> op4 nexp .)
+    READ            reduce using rule 96 (op4aux -> op4 nexp .)
+    PRINT           reduce using rule 96 (op4aux -> op4 nexp .)
+    IF              reduce using rule 96 (op4aux -> op4 nexp .)
+    WHILE           reduce using rule 96 (op4aux -> op4 nexp .)
+    FOR             reduce using rule 96 (op4aux -> op4 nexp .)
+    L_P             reduce using rule 96 (op4aux -> op4 nexp .)
+    CTE_I           reduce using rule 96 (op4aux -> op4 nexp .)
+    CTE_F           reduce using rule 96 (op4aux -> op4 nexp .)
+    CTE_CHAR        reduce using rule 96 (op4aux -> op4 nexp .)
+    R_B             reduce using rule 96 (op4aux -> op4 nexp .)
+    SEMICOLON       reduce using rule 96 (op4aux -> op4 nexp .)
+    TO              reduce using rule 96 (op4aux -> op4 nexp .)
+    DO              reduce using rule 96 (op4aux -> op4 nexp .)
+
+
+state 107
+
+    (101) op5aux -> op5 term .
+
+    PLUS            reduce using rule 101 (op5aux -> op5 term .)
+    MINUS           reduce using rule 101 (op5aux -> op5 term .)
+    LESSTHAN        reduce using rule 101 (op5aux -> op5 term .)
+    LESSTHANEQ      reduce using rule 101 (op5aux -> op5 term .)
+    GREATERTHAN     reduce using rule 101 (op5aux -> op5 term .)
+    GREATERTHANEQ   reduce using rule 101 (op5aux -> op5 term .)
+    EQ              reduce using rule 101 (op5aux -> op5 term .)
+    DIFERENT        reduce using rule 101 (op5aux -> op5 term .)
+    AND             reduce using rule 101 (op5aux -> op5 term .)
+    OR              reduce using rule 101 (op5aux -> op5 term .)
+    R_SB            reduce using rule 101 (op5aux -> op5 term .)
+    R_P             reduce using rule 101 (op5aux -> op5 term .)
+    COMA            reduce using rule 101 (op5aux -> op5 term .)
+    ID              reduce using rule 101 (op5aux -> op5 term .)
+    RETURN          reduce using rule 101 (op5aux -> op5 term .)
+    READ            reduce using rule 101 (op5aux -> op5 term .)
+    PRINT           reduce using rule 101 (op5aux -> op5 term .)
+    IF              reduce using rule 101 (op5aux -> op5 term .)
+    WHILE           reduce using rule 101 (op5aux -> op5 term .)
+    FOR             reduce using rule 101 (op5aux -> op5 term .)
+    L_P             reduce using rule 101 (op5aux -> op5 term .)
+    CTE_I           reduce using rule 101 (op5aux -> op5 term .)
+    CTE_F           reduce using rule 101 (op5aux -> op5 term .)
+    CTE_CHAR        reduce using rule 101 (op5aux -> op5 term .)
+    R_B             reduce using rule 101 (op5aux -> op5 term .)
+    SEMICOLON       reduce using rule 101 (op5aux -> op5 term .)
+    TO              reduce using rule 101 (op5aux -> op5 term .)
+    DO              reduce using rule 101 (op5aux -> op5 term .)
+
+
+state 108
+
+    (76) fact1 -> L_P args . R_P
+
+    R_P             shift and go to state 117
+
+
+state 109
+
+    (43) args -> args1 .
+
+    R_P             reduce using rule 43 (args -> args1 .)
+
+
+state 110
+
+    (44) args -> empty .
+
+    R_P             reduce using rule 44 (args -> empty .)
+
+
+state 111
+
+    (45) args1 -> expression . args2
+    (46) args2 -> . COMA args1
+    (47) args2 -> . empty
+    (103) empty -> .
+
+    COMA            shift and go to state 119
+    R_P             reduce using rule 103 (empty -> .)
+
+    args2                          shift and go to state 118
+    empty                          shift and go to state 120
+
+state 112
+
+    (74) fact -> L_P expression R_P .
+
+    MULT            reduce using rule 74 (fact -> L_P expression R_P .)
+    DIV             reduce using rule 74 (fact -> L_P expression R_P .)
+    MOD             reduce using rule 74 (fact -> L_P expression R_P .)
+    PLUS            reduce using rule 74 (fact -> L_P expression R_P .)
+    MINUS           reduce using rule 74 (fact -> L_P expression R_P .)
+    LESSTHAN        reduce using rule 74 (fact -> L_P expression R_P .)
+    LESSTHANEQ      reduce using rule 74 (fact -> L_P expression R_P .)
+    GREATERTHAN     reduce using rule 74 (fact -> L_P expression R_P .)
+    GREATERTHANEQ   reduce using rule 74 (fact -> L_P expression R_P .)
+    EQ              reduce using rule 74 (fact -> L_P expression R_P .)
+    DIFERENT        reduce using rule 74 (fact -> L_P expression R_P .)
+    AND             reduce using rule 74 (fact -> L_P expression R_P .)
+    OR              reduce using rule 74 (fact -> L_P expression R_P .)
+    R_SB            reduce using rule 74 (fact -> L_P expression R_P .)
+    R_P             reduce using rule 74 (fact -> L_P expression R_P .)
+    COMA            reduce using rule 74 (fact -> L_P expression R_P .)
+    ID              reduce using rule 74 (fact -> L_P expression R_P .)
+    RETURN          reduce using rule 74 (fact -> L_P expression R_P .)
+    READ            reduce using rule 74 (fact -> L_P expression R_P .)
+    PRINT           reduce using rule 74 (fact -> L_P expression R_P .)
+    IF              reduce using rule 74 (fact -> L_P expression R_P .)
+    WHILE           reduce using rule 74 (fact -> L_P expression R_P .)
+    FOR             reduce using rule 74 (fact -> L_P expression R_P .)
+    L_P             reduce using rule 74 (fact -> L_P expression R_P .)
+    CTE_I           reduce using rule 74 (fact -> L_P expression R_P .)
+    CTE_F           reduce using rule 74 (fact -> L_P expression R_P .)
+    CTE_CHAR        reduce using rule 74 (fact -> L_P expression R_P .)
+    R_B             reduce using rule 74 (fact -> L_P expression R_P .)
+    SEMICOLON       reduce using rule 74 (fact -> L_P expression R_P .)
+    TO              reduce using rule 74 (fact -> L_P expression R_P .)
+    DO              reduce using rule 74 (fact -> L_P expression R_P .)
+
+
+state 113
+
+    (2) main -> MAIN L_P params R_P var_declaration L_B . statements R_B
+    (32) statements -> . statement statements
+    (33) statements -> . empty
+    (34) statement -> . assignation
+    (35) statement -> . call_func
+    (36) statement -> . return_func
+    (37) statement -> . read
+    (38) statement -> . write
+    (39) statement -> . decision_statement
+    (40) statement -> . repetition_statement
+    (41) statement -> . expression
+    (103) empty -> .
+    (42) assignation -> . id EQUAL expression SEMICOLON
+    (48) call_func -> . ID L_P args R_P SEMICOLON
+    (49) return_func -> . RETURN L_P expression R_P SEMICOLON
+    (50) read -> . READ L_P read_args R_P SEMICOLON
+    (54) write -> . PRINT L_P write_args R_P SEMICOLON
+    (60) decision_statement -> . IF L_P expression R_P L_B statements R_B decision_statement1
+    (63) repetition_statement -> . while_statement
+    (64) repetition_statement -> . for_statement
+    (68) expression -> . texp op1
+    (16) id -> . ID id1
+    (66) while_statement -> . WHILE L_P expression R_P do_statement
+    (65) for_statement -> . FOR id EQUAL expression TO expression do_statement
+    (69) texp -> . gexp op2
+    (70) gexp -> . nexp op3aux
+    (71) nexp -> . term op4aux
+    (72) term -> . fact op5aux
+    (73) fact -> . ID fact1
+    (74) fact -> . L_P expression R_P
+    (75) fact -> . cte
+    (79) cte -> . CTE_I
+    (80) cte -> . CTE_F
+    (81) cte -> . CTE_CHAR
+
+    R_B             reduce using rule 103 (empty -> .)
+    ID              shift and go to state 133
+    RETURN          shift and go to state 134
+    READ            shift and go to state 135
+    PRINT           shift and go to state 136
+    IF              shift and go to state 137
+    WHILE           shift and go to state 140
+    FOR             shift and go to state 141
+    L_P             shift and go to state 48
+    CTE_I           shift and go to state 50
+    CTE_F           shift and go to state 51
+    CTE_CHAR        shift and go to state 52
+
+    statements                     shift and go to state 121
+    statement                      shift and go to state 122
+    empty                          shift and go to state 123
+    assignation                    shift and go to state 124
+    call_func                      shift and go to state 125
+    return_func                    shift and go to state 126
+    read                           shift and go to state 127
+    write                          shift and go to state 128
+    decision_statement             shift and go to state 129
+    repetition_statement           shift and go to state 130
+    expression                     shift and go to state 131
+    id                             shift and go to state 132
+    while_statement                shift and go to state 138
+    for_statement                  shift and go to state 139
+    texp                           shift and go to state 42
+    gexp                           shift and go to state 43
+    nexp                           shift and go to state 44
+    term                           shift and go to state 45
+    fact                           shift and go to state 46
+    cte                            shift and go to state 49
+
+state 114
+
+    (30) params1 -> COMA params .
+
+    R_P             reduce using rule 30 (params1 -> COMA params .)
+
+
+state 115
+
+    (25) function -> func_type FUNC ID L_P params R_P var_declaration . L_B statements R_B
+
+    L_B             shift and go to state 142
+
+
+state 116
+
+    (19) id2 -> L_SB expression . R_SB
+
+    R_SB            shift and go to state 143
+
+
+state 117
+
+    (76) fact1 -> L_P args R_P .
+
+    MULT            reduce using rule 76 (fact1 -> L_P args R_P .)
+    DIV             reduce using rule 76 (fact1 -> L_P args R_P .)
+    MOD             reduce using rule 76 (fact1 -> L_P args R_P .)
+    PLUS            reduce using rule 76 (fact1 -> L_P args R_P .)
+    MINUS           reduce using rule 76 (fact1 -> L_P args R_P .)
+    LESSTHAN        reduce using rule 76 (fact1 -> L_P args R_P .)
+    LESSTHANEQ      reduce using rule 76 (fact1 -> L_P args R_P .)
+    GREATERTHAN     reduce using rule 76 (fact1 -> L_P args R_P .)
+    GREATERTHANEQ   reduce using rule 76 (fact1 -> L_P args R_P .)
+    EQ              reduce using rule 76 (fact1 -> L_P args R_P .)
+    DIFERENT        reduce using rule 76 (fact1 -> L_P args R_P .)
+    AND             reduce using rule 76 (fact1 -> L_P args R_P .)
+    OR              reduce using rule 76 (fact1 -> L_P args R_P .)
+    R_SB            reduce using rule 76 (fact1 -> L_P args R_P .)
+    R_P             reduce using rule 76 (fact1 -> L_P args R_P .)
+    COMA            reduce using rule 76 (fact1 -> L_P args R_P .)
+    ID              reduce using rule 76 (fact1 -> L_P args R_P .)
+    RETURN          reduce using rule 76 (fact1 -> L_P args R_P .)
+    READ            reduce using rule 76 (fact1 -> L_P args R_P .)
+    PRINT           reduce using rule 76 (fact1 -> L_P args R_P .)
+    IF              reduce using rule 76 (fact1 -> L_P args R_P .)
+    WHILE           reduce using rule 76 (fact1 -> L_P args R_P .)
+    FOR             reduce using rule 76 (fact1 -> L_P args R_P .)
+    L_P             reduce using rule 76 (fact1 -> L_P args R_P .)
+    CTE_I           reduce using rule 76 (fact1 -> L_P args R_P .)
+    CTE_F           reduce using rule 76 (fact1 -> L_P args R_P .)
+    CTE_CHAR        reduce using rule 76 (fact1 -> L_P args R_P .)
+    R_B             reduce using rule 76 (fact1 -> L_P args R_P .)
+    SEMICOLON       reduce using rule 76 (fact1 -> L_P args R_P .)
+    TO              reduce using rule 76 (fact1 -> L_P args R_P .)
+    DO              reduce using rule 76 (fact1 -> L_P args R_P .)
+
+
+state 118
+
+    (45) args1 -> expression args2 .
+
+    R_P             reduce using rule 45 (args1 -> expression args2 .)
+
+
+state 119
+
+    (46) args2 -> COMA . args1
+    (45) args1 -> . expression args2
+    (68) expression -> . texp op1
+    (69) texp -> . gexp op2
+    (70) gexp -> . nexp op3aux
+    (71) nexp -> . term op4aux
+    (72) term -> . fact op5aux
+    (73) fact -> . ID fact1
+    (74) fact -> . L_P expression R_P
+    (75) fact -> . cte
+    (79) cte -> . CTE_I
+    (80) cte -> . CTE_F
+    (81) cte -> . CTE_CHAR
+
+    ID              shift and go to state 47
+    L_P             shift and go to state 48
+    CTE_I           shift and go to state 50
+    CTE_F           shift and go to state 51
+    CTE_CHAR        shift and go to state 52
+
+    args1                          shift and go to state 144
+    expression                     shift and go to state 111
+    texp                           shift and go to state 42
+    gexp                           shift and go to state 43
+    nexp                           shift and go to state 44
+    term                           shift and go to state 45
+    fact                           shift and go to state 46
+    cte                            shift and go to state 49
+
+state 120
+
+    (47) args2 -> empty .
+
+    R_P             reduce using rule 47 (args2 -> empty .)
+
+
+state 121
+
+    (2) main -> MAIN L_P params R_P var_declaration L_B statements . R_B
+
+    R_B             shift and go to state 145
+
+
+state 122
+
+    (32) statements -> statement . statements
+    (32) statements -> . statement statements
+    (33) statements -> . empty
+    (34) statement -> . assignation
+    (35) statement -> . call_func
+    (36) statement -> . return_func
+    (37) statement -> . read
+    (38) statement -> . write
+    (39) statement -> . decision_statement
+    (40) statement -> . repetition_statement
+    (41) statement -> . expression
+    (103) empty -> .
+    (42) assignation -> . id EQUAL expression SEMICOLON
+    (48) call_func -> . ID L_P args R_P SEMICOLON
+    (49) return_func -> . RETURN L_P expression R_P SEMICOLON
+    (50) read -> . READ L_P read_args R_P SEMICOLON
+    (54) write -> . PRINT L_P write_args R_P SEMICOLON
+    (60) decision_statement -> . IF L_P expression R_P L_B statements R_B decision_statement1
+    (63) repetition_statement -> . while_statement
+    (64) repetition_statement -> . for_statement
+    (68) expression -> . texp op1
+    (16) id -> . ID id1
+    (66) while_statement -> . WHILE L_P expression R_P do_statement
+    (65) for_statement -> . FOR id EQUAL expression TO expression do_statement
+    (69) texp -> . gexp op2
+    (70) gexp -> . nexp op3aux
+    (71) nexp -> . term op4aux
+    (72) term -> . fact op5aux
+    (73) fact -> . ID fact1
+    (74) fact -> . L_P expression R_P
+    (75) fact -> . cte
+    (79) cte -> . CTE_I
+    (80) cte -> . CTE_F
+    (81) cte -> . CTE_CHAR
+
+    R_B             reduce using rule 103 (empty -> .)
+    ID              shift and go to state 133
+    RETURN          shift and go to state 134
+    READ            shift and go to state 135
+    PRINT           shift and go to state 136
+    IF              shift and go to state 137
+    WHILE           shift and go to state 140
+    FOR             shift and go to state 141
+    L_P             shift and go to state 48
+    CTE_I           shift and go to state 50
+    CTE_F           shift and go to state 51
+    CTE_CHAR        shift and go to state 52
+
+    statement                      shift and go to state 122
+    statements                     shift and go to state 146
+    empty                          shift and go to state 123
+    assignation                    shift and go to state 124
+    call_func                      shift and go to state 125
+    return_func                    shift and go to state 126
+    read                           shift and go to state 127
+    write                          shift and go to state 128
+    decision_statement             shift and go to state 129
+    repetition_statement           shift and go to state 130
+    expression                     shift and go to state 131
+    id                             shift and go to state 132
+    while_statement                shift and go to state 138
+    for_statement                  shift and go to state 139
+    texp                           shift and go to state 42
+    gexp                           shift and go to state 43
+    nexp                           shift and go to state 44
+    term                           shift and go to state 45
+    fact                           shift and go to state 46
+    cte                            shift and go to state 49
+
+state 123
+
+    (33) statements -> empty .
+
+    R_B             reduce using rule 33 (statements -> empty .)
+
+
+state 124
+
+    (34) statement -> assignation .
+
+    ID              reduce using rule 34 (statement -> assignation .)
+    RETURN          reduce using rule 34 (statement -> assignation .)
+    READ            reduce using rule 34 (statement -> assignation .)
+    PRINT           reduce using rule 34 (statement -> assignation .)
+    IF              reduce using rule 34 (statement -> assignation .)
+    WHILE           reduce using rule 34 (statement -> assignation .)
+    FOR             reduce using rule 34 (statement -> assignation .)
+    L_P             reduce using rule 34 (statement -> assignation .)
+    CTE_I           reduce using rule 34 (statement -> assignation .)
+    CTE_F           reduce using rule 34 (statement -> assignation .)
+    CTE_CHAR        reduce using rule 34 (statement -> assignation .)
+    R_B             reduce using rule 34 (statement -> assignation .)
+
+
+state 125
+
+    (35) statement -> call_func .
+
+    ID              reduce using rule 35 (statement -> call_func .)
+    RETURN          reduce using rule 35 (statement -> call_func .)
+    READ            reduce using rule 35 (statement -> call_func .)
+    PRINT           reduce using rule 35 (statement -> call_func .)
+    IF              reduce using rule 35 (statement -> call_func .)
+    WHILE           reduce using rule 35 (statement -> call_func .)
+    FOR             reduce using rule 35 (statement -> call_func .)
+    L_P             reduce using rule 35 (statement -> call_func .)
+    CTE_I           reduce using rule 35 (statement -> call_func .)
+    CTE_F           reduce using rule 35 (statement -> call_func .)
+    CTE_CHAR        reduce using rule 35 (statement -> call_func .)
+    R_B             reduce using rule 35 (statement -> call_func .)
+
+
+state 126
+
+    (36) statement -> return_func .
+
+    ID              reduce using rule 36 (statement -> return_func .)
+    RETURN          reduce using rule 36 (statement -> return_func .)
+    READ            reduce using rule 36 (statement -> return_func .)
+    PRINT           reduce using rule 36 (statement -> return_func .)
+    IF              reduce using rule 36 (statement -> return_func .)
+    WHILE           reduce using rule 36 (statement -> return_func .)
+    FOR             reduce using rule 36 (statement -> return_func .)
+    L_P             reduce using rule 36 (statement -> return_func .)
+    CTE_I           reduce using rule 36 (statement -> return_func .)
+    CTE_F           reduce using rule 36 (statement -> return_func .)
+    CTE_CHAR        reduce using rule 36 (statement -> return_func .)
+    R_B             reduce using rule 36 (statement -> return_func .)
+
+
+state 127
+
+    (37) statement -> read .
+
+    ID              reduce using rule 37 (statement -> read .)
+    RETURN          reduce using rule 37 (statement -> read .)
+    READ            reduce using rule 37 (statement -> read .)
+    PRINT           reduce using rule 37 (statement -> read .)
+    IF              reduce using rule 37 (statement -> read .)
+    WHILE           reduce using rule 37 (statement -> read .)
+    FOR             reduce using rule 37 (statement -> read .)
+    L_P             reduce using rule 37 (statement -> read .)
+    CTE_I           reduce using rule 37 (statement -> read .)
+    CTE_F           reduce using rule 37 (statement -> read .)
+    CTE_CHAR        reduce using rule 37 (statement -> read .)
+    R_B             reduce using rule 37 (statement -> read .)
+
+
+state 128
+
+    (38) statement -> write .
+
+    ID              reduce using rule 38 (statement -> write .)
+    RETURN          reduce using rule 38 (statement -> write .)
+    READ            reduce using rule 38 (statement -> write .)
+    PRINT           reduce using rule 38 (statement -> write .)
+    IF              reduce using rule 38 (statement -> write .)
+    WHILE           reduce using rule 38 (statement -> write .)
+    FOR             reduce using rule 38 (statement -> write .)
+    L_P             reduce using rule 38 (statement -> write .)
+    CTE_I           reduce using rule 38 (statement -> write .)
+    CTE_F           reduce using rule 38 (statement -> write .)
+    CTE_CHAR        reduce using rule 38 (statement -> write .)
+    R_B             reduce using rule 38 (statement -> write .)
+
+
+state 129
+
+    (39) statement -> decision_statement .
+
+    ID              reduce using rule 39 (statement -> decision_statement .)
+    RETURN          reduce using rule 39 (statement -> decision_statement .)
+    READ            reduce using rule 39 (statement -> decision_statement .)
+    PRINT           reduce using rule 39 (statement -> decision_statement .)
+    IF              reduce using rule 39 (statement -> decision_statement .)
+    WHILE           reduce using rule 39 (statement -> decision_statement .)
+    FOR             reduce using rule 39 (statement -> decision_statement .)
+    L_P             reduce using rule 39 (statement -> decision_statement .)
+    CTE_I           reduce using rule 39 (statement -> decision_statement .)
+    CTE_F           reduce using rule 39 (statement -> decision_statement .)
+    CTE_CHAR        reduce using rule 39 (statement -> decision_statement .)
+    R_B             reduce using rule 39 (statement -> decision_statement .)
+
+
+state 130
+
+    (40) statement -> repetition_statement .
+
+    ID              reduce using rule 40 (statement -> repetition_statement .)
+    RETURN          reduce using rule 40 (statement -> repetition_statement .)
+    READ            reduce using rule 40 (statement -> repetition_statement .)
+    PRINT           reduce using rule 40 (statement -> repetition_statement .)
+    IF              reduce using rule 40 (statement -> repetition_statement .)
+    WHILE           reduce using rule 40 (statement -> repetition_statement .)
+    FOR             reduce using rule 40 (statement -> repetition_statement .)
+    L_P             reduce using rule 40 (statement -> repetition_statement .)
+    CTE_I           reduce using rule 40 (statement -> repetition_statement .)
+    CTE_F           reduce using rule 40 (statement -> repetition_statement .)
+    CTE_CHAR        reduce using rule 40 (statement -> repetition_statement .)
+    R_B             reduce using rule 40 (statement -> repetition_statement .)
+
+
+state 131
+
+    (41) statement -> expression .
+
+    ID              reduce using rule 41 (statement -> expression .)
+    RETURN          reduce using rule 41 (statement -> expression .)
+    READ            reduce using rule 41 (statement -> expression .)
+    PRINT           reduce using rule 41 (statement -> expression .)
+    IF              reduce using rule 41 (statement -> expression .)
+    WHILE           reduce using rule 41 (statement -> expression .)
+    FOR             reduce using rule 41 (statement -> expression .)
+    L_P             reduce using rule 41 (statement -> expression .)
+    CTE_I           reduce using rule 41 (statement -> expression .)
+    CTE_F           reduce using rule 41 (statement -> expression .)
+    CTE_CHAR        reduce using rule 41 (statement -> expression .)
+    R_B             reduce using rule 41 (statement -> expression .)
+
+
+state 132
+
+    (42) assignation -> id . EQUAL expression SEMICOLON
+
+    EQUAL           shift and go to state 147
+
+
+state 133
+
+    (48) call_func -> ID . L_P args R_P SEMICOLON
+    (16) id -> ID . id1
+    (73) fact -> ID . fact1
+    (17) id1 -> . L_SB expression R_SB id2
+    (18) id1 -> . empty
+    (76) fact1 -> . L_P args R_P
+    (77) fact1 -> . id1
+    (78) fact1 -> . empty
+    (103) empty -> .
+
+  ! shift/reduce conflict for L_P resolved as shift
+    L_P             shift and go to state 148
+    L_SB            shift and go to state 33
+    EQUAL           reduce using rule 103 (empty -> .)
+    MULT            reduce using rule 103 (empty -> .)
+    DIV             reduce using rule 103 (empty -> .)
+    MOD             reduce using rule 103 (empty -> .)
+    PLUS            reduce using rule 103 (empty -> .)
+    MINUS           reduce using rule 103 (empty -> .)
+    LESSTHAN        reduce using rule 103 (empty -> .)
+    LESSTHANEQ      reduce using rule 103 (empty -> .)
+    GREATERTHAN     reduce using rule 103 (empty -> .)
+    GREATERTHANEQ   reduce using rule 103 (empty -> .)
+    EQ              reduce using rule 103 (empty -> .)
+    DIFERENT        reduce using rule 103 (empty -> .)
+    AND             reduce using rule 103 (empty -> .)
+    OR              reduce using rule 103 (empty -> .)
+    ID              reduce using rule 103 (empty -> .)
+    RETURN          reduce using rule 103 (empty -> .)
+    READ            reduce using rule 103 (empty -> .)
+    PRINT           reduce using rule 103 (empty -> .)
+    IF              reduce using rule 103 (empty -> .)
+    WHILE           reduce using rule 103 (empty -> .)
+    FOR             reduce using rule 103 (empty -> .)
+    CTE_I           reduce using rule 103 (empty -> .)
+    CTE_F           reduce using rule 103 (empty -> .)
+    CTE_CHAR        reduce using rule 103 (empty -> .)
+    R_B             reduce using rule 103 (empty -> .)
+
+  ! L_P             [ reduce using rule 103 (empty -> .) ]
+
+    id1                            shift and go to state 149
+    fact1                          shift and go to state 89
+    empty                          shift and go to state 150
+
+state 134
+
+    (49) return_func -> RETURN . L_P expression R_P SEMICOLON
+
+    L_P             shift and go to state 151
+
+
+state 135
+
+    (50) read -> READ . L_P read_args R_P SEMICOLON
+
+    L_P             shift and go to state 152
+
+
+state 136
+
+    (54) write -> PRINT . L_P write_args R_P SEMICOLON
+
+    L_P             shift and go to state 153
+
+
+state 137
+
+    (60) decision_statement -> IF . L_P expression R_P L_B statements R_B decision_statement1
+
+    L_P             shift and go to state 154
+
+
+state 138
+
+    (63) repetition_statement -> while_statement .
+
+    ID              reduce using rule 63 (repetition_statement -> while_statement .)
+    RETURN          reduce using rule 63 (repetition_statement -> while_statement .)
+    READ            reduce using rule 63 (repetition_statement -> while_statement .)
+    PRINT           reduce using rule 63 (repetition_statement -> while_statement .)
+    IF              reduce using rule 63 (repetition_statement -> while_statement .)
+    WHILE           reduce using rule 63 (repetition_statement -> while_statement .)
+    FOR             reduce using rule 63 (repetition_statement -> while_statement .)
+    L_P             reduce using rule 63 (repetition_statement -> while_statement .)
+    CTE_I           reduce using rule 63 (repetition_statement -> while_statement .)
+    CTE_F           reduce using rule 63 (repetition_statement -> while_statement .)
+    CTE_CHAR        reduce using rule 63 (repetition_statement -> while_statement .)
+    R_B             reduce using rule 63 (repetition_statement -> while_statement .)
+
+
+state 139
+
+    (64) repetition_statement -> for_statement .
+
+    ID              reduce using rule 64 (repetition_statement -> for_statement .)
+    RETURN          reduce using rule 64 (repetition_statement -> for_statement .)
+    READ            reduce using rule 64 (repetition_statement -> for_statement .)
+    PRINT           reduce using rule 64 (repetition_statement -> for_statement .)
+    IF              reduce using rule 64 (repetition_statement -> for_statement .)
+    WHILE           reduce using rule 64 (repetition_statement -> for_statement .)
+    FOR             reduce using rule 64 (repetition_statement -> for_statement .)
+    L_P             reduce using rule 64 (repetition_statement -> for_statement .)
+    CTE_I           reduce using rule 64 (repetition_statement -> for_statement .)
+    CTE_F           reduce using rule 64 (repetition_statement -> for_statement .)
+    CTE_CHAR        reduce using rule 64 (repetition_statement -> for_statement .)
+    R_B             reduce using rule 64 (repetition_statement -> for_statement .)
+
+
+state 140
+
+    (66) while_statement -> WHILE . L_P expression R_P do_statement
+
+    L_P             shift and go to state 155
+
+
+state 141
+
+    (65) for_statement -> FOR . id EQUAL expression TO expression do_statement
+    (16) id -> . ID id1
+
+    ID              shift and go to state 26
+
+    id                             shift and go to state 156
+
+state 142
+
+    (25) function -> func_type FUNC ID L_P params R_P var_declaration L_B . statements R_B
+    (32) statements -> . statement statements
+    (33) statements -> . empty
+    (34) statement -> . assignation
+    (35) statement -> . call_func
+    (36) statement -> . return_func
+    (37) statement -> . read
+    (38) statement -> . write
+    (39) statement -> . decision_statement
+    (40) statement -> . repetition_statement
+    (41) statement -> . expression
+    (103) empty -> .
+    (42) assignation -> . id EQUAL expression SEMICOLON
+    (48) call_func -> . ID L_P args R_P SEMICOLON
+    (49) return_func -> . RETURN L_P expression R_P SEMICOLON
+    (50) read -> . READ L_P read_args R_P SEMICOLON
+    (54) write -> . PRINT L_P write_args R_P SEMICOLON
+    (60) decision_statement -> . IF L_P expression R_P L_B statements R_B decision_statement1
+    (63) repetition_statement -> . while_statement
+    (64) repetition_statement -> . for_statement
+    (68) expression -> . texp op1
+    (16) id -> . ID id1
+    (66) while_statement -> . WHILE L_P expression R_P do_statement
+    (65) for_statement -> . FOR id EQUAL expression TO expression do_statement
+    (69) texp -> . gexp op2
+    (70) gexp -> . nexp op3aux
+    (71) nexp -> . term op4aux
+    (72) term -> . fact op5aux
+    (73) fact -> . ID fact1
+    (74) fact -> . L_P expression R_P
+    (75) fact -> . cte
+    (79) cte -> . CTE_I
+    (80) cte -> . CTE_F
+    (81) cte -> . CTE_CHAR
+
+    R_B             reduce using rule 103 (empty -> .)
+    ID              shift and go to state 133
+    RETURN          shift and go to state 134
+    READ            shift and go to state 135
+    PRINT           shift and go to state 136
+    IF              shift and go to state 137
+    WHILE           shift and go to state 140
+    FOR             shift and go to state 141
+    L_P             shift and go to state 48
+    CTE_I           shift and go to state 50
+    CTE_F           shift and go to state 51
+    CTE_CHAR        shift and go to state 52
+
+    statements                     shift and go to state 157
+    statement                      shift and go to state 122
+    empty                          shift and go to state 123
+    assignation                    shift and go to state 124
+    call_func                      shift and go to state 125
+    return_func                    shift and go to state 126
+    read                           shift and go to state 127
+    write                          shift and go to state 128
+    decision_statement             shift and go to state 129
+    repetition_statement           shift and go to state 130
+    expression                     shift and go to state 131
+    id                             shift and go to state 132
+    while_statement                shift and go to state 138
+    for_statement                  shift and go to state 139
+    texp                           shift and go to state 42
+    gexp                           shift and go to state 43
+    nexp                           shift and go to state 44
+    term                           shift and go to state 45
+    fact                           shift and go to state 46
+    cte                            shift and go to state 49
+
+state 143
+
+    (19) id2 -> L_SB expression R_SB .
+
+    COMA            reduce using rule 19 (id2 -> L_SB expression R_SB .)
+    SEMICOLON       reduce using rule 19 (id2 -> L_SB expression R_SB .)
+    R_P             reduce using rule 19 (id2 -> L_SB expression R_SB .)
+    EQUAL           reduce using rule 19 (id2 -> L_SB expression R_SB .)
+    MULT            reduce using rule 19 (id2 -> L_SB expression R_SB .)
+    DIV             reduce using rule 19 (id2 -> L_SB expression R_SB .)
+    MOD             reduce using rule 19 (id2 -> L_SB expression R_SB .)
+    PLUS            reduce using rule 19 (id2 -> L_SB expression R_SB .)
+    MINUS           reduce using rule 19 (id2 -> L_SB expression R_SB .)
+    LESSTHAN        reduce using rule 19 (id2 -> L_SB expression R_SB .)
+    LESSTHANEQ      reduce using rule 19 (id2 -> L_SB expression R_SB .)
+    GREATERTHAN     reduce using rule 19 (id2 -> L_SB expression R_SB .)
+    GREATERTHANEQ   reduce using rule 19 (id2 -> L_SB expression R_SB .)
+    EQ              reduce using rule 19 (id2 -> L_SB expression R_SB .)
+    DIFERENT        reduce using rule 19 (id2 -> L_SB expression R_SB .)
+    AND             reduce using rule 19 (id2 -> L_SB expression R_SB .)
+    OR              reduce using rule 19 (id2 -> L_SB expression R_SB .)
+    R_SB            reduce using rule 19 (id2 -> L_SB expression R_SB .)
+    ID              reduce using rule 19 (id2 -> L_SB expression R_SB .)
+    RETURN          reduce using rule 19 (id2 -> L_SB expression R_SB .)
+    READ            reduce using rule 19 (id2 -> L_SB expression R_SB .)
+    PRINT           reduce using rule 19 (id2 -> L_SB expression R_SB .)
+    IF              reduce using rule 19 (id2 -> L_SB expression R_SB .)
+    WHILE           reduce using rule 19 (id2 -> L_SB expression R_SB .)
+    FOR             reduce using rule 19 (id2 -> L_SB expression R_SB .)
+    L_P             reduce using rule 19 (id2 -> L_SB expression R_SB .)
+    CTE_I           reduce using rule 19 (id2 -> L_SB expression R_SB .)
+    CTE_F           reduce using rule 19 (id2 -> L_SB expression R_SB .)
+    CTE_CHAR        reduce using rule 19 (id2 -> L_SB expression R_SB .)
+    R_B             reduce using rule 19 (id2 -> L_SB expression R_SB .)
+    TO              reduce using rule 19 (id2 -> L_SB expression R_SB .)
+    DO              reduce using rule 19 (id2 -> L_SB expression R_SB .)
+
+
+state 144
+
+    (46) args2 -> COMA args1 .
+
+    R_P             reduce using rule 46 (args2 -> COMA args1 .)
+
+
+state 145
+
+    (2) main -> MAIN L_P params R_P var_declaration L_B statements R_B .
+
+    $end            reduce using rule 2 (main -> MAIN L_P params R_P var_declaration L_B statements R_B .)
+
+
+state 146
+
+    (32) statements -> statement statements .
+
+    R_B             reduce using rule 32 (statements -> statement statements .)
+
+
+state 147
+
+    (42) assignation -> id EQUAL . expression SEMICOLON
+    (68) expression -> . texp op1
+    (69) texp -> . gexp op2
+    (70) gexp -> . nexp op3aux
+    (71) nexp -> . term op4aux
+    (72) term -> . fact op5aux
+    (73) fact -> . ID fact1
+    (74) fact -> . L_P expression R_P
+    (75) fact -> . cte
+    (79) cte -> . CTE_I
+    (80) cte -> . CTE_F
+    (81) cte -> . CTE_CHAR
+
+    ID              shift and go to state 47
+    L_P             shift and go to state 48
+    CTE_I           shift and go to state 50
+    CTE_F           shift and go to state 51
+    CTE_CHAR        shift and go to state 52
+
+    expression                     shift and go to state 158
+    texp                           shift and go to state 42
+    gexp                           shift and go to state 43
+    nexp                           shift and go to state 44
+    term                           shift and go to state 45
+    fact                           shift and go to state 46
+    cte                            shift and go to state 49
+
+state 148
+
+    (48) call_func -> ID L_P . args R_P SEMICOLON
+    (76) fact1 -> L_P . args R_P
+    (43) args -> . args1
+    (44) args -> . empty
+    (45) args1 -> . expression args2
+    (103) empty -> .
+    (68) expression -> . texp op1
+    (69) texp -> . gexp op2
+    (70) gexp -> . nexp op3aux
+    (71) nexp -> . term op4aux
+    (72) term -> . fact op5aux
+    (73) fact -> . ID fact1
+    (74) fact -> . L_P expression R_P
+    (75) fact -> . cte
+    (79) cte -> . CTE_I
+    (80) cte -> . CTE_F
+    (81) cte -> . CTE_CHAR
+
+    R_P             reduce using rule 103 (empty -> .)
+    ID              shift and go to state 47
+    L_P             shift and go to state 48
+    CTE_I           shift and go to state 50
+    CTE_F           shift and go to state 51
+    CTE_CHAR        shift and go to state 52
+
+    args                           shift and go to state 159
+    args1                          shift and go to state 109
+    empty                          shift and go to state 110
+    expression                     shift and go to state 111
+    texp                           shift and go to state 42
+    gexp                           shift and go to state 43
+    nexp                           shift and go to state 44
+    term                           shift and go to state 45
+    fact                           shift and go to state 46
+    cte                            shift and go to state 49
+
+state 149
+
+    (16) id -> ID id1 .
+    (77) fact1 -> id1 .
+
+    EQUAL           reduce using rule 16 (id -> ID id1 .)
+    MULT            reduce using rule 77 (fact1 -> id1 .)
+    DIV             reduce using rule 77 (fact1 -> id1 .)
+    MOD             reduce using rule 77 (fact1 -> id1 .)
+    PLUS            reduce using rule 77 (fact1 -> id1 .)
+    MINUS           reduce using rule 77 (fact1 -> id1 .)
+    LESSTHAN        reduce using rule 77 (fact1 -> id1 .)
+    LESSTHANEQ      reduce using rule 77 (fact1 -> id1 .)
+    GREATERTHAN     reduce using rule 77 (fact1 -> id1 .)
+    GREATERTHANEQ   reduce using rule 77 (fact1 -> id1 .)
+    EQ              reduce using rule 77 (fact1 -> id1 .)
+    DIFERENT        reduce using rule 77 (fact1 -> id1 .)
+    AND             reduce using rule 77 (fact1 -> id1 .)
+    OR              reduce using rule 77 (fact1 -> id1 .)
+    ID              reduce using rule 77 (fact1 -> id1 .)
+    RETURN          reduce using rule 77 (fact1 -> id1 .)
+    READ            reduce using rule 77 (fact1 -> id1 .)
+    PRINT           reduce using rule 77 (fact1 -> id1 .)
+    IF              reduce using rule 77 (fact1 -> id1 .)
+    WHILE           reduce using rule 77 (fact1 -> id1 .)
+    FOR             reduce using rule 77 (fact1 -> id1 .)
+    L_P             reduce using rule 77 (fact1 -> id1 .)
+    CTE_I           reduce using rule 77 (fact1 -> id1 .)
+    CTE_F           reduce using rule 77 (fact1 -> id1 .)
+    CTE_CHAR        reduce using rule 77 (fact1 -> id1 .)
+    R_B             reduce using rule 77 (fact1 -> id1 .)
+
+
+state 150
+
+    (18) id1 -> empty .
+    (78) fact1 -> empty .
+
+  ! reduce/reduce conflict for MULT resolved using rule 18 (id1 -> empty .)
+  ! reduce/reduce conflict for DIV resolved using rule 18 (id1 -> empty .)
+  ! reduce/reduce conflict for MOD resolved using rule 18 (id1 -> empty .)
+  ! reduce/reduce conflict for PLUS resolved using rule 18 (id1 -> empty .)
+  ! reduce/reduce conflict for MINUS resolved using rule 18 (id1 -> empty .)
+  ! reduce/reduce conflict for LESSTHAN resolved using rule 18 (id1 -> empty .)
+  ! reduce/reduce conflict for LESSTHANEQ resolved using rule 18 (id1 -> empty .)
+  ! reduce/reduce conflict for GREATERTHAN resolved using rule 18 (id1 -> empty .)
+  ! reduce/reduce conflict for GREATERTHANEQ resolved using rule 18 (id1 -> empty .)
+  ! reduce/reduce conflict for EQ resolved using rule 18 (id1 -> empty .)
+  ! reduce/reduce conflict for DIFERENT resolved using rule 18 (id1 -> empty .)
+  ! reduce/reduce conflict for AND resolved using rule 18 (id1 -> empty .)
+  ! reduce/reduce conflict for OR resolved using rule 18 (id1 -> empty .)
+  ! reduce/reduce conflict for ID resolved using rule 18 (id1 -> empty .)
+  ! reduce/reduce conflict for RETURN resolved using rule 18 (id1 -> empty .)
+  ! reduce/reduce conflict for READ resolved using rule 18 (id1 -> empty .)
+  ! reduce/reduce conflict for PRINT resolved using rule 18 (id1 -> empty .)
+  ! reduce/reduce conflict for IF resolved using rule 18 (id1 -> empty .)
+  ! reduce/reduce conflict for WHILE resolved using rule 18 (id1 -> empty .)
+  ! reduce/reduce conflict for FOR resolved using rule 18 (id1 -> empty .)
+  ! reduce/reduce conflict for L_P resolved using rule 18 (id1 -> empty .)
+  ! reduce/reduce conflict for CTE_I resolved using rule 18 (id1 -> empty .)
+  ! reduce/reduce conflict for CTE_F resolved using rule 18 (id1 -> empty .)
+  ! reduce/reduce conflict for CTE_CHAR resolved using rule 18 (id1 -> empty .)
+  ! reduce/reduce conflict for R_B resolved using rule 18 (id1 -> empty .)
+    EQUAL           reduce using rule 18 (id1 -> empty .)
+    MULT            reduce using rule 18 (id1 -> empty .)
+    DIV             reduce using rule 18 (id1 -> empty .)
+    MOD             reduce using rule 18 (id1 -> empty .)
+    PLUS            reduce using rule 18 (id1 -> empty .)
+    MINUS           reduce using rule 18 (id1 -> empty .)
+    LESSTHAN        reduce using rule 18 (id1 -> empty .)
+    LESSTHANEQ      reduce using rule 18 (id1 -> empty .)
+    GREATERTHAN     reduce using rule 18 (id1 -> empty .)
+    GREATERTHANEQ   reduce using rule 18 (id1 -> empty .)
+    EQ              reduce using rule 18 (id1 -> empty .)
+    DIFERENT        reduce using rule 18 (id1 -> empty .)
+    AND             reduce using rule 18 (id1 -> empty .)
+    OR              reduce using rule 18 (id1 -> empty .)
+    ID              reduce using rule 18 (id1 -> empty .)
+    RETURN          reduce using rule 18 (id1 -> empty .)
+    READ            reduce using rule 18 (id1 -> empty .)
+    PRINT           reduce using rule 18 (id1 -> empty .)
+    IF              reduce using rule 18 (id1 -> empty .)
+    WHILE           reduce using rule 18 (id1 -> empty .)
+    FOR             reduce using rule 18 (id1 -> empty .)
+    L_P             reduce using rule 18 (id1 -> empty .)
+    CTE_I           reduce using rule 18 (id1 -> empty .)
+    CTE_F           reduce using rule 18 (id1 -> empty .)
+    CTE_CHAR        reduce using rule 18 (id1 -> empty .)
+    R_B             reduce using rule 18 (id1 -> empty .)
+
+  ! MULT            [ reduce using rule 78 (fact1 -> empty .) ]
+  ! DIV             [ reduce using rule 78 (fact1 -> empty .) ]
+  ! MOD             [ reduce using rule 78 (fact1 -> empty .) ]
+  ! PLUS            [ reduce using rule 78 (fact1 -> empty .) ]
+  ! MINUS           [ reduce using rule 78 (fact1 -> empty .) ]
+  ! LESSTHAN        [ reduce using rule 78 (fact1 -> empty .) ]
+  ! LESSTHANEQ      [ reduce using rule 78 (fact1 -> empty .) ]
+  ! GREATERTHAN     [ reduce using rule 78 (fact1 -> empty .) ]
+  ! GREATERTHANEQ   [ reduce using rule 78 (fact1 -> empty .) ]
+  ! EQ              [ reduce using rule 78 (fact1 -> empty .) ]
+  ! DIFERENT        [ reduce using rule 78 (fact1 -> empty .) ]
+  ! AND             [ reduce using rule 78 (fact1 -> empty .) ]
+  ! OR              [ reduce using rule 78 (fact1 -> empty .) ]
+  ! ID              [ reduce using rule 78 (fact1 -> empty .) ]
+  ! RETURN          [ reduce using rule 78 (fact1 -> empty .) ]
+  ! READ            [ reduce using rule 78 (fact1 -> empty .) ]
+  ! PRINT           [ reduce using rule 78 (fact1 -> empty .) ]
+  ! IF              [ reduce using rule 78 (fact1 -> empty .) ]
+  ! WHILE           [ reduce using rule 78 (fact1 -> empty .) ]
+  ! FOR             [ reduce using rule 78 (fact1 -> empty .) ]
+  ! L_P             [ reduce using rule 78 (fact1 -> empty .) ]
+  ! CTE_I           [ reduce using rule 78 (fact1 -> empty .) ]
+  ! CTE_F           [ reduce using rule 78 (fact1 -> empty .) ]
+  ! CTE_CHAR        [ reduce using rule 78 (fact1 -> empty .) ]
+  ! R_B             [ reduce using rule 78 (fact1 -> empty .) ]
+
+
+state 151
+
+    (49) return_func -> RETURN L_P . expression R_P SEMICOLON
+    (68) expression -> . texp op1
+    (69) texp -> . gexp op2
+    (70) gexp -> . nexp op3aux
+    (71) nexp -> . term op4aux
+    (72) term -> . fact op5aux
+    (73) fact -> . ID fact1
+    (74) fact -> . L_P expression R_P
+    (75) fact -> . cte
+    (79) cte -> . CTE_I
+    (80) cte -> . CTE_F
+    (81) cte -> . CTE_CHAR
+
+    ID              shift and go to state 47
+    L_P             shift and go to state 48
+    CTE_I           shift and go to state 50
+    CTE_F           shift and go to state 51
+    CTE_CHAR        shift and go to state 52
+
+    expression                     shift and go to state 160
+    texp                           shift and go to state 42
+    gexp                           shift and go to state 43
+    nexp                           shift and go to state 44
+    term                           shift and go to state 45
+    fact                           shift and go to state 46
+    cte                            shift and go to state 49
+
+state 152
+
+    (50) read -> READ L_P . read_args R_P SEMICOLON
+    (51) read_args -> . expression read_args1
+    (68) expression -> . texp op1
+    (69) texp -> . gexp op2
+    (70) gexp -> . nexp op3aux
+    (71) nexp -> . term op4aux
+    (72) term -> . fact op5aux
+    (73) fact -> . ID fact1
+    (74) fact -> . L_P expression R_P
+    (75) fact -> . cte
+    (79) cte -> . CTE_I
+    (80) cte -> . CTE_F
+    (81) cte -> . CTE_CHAR
+
+    ID              shift and go to state 47
+    L_P             shift and go to state 48
+    CTE_I           shift and go to state 50
+    CTE_F           shift and go to state 51
+    CTE_CHAR        shift and go to state 52
+
+    read_args                      shift and go to state 161
+    expression                     shift and go to state 162
+    texp                           shift and go to state 42
+    gexp                           shift and go to state 43
+    nexp                           shift and go to state 44
+    term                           shift and go to state 45
+    fact                           shift and go to state 46
+    cte                            shift and go to state 49
+
+state 153
+
+    (54) write -> PRINT L_P . write_args R_P SEMICOLON
+    (55) write_args -> . write_args2 write_args1
+    (58) write_args2 -> . expression
+    (59) write_args2 -> . CTE_STRING
+    (68) expression -> . texp op1
+    (69) texp -> . gexp op2
+    (70) gexp -> . nexp op3aux
+    (71) nexp -> . term op4aux
+    (72) term -> . fact op5aux
+    (73) fact -> . ID fact1
+    (74) fact -> . L_P expression R_P
+    (75) fact -> . cte
+    (79) cte -> . CTE_I
+    (80) cte -> . CTE_F
+    (81) cte -> . CTE_CHAR
+
+    CTE_STRING      shift and go to state 166
+    ID              shift and go to state 47
+    L_P             shift and go to state 48
+    CTE_I           shift and go to state 50
+    CTE_F           shift and go to state 51
+    CTE_CHAR        shift and go to state 52
+
+    write_args                     shift and go to state 163
+    write_args2                    shift and go to state 164
+    expression                     shift and go to state 165
+    texp                           shift and go to state 42
+    gexp                           shift and go to state 43
+    nexp                           shift and go to state 44
+    term                           shift and go to state 45
+    fact                           shift and go to state 46
+    cte                            shift and go to state 49
+
+state 154
+
+    (60) decision_statement -> IF L_P . expression R_P L_B statements R_B decision_statement1
+    (68) expression -> . texp op1
+    (69) texp -> . gexp op2
+    (70) gexp -> . nexp op3aux
+    (71) nexp -> . term op4aux
+    (72) term -> . fact op5aux
+    (73) fact -> . ID fact1
+    (74) fact -> . L_P expression R_P
+    (75) fact -> . cte
+    (79) cte -> . CTE_I
+    (80) cte -> . CTE_F
+    (81) cte -> . CTE_CHAR
+
+    ID              shift and go to state 47
+    L_P             shift and go to state 48
+    CTE_I           shift and go to state 50
+    CTE_F           shift and go to state 51
+    CTE_CHAR        shift and go to state 52
+
+    expression                     shift and go to state 167
+    texp                           shift and go to state 42
+    gexp                           shift and go to state 43
+    nexp                           shift and go to state 44
+    term                           shift and go to state 45
+    fact                           shift and go to state 46
+    cte                            shift and go to state 49
+
+state 155
+
+    (66) while_statement -> WHILE L_P . expression R_P do_statement
+    (68) expression -> . texp op1
+    (69) texp -> . gexp op2
+    (70) gexp -> . nexp op3aux
+    (71) nexp -> . term op4aux
+    (72) term -> . fact op5aux
+    (73) fact -> . ID fact1
+    (74) fact -> . L_P expression R_P
+    (75) fact -> . cte
+    (79) cte -> . CTE_I
+    (80) cte -> . CTE_F
+    (81) cte -> . CTE_CHAR
+
+    ID              shift and go to state 47
+    L_P             shift and go to state 48
+    CTE_I           shift and go to state 50
+    CTE_F           shift and go to state 51
+    CTE_CHAR        shift and go to state 52
+
+    expression                     shift and go to state 168
+    texp                           shift and go to state 42
+    gexp                           shift and go to state 43
+    nexp                           shift and go to state 44
+    term                           shift and go to state 45
+    fact                           shift and go to state 46
+    cte                            shift and go to state 49
+
+state 156
+
+    (65) for_statement -> FOR id . EQUAL expression TO expression do_statement
+
+    EQUAL           shift and go to state 169
+
+
+state 157
+
+    (25) function -> func_type FUNC ID L_P params R_P var_declaration L_B statements . R_B
+
+    R_B             shift and go to state 170
+
+
+state 158
+
+    (42) assignation -> id EQUAL expression . SEMICOLON
+
+    SEMICOLON       shift and go to state 171
+
+
+state 159
+
+    (48) call_func -> ID L_P args . R_P SEMICOLON
+    (76) fact1 -> L_P args . R_P
+
+    R_P             shift and go to state 172
+
+
+state 160
+
+    (49) return_func -> RETURN L_P expression . R_P SEMICOLON
+
+    R_P             shift and go to state 173
+
+
+state 161
+
+    (50) read -> READ L_P read_args . R_P SEMICOLON
+
+    R_P             shift and go to state 174
+
+
+state 162
+
+    (51) read_args -> expression . read_args1
+    (52) read_args1 -> . COMA expression read_args1
+    (53) read_args1 -> . empty
+    (103) empty -> .
+
+    COMA            shift and go to state 176
+    R_P             reduce using rule 103 (empty -> .)
+
+    read_args1                     shift and go to state 175
+    empty                          shift and go to state 177
+
+state 163
+
+    (54) write -> PRINT L_P write_args . R_P SEMICOLON
+
+    R_P             shift and go to state 178
+
+
+state 164
+
+    (55) write_args -> write_args2 . write_args1
+    (56) write_args1 -> . COMA write_args2 write_args1
+    (57) write_args1 -> . empty
+    (103) empty -> .
+
+    COMA            shift and go to state 180
+    R_P             reduce using rule 103 (empty -> .)
+
+    write_args1                    shift and go to state 179
+    empty                          shift and go to state 181
+
+state 165
+
+    (58) write_args2 -> expression .
+
+    COMA            reduce using rule 58 (write_args2 -> expression .)
+    R_P             reduce using rule 58 (write_args2 -> expression .)
+
+
+state 166
+
+    (59) write_args2 -> CTE_STRING .
+
+    COMA            reduce using rule 59 (write_args2 -> CTE_STRING .)
+    R_P             reduce using rule 59 (write_args2 -> CTE_STRING .)
+
+
+state 167
+
+    (60) decision_statement -> IF L_P expression . R_P L_B statements R_B decision_statement1
+
+    R_P             shift and go to state 182
+
+
+state 168
+
+    (66) while_statement -> WHILE L_P expression . R_P do_statement
+
+    R_P             shift and go to state 183
+
+
+state 169
+
+    (65) for_statement -> FOR id EQUAL . expression TO expression do_statement
+    (68) expression -> . texp op1
+    (69) texp -> . gexp op2
+    (70) gexp -> . nexp op3aux
+    (71) nexp -> . term op4aux
+    (72) term -> . fact op5aux
+    (73) fact -> . ID fact1
+    (74) fact -> . L_P expression R_P
+    (75) fact -> . cte
+    (79) cte -> . CTE_I
+    (80) cte -> . CTE_F
+    (81) cte -> . CTE_CHAR
+
+    ID              shift and go to state 47
+    L_P             shift and go to state 48
+    CTE_I           shift and go to state 50
+    CTE_F           shift and go to state 51
+    CTE_CHAR        shift and go to state 52
+
+    expression                     shift and go to state 184
+    texp                           shift and go to state 42
+    gexp                           shift and go to state 43
+    nexp                           shift and go to state 44
+    term                           shift and go to state 45
+    fact                           shift and go to state 46
+    cte                            shift and go to state 49
+
+state 170
+
+    (25) function -> func_type FUNC ID L_P params R_P var_declaration L_B statements R_B .
+
+    VOID            reduce using rule 25 (function -> func_type FUNC ID L_P params R_P var_declaration L_B statements R_B .)
+    INT             reduce using rule 25 (function -> func_type FUNC ID L_P params R_P var_declaration L_B statements R_B .)
+    FLOAT           reduce using rule 25 (function -> func_type FUNC ID L_P params R_P var_declaration L_B statements R_B .)
+    CHAR            reduce using rule 25 (function -> func_type FUNC ID L_P params R_P var_declaration L_B statements R_B .)
+    MAIN            reduce using rule 25 (function -> func_type FUNC ID L_P params R_P var_declaration L_B statements R_B .)
+
+
+state 171
+
+    (42) assignation -> id EQUAL expression SEMICOLON .
+
+    ID              reduce using rule 42 (assignation -> id EQUAL expression SEMICOLON .)
+    RETURN          reduce using rule 42 (assignation -> id EQUAL expression SEMICOLON .)
+    READ            reduce using rule 42 (assignation -> id EQUAL expression SEMICOLON .)
+    PRINT           reduce using rule 42 (assignation -> id EQUAL expression SEMICOLON .)
+    IF              reduce using rule 42 (assignation -> id EQUAL expression SEMICOLON .)
+    WHILE           reduce using rule 42 (assignation -> id EQUAL expression SEMICOLON .)
+    FOR             reduce using rule 42 (assignation -> id EQUAL expression SEMICOLON .)
+    L_P             reduce using rule 42 (assignation -> id EQUAL expression SEMICOLON .)
+    CTE_I           reduce using rule 42 (assignation -> id EQUAL expression SEMICOLON .)
+    CTE_F           reduce using rule 42 (assignation -> id EQUAL expression SEMICOLON .)
+    CTE_CHAR        reduce using rule 42 (assignation -> id EQUAL expression SEMICOLON .)
+    R_B             reduce using rule 42 (assignation -> id EQUAL expression SEMICOLON .)
+
+
+state 172
+
+    (48) call_func -> ID L_P args R_P . SEMICOLON
+    (76) fact1 -> L_P args R_P .
+
+    SEMICOLON       shift and go to state 185
+    MULT            reduce using rule 76 (fact1 -> L_P args R_P .)
+    DIV             reduce using rule 76 (fact1 -> L_P args R_P .)
+    MOD             reduce using rule 76 (fact1 -> L_P args R_P .)
+    PLUS            reduce using rule 76 (fact1 -> L_P args R_P .)
+    MINUS           reduce using rule 76 (fact1 -> L_P args R_P .)
+    LESSTHAN        reduce using rule 76 (fact1 -> L_P args R_P .)
+    LESSTHANEQ      reduce using rule 76 (fact1 -> L_P args R_P .)
+    GREATERTHAN     reduce using rule 76 (fact1 -> L_P args R_P .)
+    GREATERTHANEQ   reduce using rule 76 (fact1 -> L_P args R_P .)
+    EQ              reduce using rule 76 (fact1 -> L_P args R_P .)
+    DIFERENT        reduce using rule 76 (fact1 -> L_P args R_P .)
+    AND             reduce using rule 76 (fact1 -> L_P args R_P .)
+    OR              reduce using rule 76 (fact1 -> L_P args R_P .)
+    ID              reduce using rule 76 (fact1 -> L_P args R_P .)
+    RETURN          reduce using rule 76 (fact1 -> L_P args R_P .)
+    READ            reduce using rule 76 (fact1 -> L_P args R_P .)
+    PRINT           reduce using rule 76 (fact1 -> L_P args R_P .)
+    IF              reduce using rule 76 (fact1 -> L_P args R_P .)
+    WHILE           reduce using rule 76 (fact1 -> L_P args R_P .)
+    FOR             reduce using rule 76 (fact1 -> L_P args R_P .)
+    L_P             reduce using rule 76 (fact1 -> L_P args R_P .)
+    CTE_I           reduce using rule 76 (fact1 -> L_P args R_P .)
+    CTE_F           reduce using rule 76 (fact1 -> L_P args R_P .)
+    CTE_CHAR        reduce using rule 76 (fact1 -> L_P args R_P .)
+    R_B             reduce using rule 76 (fact1 -> L_P args R_P .)
+
+
+state 173
+
+    (49) return_func -> RETURN L_P expression R_P . SEMICOLON
+
+    SEMICOLON       shift and go to state 186
+
+
+state 174
+
+    (50) read -> READ L_P read_args R_P . SEMICOLON
+
+    SEMICOLON       shift and go to state 187
+
+
+state 175
+
+    (51) read_args -> expression read_args1 .
+
+    R_P             reduce using rule 51 (read_args -> expression read_args1 .)
+
+
+state 176
+
+    (52) read_args1 -> COMA . expression read_args1
+    (68) expression -> . texp op1
+    (69) texp -> . gexp op2
+    (70) gexp -> . nexp op3aux
+    (71) nexp -> . term op4aux
+    (72) term -> . fact op5aux
+    (73) fact -> . ID fact1
+    (74) fact -> . L_P expression R_P
+    (75) fact -> . cte
+    (79) cte -> . CTE_I
+    (80) cte -> . CTE_F
+    (81) cte -> . CTE_CHAR
+
+    ID              shift and go to state 47
+    L_P             shift and go to state 48
+    CTE_I           shift and go to state 50
+    CTE_F           shift and go to state 51
+    CTE_CHAR        shift and go to state 52
+
+    expression                     shift and go to state 188
+    texp                           shift and go to state 42
+    gexp                           shift and go to state 43
+    nexp                           shift and go to state 44
+    term                           shift and go to state 45
+    fact                           shift and go to state 46
+    cte                            shift and go to state 49
+
+state 177
+
+    (53) read_args1 -> empty .
+
+    R_P             reduce using rule 53 (read_args1 -> empty .)
+
+
+state 178
+
+    (54) write -> PRINT L_P write_args R_P . SEMICOLON
+
+    SEMICOLON       shift and go to state 189
+
+
+state 179
+
+    (55) write_args -> write_args2 write_args1 .
+
+    R_P             reduce using rule 55 (write_args -> write_args2 write_args1 .)
+
+
+state 180
+
+    (56) write_args1 -> COMA . write_args2 write_args1
+    (58) write_args2 -> . expression
+    (59) write_args2 -> . CTE_STRING
+    (68) expression -> . texp op1
+    (69) texp -> . gexp op2
+    (70) gexp -> . nexp op3aux
+    (71) nexp -> . term op4aux
+    (72) term -> . fact op5aux
+    (73) fact -> . ID fact1
+    (74) fact -> . L_P expression R_P
+    (75) fact -> . cte
+    (79) cte -> . CTE_I
+    (80) cte -> . CTE_F
+    (81) cte -> . CTE_CHAR
+
+    CTE_STRING      shift and go to state 166
+    ID              shift and go to state 47
+    L_P             shift and go to state 48
+    CTE_I           shift and go to state 50
+    CTE_F           shift and go to state 51
+    CTE_CHAR        shift and go to state 52
+
+    write_args2                    shift and go to state 190
+    expression                     shift and go to state 165
+    texp                           shift and go to state 42
+    gexp                           shift and go to state 43
+    nexp                           shift and go to state 44
+    term                           shift and go to state 45
+    fact                           shift and go to state 46
+    cte                            shift and go to state 49
+
+state 181
+
+    (57) write_args1 -> empty .
+
+    R_P             reduce using rule 57 (write_args1 -> empty .)
+
+
+state 182
+
+    (60) decision_statement -> IF L_P expression R_P . L_B statements R_B decision_statement1
+
+    L_B             shift and go to state 191
+
+
+state 183
+
+    (66) while_statement -> WHILE L_P expression R_P . do_statement
+    (67) do_statement -> . DO L_B statements R_B
+
+    DO              shift and go to state 193
+
+    do_statement                   shift and go to state 192
+
+state 184
+
+    (65) for_statement -> FOR id EQUAL expression . TO expression do_statement
+
+    TO              shift and go to state 194
+
+
+state 185
+
+    (48) call_func -> ID L_P args R_P SEMICOLON .
+
+    ID              reduce using rule 48 (call_func -> ID L_P args R_P SEMICOLON .)
+    RETURN          reduce using rule 48 (call_func -> ID L_P args R_P SEMICOLON .)
+    READ            reduce using rule 48 (call_func -> ID L_P args R_P SEMICOLON .)
+    PRINT           reduce using rule 48 (call_func -> ID L_P args R_P SEMICOLON .)
+    IF              reduce using rule 48 (call_func -> ID L_P args R_P SEMICOLON .)
+    WHILE           reduce using rule 48 (call_func -> ID L_P args R_P SEMICOLON .)
+    FOR             reduce using rule 48 (call_func -> ID L_P args R_P SEMICOLON .)
+    L_P             reduce using rule 48 (call_func -> ID L_P args R_P SEMICOLON .)
+    CTE_I           reduce using rule 48 (call_func -> ID L_P args R_P SEMICOLON .)
+    CTE_F           reduce using rule 48 (call_func -> ID L_P args R_P SEMICOLON .)
+    CTE_CHAR        reduce using rule 48 (call_func -> ID L_P args R_P SEMICOLON .)
+    R_B             reduce using rule 48 (call_func -> ID L_P args R_P SEMICOLON .)
+
+
+state 186
+
+    (49) return_func -> RETURN L_P expression R_P SEMICOLON .
+
+    ID              reduce using rule 49 (return_func -> RETURN L_P expression R_P SEMICOLON .)
+    RETURN          reduce using rule 49 (return_func -> RETURN L_P expression R_P SEMICOLON .)
+    READ            reduce using rule 49 (return_func -> RETURN L_P expression R_P SEMICOLON .)
+    PRINT           reduce using rule 49 (return_func -> RETURN L_P expression R_P SEMICOLON .)
+    IF              reduce using rule 49 (return_func -> RETURN L_P expression R_P SEMICOLON .)
+    WHILE           reduce using rule 49 (return_func -> RETURN L_P expression R_P SEMICOLON .)
+    FOR             reduce using rule 49 (return_func -> RETURN L_P expression R_P SEMICOLON .)
+    L_P             reduce using rule 49 (return_func -> RETURN L_P expression R_P SEMICOLON .)
+    CTE_I           reduce using rule 49 (return_func -> RETURN L_P expression R_P SEMICOLON .)
+    CTE_F           reduce using rule 49 (return_func -> RETURN L_P expression R_P SEMICOLON .)
+    CTE_CHAR        reduce using rule 49 (return_func -> RETURN L_P expression R_P SEMICOLON .)
+    R_B             reduce using rule 49 (return_func -> RETURN L_P expression R_P SEMICOLON .)
+
+
+state 187
+
+    (50) read -> READ L_P read_args R_P SEMICOLON .
+
+    ID              reduce using rule 50 (read -> READ L_P read_args R_P SEMICOLON .)
+    RETURN          reduce using rule 50 (read -> READ L_P read_args R_P SEMICOLON .)
+    READ            reduce using rule 50 (read -> READ L_P read_args R_P SEMICOLON .)
+    PRINT           reduce using rule 50 (read -> READ L_P read_args R_P SEMICOLON .)
+    IF              reduce using rule 50 (read -> READ L_P read_args R_P SEMICOLON .)
+    WHILE           reduce using rule 50 (read -> READ L_P read_args R_P SEMICOLON .)
+    FOR             reduce using rule 50 (read -> READ L_P read_args R_P SEMICOLON .)
+    L_P             reduce using rule 50 (read -> READ L_P read_args R_P SEMICOLON .)
+    CTE_I           reduce using rule 50 (read -> READ L_P read_args R_P SEMICOLON .)
+    CTE_F           reduce using rule 50 (read -> READ L_P read_args R_P SEMICOLON .)
+    CTE_CHAR        reduce using rule 50 (read -> READ L_P read_args R_P SEMICOLON .)
+    R_B             reduce using rule 50 (read -> READ L_P read_args R_P SEMICOLON .)
+
+
+state 188
+
+    (52) read_args1 -> COMA expression . read_args1
+    (52) read_args1 -> . COMA expression read_args1
+    (53) read_args1 -> . empty
+    (103) empty -> .
+
+    COMA            shift and go to state 176
+    R_P             reduce using rule 103 (empty -> .)
+
+    read_args1                     shift and go to state 195
+    empty                          shift and go to state 177
+
+state 189
+
+    (54) write -> PRINT L_P write_args R_P SEMICOLON .
+
+    ID              reduce using rule 54 (write -> PRINT L_P write_args R_P SEMICOLON .)
+    RETURN          reduce using rule 54 (write -> PRINT L_P write_args R_P SEMICOLON .)
+    READ            reduce using rule 54 (write -> PRINT L_P write_args R_P SEMICOLON .)
+    PRINT           reduce using rule 54 (write -> PRINT L_P write_args R_P SEMICOLON .)
+    IF              reduce using rule 54 (write -> PRINT L_P write_args R_P SEMICOLON .)
+    WHILE           reduce using rule 54 (write -> PRINT L_P write_args R_P SEMICOLON .)
+    FOR             reduce using rule 54 (write -> PRINT L_P write_args R_P SEMICOLON .)
+    L_P             reduce using rule 54 (write -> PRINT L_P write_args R_P SEMICOLON .)
+    CTE_I           reduce using rule 54 (write -> PRINT L_P write_args R_P SEMICOLON .)
+    CTE_F           reduce using rule 54 (write -> PRINT L_P write_args R_P SEMICOLON .)
+    CTE_CHAR        reduce using rule 54 (write -> PRINT L_P write_args R_P SEMICOLON .)
+    R_B             reduce using rule 54 (write -> PRINT L_P write_args R_P SEMICOLON .)
+
+
+state 190
+
+    (56) write_args1 -> COMA write_args2 . write_args1
+    (56) write_args1 -> . COMA write_args2 write_args1
+    (57) write_args1 -> . empty
+    (103) empty -> .
+
+    COMA            shift and go to state 180
+    R_P             reduce using rule 103 (empty -> .)
+
+    write_args1                    shift and go to state 196
+    empty                          shift and go to state 181
+
+state 191
+
+    (60) decision_statement -> IF L_P expression R_P L_B . statements R_B decision_statement1
+    (32) statements -> . statement statements
+    (33) statements -> . empty
+    (34) statement -> . assignation
+    (35) statement -> . call_func
+    (36) statement -> . return_func
+    (37) statement -> . read
+    (38) statement -> . write
+    (39) statement -> . decision_statement
+    (40) statement -> . repetition_statement
+    (41) statement -> . expression
+    (103) empty -> .
+    (42) assignation -> . id EQUAL expression SEMICOLON
+    (48) call_func -> . ID L_P args R_P SEMICOLON
+    (49) return_func -> . RETURN L_P expression R_P SEMICOLON
+    (50) read -> . READ L_P read_args R_P SEMICOLON
+    (54) write -> . PRINT L_P write_args R_P SEMICOLON
+    (60) decision_statement -> . IF L_P expression R_P L_B statements R_B decision_statement1
+    (63) repetition_statement -> . while_statement
+    (64) repetition_statement -> . for_statement
+    (68) expression -> . texp op1
+    (16) id -> . ID id1
+    (66) while_statement -> . WHILE L_P expression R_P do_statement
+    (65) for_statement -> . FOR id EQUAL expression TO expression do_statement
+    (69) texp -> . gexp op2
+    (70) gexp -> . nexp op3aux
+    (71) nexp -> . term op4aux
+    (72) term -> . fact op5aux
+    (73) fact -> . ID fact1
+    (74) fact -> . L_P expression R_P
+    (75) fact -> . cte
+    (79) cte -> . CTE_I
+    (80) cte -> . CTE_F
+    (81) cte -> . CTE_CHAR
+
+    R_B             reduce using rule 103 (empty -> .)
+    ID              shift and go to state 133
+    RETURN          shift and go to state 134
+    READ            shift and go to state 135
+    PRINT           shift and go to state 136
+    IF              shift and go to state 137
+    WHILE           shift and go to state 140
+    FOR             shift and go to state 141
+    L_P             shift and go to state 48
+    CTE_I           shift and go to state 50
+    CTE_F           shift and go to state 51
+    CTE_CHAR        shift and go to state 52
+
+    expression                     shift and go to state 131
+    statements                     shift and go to state 197
+    statement                      shift and go to state 122
+    empty                          shift and go to state 123
+    assignation                    shift and go to state 124
+    call_func                      shift and go to state 125
+    return_func                    shift and go to state 126
+    read                           shift and go to state 127
+    write                          shift and go to state 128
+    decision_statement             shift and go to state 129
+    repetition_statement           shift and go to state 130
+    id                             shift and go to state 132
+    while_statement                shift and go to state 138
+    for_statement                  shift and go to state 139
+    texp                           shift and go to state 42
+    gexp                           shift and go to state 43
+    nexp                           shift and go to state 44
+    term                           shift and go to state 45
+    fact                           shift and go to state 46
+    cte                            shift and go to state 49
+
+state 192
+
+    (66) while_statement -> WHILE L_P expression R_P do_statement .
+
+    ID              reduce using rule 66 (while_statement -> WHILE L_P expression R_P do_statement .)
+    RETURN          reduce using rule 66 (while_statement -> WHILE L_P expression R_P do_statement .)
+    READ            reduce using rule 66 (while_statement -> WHILE L_P expression R_P do_statement .)
+    PRINT           reduce using rule 66 (while_statement -> WHILE L_P expression R_P do_statement .)
+    IF              reduce using rule 66 (while_statement -> WHILE L_P expression R_P do_statement .)
+    WHILE           reduce using rule 66 (while_statement -> WHILE L_P expression R_P do_statement .)
+    FOR             reduce using rule 66 (while_statement -> WHILE L_P expression R_P do_statement .)
+    L_P             reduce using rule 66 (while_statement -> WHILE L_P expression R_P do_statement .)
+    CTE_I           reduce using rule 66 (while_statement -> WHILE L_P expression R_P do_statement .)
+    CTE_F           reduce using rule 66 (while_statement -> WHILE L_P expression R_P do_statement .)
+    CTE_CHAR        reduce using rule 66 (while_statement -> WHILE L_P expression R_P do_statement .)
+    R_B             reduce using rule 66 (while_statement -> WHILE L_P expression R_P do_statement .)
+
+
+state 193
+
+    (67) do_statement -> DO . L_B statements R_B
+
+    L_B             shift and go to state 198
+
+
+state 194
+
+    (65) for_statement -> FOR id EQUAL expression TO . expression do_statement
+    (68) expression -> . texp op1
+    (69) texp -> . gexp op2
+    (70) gexp -> . nexp op3aux
+    (71) nexp -> . term op4aux
+    (72) term -> . fact op5aux
+    (73) fact -> . ID fact1
+    (74) fact -> . L_P expression R_P
+    (75) fact -> . cte
+    (79) cte -> . CTE_I
+    (80) cte -> . CTE_F
+    (81) cte -> . CTE_CHAR
+
+    ID              shift and go to state 47
+    L_P             shift and go to state 48
+    CTE_I           shift and go to state 50
+    CTE_F           shift and go to state 51
+    CTE_CHAR        shift and go to state 52
+
+    expression                     shift and go to state 199
+    texp                           shift and go to state 42
+    gexp                           shift and go to state 43
+    nexp                           shift and go to state 44
+    term                           shift and go to state 45
+    fact                           shift and go to state 46
+    cte                            shift and go to state 49
+
+state 195
+
+    (52) read_args1 -> COMA expression read_args1 .
+
+    R_P             reduce using rule 52 (read_args1 -> COMA expression read_args1 .)
+
+
+state 196
+
+    (56) write_args1 -> COMA write_args2 write_args1 .
+
+    R_P             reduce using rule 56 (write_args1 -> COMA write_args2 write_args1 .)
+
+
+state 197
+
+    (60) decision_statement -> IF L_P expression R_P L_B statements . R_B decision_statement1
+
+    R_B             shift and go to state 200
+
+
+state 198
+
+    (67) do_statement -> DO L_B . statements R_B
+    (32) statements -> . statement statements
+    (33) statements -> . empty
+    (34) statement -> . assignation
+    (35) statement -> . call_func
+    (36) statement -> . return_func
+    (37) statement -> . read
+    (38) statement -> . write
+    (39) statement -> . decision_statement
+    (40) statement -> . repetition_statement
+    (41) statement -> . expression
+    (103) empty -> .
+    (42) assignation -> . id EQUAL expression SEMICOLON
+    (48) call_func -> . ID L_P args R_P SEMICOLON
+    (49) return_func -> . RETURN L_P expression R_P SEMICOLON
+    (50) read -> . READ L_P read_args R_P SEMICOLON
+    (54) write -> . PRINT L_P write_args R_P SEMICOLON
+    (60) decision_statement -> . IF L_P expression R_P L_B statements R_B decision_statement1
+    (63) repetition_statement -> . while_statement
+    (64) repetition_statement -> . for_statement
+    (68) expression -> . texp op1
+    (16) id -> . ID id1
+    (66) while_statement -> . WHILE L_P expression R_P do_statement
+    (65) for_statement -> . FOR id EQUAL expression TO expression do_statement
+    (69) texp -> . gexp op2
+    (70) gexp -> . nexp op3aux
+    (71) nexp -> . term op4aux
+    (72) term -> . fact op5aux
+    (73) fact -> . ID fact1
+    (74) fact -> . L_P expression R_P
+    (75) fact -> . cte
+    (79) cte -> . CTE_I
+    (80) cte -> . CTE_F
+    (81) cte -> . CTE_CHAR
+
+    R_B             reduce using rule 103 (empty -> .)
+    ID              shift and go to state 133
+    RETURN          shift and go to state 134
+    READ            shift and go to state 135
+    PRINT           shift and go to state 136
+    IF              shift and go to state 137
+    WHILE           shift and go to state 140
+    FOR             shift and go to state 141
+    L_P             shift and go to state 48
+    CTE_I           shift and go to state 50
+    CTE_F           shift and go to state 51
+    CTE_CHAR        shift and go to state 52
+
+    statements                     shift and go to state 201
+    statement                      shift and go to state 122
+    empty                          shift and go to state 123
+    assignation                    shift and go to state 124
+    call_func                      shift and go to state 125
+    return_func                    shift and go to state 126
+    read                           shift and go to state 127
+    write                          shift and go to state 128
+    decision_statement             shift and go to state 129
+    repetition_statement           shift and go to state 130
+    expression                     shift and go to state 131
+    id                             shift and go to state 132
+    while_statement                shift and go to state 138
+    for_statement                  shift and go to state 139
+    texp                           shift and go to state 42
+    gexp                           shift and go to state 43
+    nexp                           shift and go to state 44
+    term                           shift and go to state 45
+    fact                           shift and go to state 46
+    cte                            shift and go to state 49
+
+state 199
+
+    (65) for_statement -> FOR id EQUAL expression TO expression . do_statement
+    (67) do_statement -> . DO L_B statements R_B
+
+    DO              shift and go to state 193
+
+    do_statement                   shift and go to state 202
+
+state 200
+
+    (60) decision_statement -> IF L_P expression R_P L_B statements R_B . decision_statement1
+    (61) decision_statement1 -> . ELSE L_B statements R_B
+    (62) decision_statement1 -> . empty
+    (103) empty -> .
+
+    ELSE            shift and go to state 204
+    ID              reduce using rule 103 (empty -> .)
+    RETURN          reduce using rule 103 (empty -> .)
+    READ            reduce using rule 103 (empty -> .)
+    PRINT           reduce using rule 103 (empty -> .)
+    IF              reduce using rule 103 (empty -> .)
+    WHILE           reduce using rule 103 (empty -> .)
+    FOR             reduce using rule 103 (empty -> .)
+    L_P             reduce using rule 103 (empty -> .)
+    CTE_I           reduce using rule 103 (empty -> .)
+    CTE_F           reduce using rule 103 (empty -> .)
+    CTE_CHAR        reduce using rule 103 (empty -> .)
+    R_B             reduce using rule 103 (empty -> .)
+
+    decision_statement1            shift and go to state 203
+    empty                          shift and go to state 205
+
+state 201
+
+    (67) do_statement -> DO L_B statements . R_B
+
+    R_B             shift and go to state 206
+
+
+state 202
+
+    (65) for_statement -> FOR id EQUAL expression TO expression do_statement .
+
+    ID              reduce using rule 65 (for_statement -> FOR id EQUAL expression TO expression do_statement .)
+    RETURN          reduce using rule 65 (for_statement -> FOR id EQUAL expression TO expression do_statement .)
+    READ            reduce using rule 65 (for_statement -> FOR id EQUAL expression TO expression do_statement .)
+    PRINT           reduce using rule 65 (for_statement -> FOR id EQUAL expression TO expression do_statement .)
+    IF              reduce using rule 65 (for_statement -> FOR id EQUAL expression TO expression do_statement .)
+    WHILE           reduce using rule 65 (for_statement -> FOR id EQUAL expression TO expression do_statement .)
+    FOR             reduce using rule 65 (for_statement -> FOR id EQUAL expression TO expression do_statement .)
+    L_P             reduce using rule 65 (for_statement -> FOR id EQUAL expression TO expression do_statement .)
+    CTE_I           reduce using rule 65 (for_statement -> FOR id EQUAL expression TO expression do_statement .)
+    CTE_F           reduce using rule 65 (for_statement -> FOR id EQUAL expression TO expression do_statement .)
+    CTE_CHAR        reduce using rule 65 (for_statement -> FOR id EQUAL expression TO expression do_statement .)
+    R_B             reduce using rule 65 (for_statement -> FOR id EQUAL expression TO expression do_statement .)
+
+
+state 203
+
+    (60) decision_statement -> IF L_P expression R_P L_B statements R_B decision_statement1 .
+
+    ID              reduce using rule 60 (decision_statement -> IF L_P expression R_P L_B statements R_B decision_statement1 .)
+    RETURN          reduce using rule 60 (decision_statement -> IF L_P expression R_P L_B statements R_B decision_statement1 .)
+    READ            reduce using rule 60 (decision_statement -> IF L_P expression R_P L_B statements R_B decision_statement1 .)
+    PRINT           reduce using rule 60 (decision_statement -> IF L_P expression R_P L_B statements R_B decision_statement1 .)
+    IF              reduce using rule 60 (decision_statement -> IF L_P expression R_P L_B statements R_B decision_statement1 .)
+    WHILE           reduce using rule 60 (decision_statement -> IF L_P expression R_P L_B statements R_B decision_statement1 .)
+    FOR             reduce using rule 60 (decision_statement -> IF L_P expression R_P L_B statements R_B decision_statement1 .)
+    L_P             reduce using rule 60 (decision_statement -> IF L_P expression R_P L_B statements R_B decision_statement1 .)
+    CTE_I           reduce using rule 60 (decision_statement -> IF L_P expression R_P L_B statements R_B decision_statement1 .)
+    CTE_F           reduce using rule 60 (decision_statement -> IF L_P expression R_P L_B statements R_B decision_statement1 .)
+    CTE_CHAR        reduce using rule 60 (decision_statement -> IF L_P expression R_P L_B statements R_B decision_statement1 .)
+    R_B             reduce using rule 60 (decision_statement -> IF L_P expression R_P L_B statements R_B decision_statement1 .)
+
+
+state 204
+
+    (61) decision_statement1 -> ELSE . L_B statements R_B
+
+    L_B             shift and go to state 207
+
+
+state 205
+
+    (62) decision_statement1 -> empty .
+
+    ID              reduce using rule 62 (decision_statement1 -> empty .)
+    RETURN          reduce using rule 62 (decision_statement1 -> empty .)
+    READ            reduce using rule 62 (decision_statement1 -> empty .)
+    PRINT           reduce using rule 62 (decision_statement1 -> empty .)
+    IF              reduce using rule 62 (decision_statement1 -> empty .)
+    WHILE           reduce using rule 62 (decision_statement1 -> empty .)
+    FOR             reduce using rule 62 (decision_statement1 -> empty .)
+    L_P             reduce using rule 62 (decision_statement1 -> empty .)
+    CTE_I           reduce using rule 62 (decision_statement1 -> empty .)
+    CTE_F           reduce using rule 62 (decision_statement1 -> empty .)
+    CTE_CHAR        reduce using rule 62 (decision_statement1 -> empty .)
+    R_B             reduce using rule 62 (decision_statement1 -> empty .)
+
+
+state 206
+
+    (67) do_statement -> DO L_B statements R_B .
+
+    ID              reduce using rule 67 (do_statement -> DO L_B statements R_B .)
+    RETURN          reduce using rule 67 (do_statement -> DO L_B statements R_B .)
+    READ            reduce using rule 67 (do_statement -> DO L_B statements R_B .)
+    PRINT           reduce using rule 67 (do_statement -> DO L_B statements R_B .)
+    IF              reduce using rule 67 (do_statement -> DO L_B statements R_B .)
+    WHILE           reduce using rule 67 (do_statement -> DO L_B statements R_B .)
+    FOR             reduce using rule 67 (do_statement -> DO L_B statements R_B .)
+    L_P             reduce using rule 67 (do_statement -> DO L_B statements R_B .)
+    CTE_I           reduce using rule 67 (do_statement -> DO L_B statements R_B .)
+    CTE_F           reduce using rule 67 (do_statement -> DO L_B statements R_B .)
+    CTE_CHAR        reduce using rule 67 (do_statement -> DO L_B statements R_B .)
+    R_B             reduce using rule 67 (do_statement -> DO L_B statements R_B .)
+
+
+state 207
+
+    (61) decision_statement1 -> ELSE L_B . statements R_B
+    (32) statements -> . statement statements
+    (33) statements -> . empty
+    (34) statement -> . assignation
+    (35) statement -> . call_func
+    (36) statement -> . return_func
+    (37) statement -> . read
+    (38) statement -> . write
+    (39) statement -> . decision_statement
+    (40) statement -> . repetition_statement
+    (41) statement -> . expression
+    (103) empty -> .
+    (42) assignation -> . id EQUAL expression SEMICOLON
+    (48) call_func -> . ID L_P args R_P SEMICOLON
+    (49) return_func -> . RETURN L_P expression R_P SEMICOLON
+    (50) read -> . READ L_P read_args R_P SEMICOLON
+    (54) write -> . PRINT L_P write_args R_P SEMICOLON
+    (60) decision_statement -> . IF L_P expression R_P L_B statements R_B decision_statement1
+    (63) repetition_statement -> . while_statement
+    (64) repetition_statement -> . for_statement
+    (68) expression -> . texp op1
+    (16) id -> . ID id1
+    (66) while_statement -> . WHILE L_P expression R_P do_statement
+    (65) for_statement -> . FOR id EQUAL expression TO expression do_statement
+    (69) texp -> . gexp op2
+    (70) gexp -> . nexp op3aux
+    (71) nexp -> . term op4aux
+    (72) term -> . fact op5aux
+    (73) fact -> . ID fact1
+    (74) fact -> . L_P expression R_P
+    (75) fact -> . cte
+    (79) cte -> . CTE_I
+    (80) cte -> . CTE_F
+    (81) cte -> . CTE_CHAR
+
+    R_B             reduce using rule 103 (empty -> .)
+    ID              shift and go to state 133
+    RETURN          shift and go to state 134
+    READ            shift and go to state 135
+    PRINT           shift and go to state 136
+    IF              shift and go to state 137
+    WHILE           shift and go to state 140
+    FOR             shift and go to state 141
+    L_P             shift and go to state 48
+    CTE_I           shift and go to state 50
+    CTE_F           shift and go to state 51
+    CTE_CHAR        shift and go to state 52
+
+    statements                     shift and go to state 208
+    statement                      shift and go to state 122
+    empty                          shift and go to state 123
+    assignation                    shift and go to state 124
+    call_func                      shift and go to state 125
+    return_func                    shift and go to state 126
+    read                           shift and go to state 127
+    write                          shift and go to state 128
+    decision_statement             shift and go to state 129
+    repetition_statement           shift and go to state 130
+    expression                     shift and go to state 131
+    id                             shift and go to state 132
+    while_statement                shift and go to state 138
+    for_statement                  shift and go to state 139
+    texp                           shift and go to state 42
+    gexp                           shift and go to state 43
+    nexp                           shift and go to state 44
+    term                           shift and go to state 45
+    fact                           shift and go to state 46
+    cte                            shift and go to state 49
+
+state 208
+
+    (61) decision_statement1 -> ELSE L_B statements . R_B
+
+    R_B             shift and go to state 209
+
+
+state 209
+
+    (61) decision_statement1 -> ELSE L_B statements R_B .
+
+    ID              reduce using rule 61 (decision_statement1 -> ELSE L_B statements R_B .)
+    RETURN          reduce using rule 61 (decision_statement1 -> ELSE L_B statements R_B .)
+    READ            reduce using rule 61 (decision_statement1 -> ELSE L_B statements R_B .)
+    PRINT           reduce using rule 61 (decision_statement1 -> ELSE L_B statements R_B .)
+    IF              reduce using rule 61 (decision_statement1 -> ELSE L_B statements R_B .)
+    WHILE           reduce using rule 61 (decision_statement1 -> ELSE L_B statements R_B .)
+    FOR             reduce using rule 61 (decision_statement1 -> ELSE L_B statements R_B .)
+    L_P             reduce using rule 61 (decision_statement1 -> ELSE L_B statements R_B .)
+    CTE_I           reduce using rule 61 (decision_statement1 -> ELSE L_B statements R_B .)
+    CTE_F           reduce using rule 61 (decision_statement1 -> ELSE L_B statements R_B .)
+    CTE_CHAR        reduce using rule 61 (decision_statement1 -> ELSE L_B statements R_B .)
+    R_B             reduce using rule 61 (decision_statement1 -> ELSE L_B statements R_B .)
+
+WARNING: 
+WARNING: Conflicts:
+WARNING: 
+WARNING: shift/reduce conflict for INT in state 39 resolved as shift
+WARNING: shift/reduce conflict for FLOAT in state 39 resolved as shift
+WARNING: shift/reduce conflict for CHAR in state 39 resolved as shift
+WARNING: shift/reduce conflict for L_P in state 47 resolved as shift
+WARNING: shift/reduce conflict for L_P in state 133 resolved as shift
+WARNING: reduce/reduce conflict in state 7 resolved using rule (g_var -> empty)
+WARNING: rejected rule (var_declaration -> empty) in state 7
+WARNING: reduce/reduce conflict in state 61 resolved using rule (var2 -> empty)
+WARNING: rejected rule (var3 -> empty) in state 61
+WARNING: reduce/reduce conflict in state 92 resolved using rule (id1 -> empty)
+WARNING: rejected rule (fact1 -> empty) in state 92
+WARNING: reduce/reduce conflict in state 150 resolved using rule (id1 -> empty)
+WARNING: rejected rule (fact1 -> empty) in state 150
+WARNING: Rule (var3 -> empty) is never reduced
+WARNING: Rule (fact1 -> empty) is never reduced

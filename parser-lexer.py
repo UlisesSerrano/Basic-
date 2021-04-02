@@ -14,7 +14,6 @@ reserved = {  # reserverd tokens
     'var': 'VAR',
     'int': 'INT',
     'float': 'FLOAT',
-    'bool': 'BOOL',
     'char': 'CHAR',
     'print': 'PRINT',
     'read': 'READ',
@@ -30,20 +29,20 @@ reserved = {  # reserverd tokens
 
 tokens = [
     'CTE_I', 'CTE_F', 'CTE_STRING', 'CTE_CHAR', 'CTE_BOOLEAN', 'ID',
-    'TIMES', 'DIVIDE', 'SEMICOLON',
+    'MULT', 'DIV', 'SEMICOLON',
     'L_P', 'R_P', 'COMA',
-    'L_B', 'R_B', 'COLON',
+    'L_B', 'R_B',
     'L_SB', 'R_SB',
     'EQUAL', 'GREATERTHAN', 'LESSTHAN',
-    'GREATERTHANEQ', 'LESSTHANEQ', 'EQ'
-    'DIFERENT', 'AND', 'OR', 'NOT'
+    'GREATERTHANEQ', 'LESSTHANEQ', 'EQ',
+    'DIFERENT', 'AND', 'OR', 'NOT',
     'MINUS', 'PLUS', 'MOD',
 ] + list(reserved.values())
 
 t_MINUS = r'\-'
 t_PLUS = r'\+'
-t_TIMES = r'\*'
-t_DIVIDE = r'\/'
+t_MULT = r'\*'
+t_DIV = r'\/'
 t_MOD = r'\%'
 t_SEMICOLON = r'\;'
 t_L_P = r'\('
@@ -53,10 +52,8 @@ t_L_B = r'\{'
 t_R_B = r'\}'
 t_L_SB = r'\['
 t_R_SB = r'\['
-t_COLON = r'\:'
 t_AND = r'\&\&'
 t_OR = r'\|\|'
-t_NOT = r'\!'
 t_EQ = r'\=\='
 t_GREATERTHANEQ = r'\>\='
 t_LESSTHANEQ = r'\<\='
@@ -132,37 +129,43 @@ def p_main(p):
 
 
 def p_g_var(p):
-    'g_var : var_declaration | empty'
+    '''g_var : var_declaration 
+            | empty'''
     p[0] = p[1]
 
 
 def p_funcs(p):
-    'funcs : function funcs | empty'
+    '''funcs : function funcs
+            | empty'''
     p[0] = p[1]
 
 
 def p_var_declaration(p):
-    'var_declaration : VAR var1 | empty'
+    '''var_declaration : VAR var1
+                        | empty'''
     p[0] = p[1]
 
 
 def p_var1(p):
-    'var1 : var_type id var2 t_SEMICOLON var4'
+    'var1 : var_type id var2 SEMICOLON var4'
     p[0] = p[1]
 
 
 def p_var2(p):
-    'var2 : COMA id var3 | empty'
+    '''var2 : COMA id var3
+            | empty'''
     p[0] = p[1]
 
 
 def p_var3(p):
-    'var3 : var2 | empty'
+    '''var3 : var2
+            | empty'''
     p[0] = p[1]
 
 
 def p_var4(p):
-    'var4 : var1 | empty'
+    '''var4 : var1
+        | empty'''
     p[0] = p[1]
 
 
@@ -172,17 +175,26 @@ def p_id(p):
 
 
 def p_id1(p):
-    'id1 : L_SB expression R_SB id2 | empty'
+    '''id1 : L_SB expression R_SB id2
+        | empty'''
     p[0] = p[1]
 
 
 def p_id2(p):
-    'id2 : L_SB expression R_SB | empty'
+    '''id2 : L_SB expression R_SB
+        | empty'''
+    p[0] = p[1]
+
+
+def p_type(p):
+    '''type : INT 
+            | FLOAT 
+            | CHAR'''
     p[0] = p[1]
 
 
 def p_var_type(p):
-    'var_type :  type'
+    'var_type : type'
     p[0] = p[1]
 
 
@@ -192,37 +204,49 @@ def p_function(p):
 
 
 def p_func_type(p):
-    'func_type : VOID | type'
+    '''func_type : VOID
+                | type'''
     p[0] = p[1]
 
 
 def p_params(p):
-    'params : var_type id params1 | empty'
+    '''params : var_type id params1
+            | empty'''
     p[0] = p[1]
 
 
 def p_params1(p):
-    'params1 : COMA params | empty'
+    '''params1 : COMA params
+                | empty'''
     p[0] = p[1]
 
 
 def p_statements(p):
-    'statements : statement statements | empty'
+    '''statements : statement statements
+                | empty'''
     p[0] = p[1]
 
 
 def p_statement(p):
-    'statement : assignation | call_func | return_func | read | write | decision_statement | repetition_statement | expression'
+    '''statement : assignation
+                | call_func
+                | return_func
+                | read
+                | write
+                | decision_statement
+                | repetition_statement
+                | expression'''
     p[0] = p[1]
 
 
 def p_assignation(p):
-    'assignation : id EQUALS expression SEMICOLON'
+    'assignation : id EQUAL expression SEMICOLON'
     p[0] = p[1]
 
 
 def p_args(p):
-    'args : args1 | empty'
+    '''args : args1
+            | empty'''
     p[0] = p[1]
 
 
@@ -232,7 +256,8 @@ def p_args1(p):
 
 
 def p_args2(p):
-    'args2 : COMA args1 | empty'
+    '''args2 : COMA args1
+            | empty'''
     p[0] = p[1]
 
 
@@ -257,12 +282,13 @@ def p_read_args(p):
 
 
 def p_read_args1(p):
-    'read_args1 : COMA expression read_args1 | empty'
+    '''read_args1 : COMA expression read_args1
+                | empty'''
     p[0] = p[1]
 
 
 def p_write(p):
-    'write : WRITE L_P write_args R_P SEMICOLON'
+    'write : PRINT L_P write_args R_P SEMICOLON'
     p[0] = p[1]
 
 
@@ -272,12 +298,14 @@ def p_write_args(p):
 
 
 def p_write_args1(p):
-    'write_args1 : COMA write_args2 write_args1 | empty'
+    '''write_args1 : COMA write_args2 write_args1
+                    | empty'''
     p[0] = p[1]
 
 
 def p_write_args2(p):
-    'write_args2 : expression | CTE_STRING'
+    '''write_args2 : expression
+                | CTE_STRING'''
     p[0] = p[1]
 
 
@@ -287,17 +315,24 @@ def p_decision_statement(p):
 
 
 def p_decision_statement1(p):
-    'decision_statement1 : ELSE L_B statements R_B | empty'
+    '''decision_statement1 : ELSE L_B statements R_B
+                            | empty'''
     p[0] = p[1]
 
 
 def p_repetition_statement(p):
-    'repetition_statement : while_statement | for statement'
+    '''repetition_statement : while_statement
+                            | for_statement'''
     p[0] = p[1]
 
 
 def p_for_statement(p):
-    'for_statement : FOR id EQUALS expression TO expression do_statement'
+    'for_statement : FOR id EQUAL expression TO expression do_statement'
+    p[0] = p[1]
+
+
+def p_while_statement(p):
+    'while_statement : WHILE L_P expression R_P do_statement'
     p[0] = p[1]
 
 
@@ -322,61 +357,82 @@ def p_gexp(p):
 
 
 def p_nexp(p):
-    'nexp : mexp op4aux'
-    p[0] = p[1]
-
-
-def p_mexp(p):
-    'mexp : term op5aux'
+    'nexp : term op4aux'
     p[0] = p[1]
 
 
 def p_term(p):
-    'term : fact op6aux'
+    'term : fact op5aux'
     p[0] = p[1]
 
 
 def p_fact(p):
-    'fact : ID fact1 | L_P expression R_P | CTE'
+    '''fact : ID fact1
+            | L_P expression R_P
+            | cte'''
     p[0] = p[1]
 
 
 def p_fact1(p):
-    'fact1 : L_P args R_P | id1 | empty'
+    '''fact1 : L_P args R_P
+            | id1
+            | empty'''
+
+def p_cte(p):
+    '''cte : CTE_I
+            | CTE_F
+            | CTE_CHAR'''
 
 
 def p_op1(p):
-    'op1 : OR expression | empty'
+    '''op1 : OR expression
+            | empty'''
     p[0] = p[1]
 
 
 def p_op2(p):
-    'op2 : AND texp | empty'
+    '''op2 : AND texp
+            | empty'''
     p[0] = p[1]
 
 
 def p_op3(p):
-    'op3 : LESSTHAN | LESSTHANEQ | GREATERTHAN | GREATERTHANEQ | EQ | DIFERENT'
+    '''op3 : LESSTHAN
+            | LESSTHANEQ 
+            | GREATERTHAN
+            | GREATERTHANEQ
+            | EQ
+            | DIFERENT'''
+    p[0] = p[1]
+
+def p_op3aux(p):
+    '''op3aux : op3 gexp
+            | empty'''
     p[0] = p[1]
 
 
 def p_op4(p):
-    'SUM | MINUS'
+    '''op4 : PLUS
+            | MINUS'''
     p[0] = p[1]
 
 
 def p_op4aux(p):
-    'op4aux : op4 mexp | empty'
+    '''op4aux : op4 nexp
+            | empty'''
     p[0] = p[1]
 
 
 def p_op5(p):
-    'MULT | DIV | MOD'
+    '''op5 : MULT
+        | DIV
+        | MOD'''
     p[0] = p[1]
 
 
 def p_op5aux(p):
-    'op5aux : op5 term | empty'
+    '''op5aux : op5 term
+            | empty'''
     p[0] = p[1]
 
 
@@ -399,7 +455,7 @@ yacc.yacc()
 
 def usaArchivo():
     try:
-        archivo = 'prueba incorrecta.txt'
+        archivo = 'test.txt'
         arch = open(archivo, 'r')
         print("Filename used : " + archivo)
         info = arch.read()
