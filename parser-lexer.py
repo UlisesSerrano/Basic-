@@ -62,6 +62,7 @@ t_GREATERTHANEQ = r'\>='
 t_LESSTHANEQ = r'\<='
 t_GREATERTHAN = r'\>'
 t_LESSTHAN = r'\<'
+<<<<<<< HEAD
 t_DIFERENT = r'\!='
 t_EQUAL = r'\='
 # para ignorar caracteres:
@@ -72,6 +73,11 @@ def t_newline(t):
     r'\n+'
     t.lexer.lineno += t.value.count("\n")
 
+=======
+t_DIFERENT = r'\<>'
+#to ignore characteres:
+t_ignore = ' \t\n'
+>>>>>>> b73b759d9d78427d3b82d30d754ab9cd84dda591
 
 def t_error(t):
     print("Illegal character '%s'" % t.value[0])
@@ -125,6 +131,7 @@ def p_program(p):
     'program : PROGRAM ID SEMICOLON g_var funcs main'
     p[0] = p[1]
 
+<<<<<<< HEAD
 
 def p_main(p):
     'main : MAIN L_P params R_P var_declaration L_B statements R_B'
@@ -174,6 +181,9 @@ def p_id(p):
 def p_id(p):
     'id : ID id1'
     p[0] = p[1]
+=======
+    p[0] = 'Compiled Program'
+>>>>>>> b73b759d9d78427d3b82d30d754ab9cd84dda591
 
 
 def p_empty(p):
