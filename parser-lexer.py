@@ -54,15 +54,15 @@ t_R_B = r'\}'
 t_L_SB = r'\['
 t_R_SB = r'\['
 t_COLON = r'\:'
-t_AND = r'\&&'
+t_AND = r'\&\&'
 t_OR = r'\|\|'
 t_NOT = r'\!'
-t_EQ = r'\=='
-t_GREATERTHANEQ = r'\>='
-t_LESSTHANEQ = r'\<='
+t_EQ = r'\=\='
+t_GREATERTHANEQ = r'\>\='
+t_LESSTHANEQ = r'\<\='
 t_GREATERTHAN = r'\>'
 t_LESSTHAN = r'\<'
-t_DIFERENT = r'\!='
+t_DIFERENT = r'\!\='
 t_EQUAL = r'\='
 # para ignorar caracteres:
 t_ignore = ' \t\r\n'
@@ -147,7 +147,7 @@ def p_var_declaration(p):
 
 
 def p_var1(p):
-    'var1 : var_type id var2 SEMICOLON var4'
+    'var1 : var_type id var2 t_SEMICOLON var4'
     p[0] = p[1]
 
 
@@ -170,25 +170,24 @@ def p_id(p):
     'id : ID id1'
     p[0] = p[1]
 
-
 def p_id1(p):
-    'id1 : L_SB expression R_SB id2 | empty'
-    p[0] = p[1]
+     'id1 : L_SB expression R_SB id2 | empty'
+     p[0] = p[1]
 
 
-def p_id2(p):
-    'id2 : L_SB expression R_SB | empty'
-    p[0] = p[1]
+ def p_id2(p):
+     'id2 : L_SB expression R_SB | empty'
+     p[0] = p[1]
 
 
-def p_var_type(p):
-    'var_type :  type'
-    p[0] = p[1]
+ def p_var_type(p):
+     'var_type :  type'
+     p[0] = p[1]
 
 
-def p_function(p):
-    'function : func_type FUNC ID L_P params R_P var_declaration L_B statements R_B'
-    p[0] = p[1]
+ def p_function(p):
+     'function : func_type FUNC ID L_P params R_P var_declaration L_B statements R_B'
+     p[0] = p[1]
 
 
 def p_empty(p):
@@ -201,6 +200,102 @@ def p_empty(p):
 def p_error(p):
     print("Syntax error on the Input", p)
 
+def p_args(p):
+    'args : args1 | empty'
+    p[0] = p[1]
+
+def p_write(p):
+    'write : WRITE t_L_P write_args t_R_P t_SEMICOLON'
+    p[0] = p[1]
+
+def p_write_args(p):
+    'write_args : write_args2 write_args1'
+    p[0] = p[1]
+
+def p_write_args1(p):
+    'write_args1 : t_COMA write_args2 write_args1 | empty'
+    p[0] = p[1]
+
+def p_write_args2(p):
+    'write_args2 : expression | CTE_STRING'
+    p[0] = p[1]
+
+def p_decision_statement(p):
+    'decision_statement : IF L_P expression R_P L_B statements R_B decision_statement1'
+    p[0] = p[1]
+
+def p_decision_statement1(p):
+    'decision_statement1 : ELSE L_B statements R_B | empty'
+    p[0] = p[1]
+
+def p_repetition_statement(p):
+    'repetition_statement : while_statement | for statement'
+    p[0] = p[1]
+
+def p_for_statement(p):
+    'for_statement : FOR id EQUALS expression TO expression do_statement'
+    p[0] = p[1]
+
+def p_do_statement(p):
+    'do_statement :  DO L_B statements R_B'
+    p[0] = p[1]
+
+def p_expression(p):
+    'expression : texp op1'
+    p[0] = p[1]
+def p_texp(p):
+    'texp : gexp op2'
+    p[0] = p[1]
+
+def p_gexp(p):
+    'gexp : nexp op3aux'
+    p[0] = p[1]
+
+def p_nexp(p):
+    'nexp : mexp op4'
+    p[0] = p[1]
+
+def p_mexp(p):
+    'mexp : term op5aux'
+    p[0] = p[1]
+
+def p_term(p):
+    'term : fact op6aux'
+    p[0] = p[1]
+
+def p_fact(p):
+    'fact : ID fact1 | t_L_P expression t_R_P | CTE'
+    p[0] = p[1]
+
+def p_fact1(p):
+    'fact1 : t_L_P args t_R_P | id1 | empty'
+
+def p_op1(p):
+    'op1 : OR expression | empty'
+    p[0] = p[1]
+
+def p_op2(p):
+    'op2 : AND texp | empty'
+
+def p_op3(p):
+    'op3 : t_LESSTHAN | t_LESSTHANEQ | t_GREATERTHAN | t_GREATERTHANEQ | t_EQ | t_DIFERENT'
+    p[0] = p[1]
+
+def p_op4(p):
+    'SUM | MINUS'
+    p[0] = p[1]
+
+def p_op4aux(p):
+    'op4aux : op4 mexp | empty'
+    p[0] = p[1]
+
+def p_op5(p):
+    'MULT | DIV | MOD'
+    p[0] = p[1]
+def p_op5aux(p):
+    'op5aux : op5 term | empty'
+    p[0] = p[1]
+    
 # analizador lexico
 
 
