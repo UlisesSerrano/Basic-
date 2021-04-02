@@ -51,7 +51,7 @@ t_COLON = r'\:'
 t_GREATERTHAN = r'\>'
 t_LESSTHAN = r'\<'
 t_DIFERENT = r'\<>'
-#para ignorar caracteres:
+#to ignore characteres:
 t_ignore = ' \t\n'
 
 def t_error(t):
@@ -60,7 +60,7 @@ def t_error(t):
 
 def t_ID(t):
     r'[a-zA-Z][a-zA-Z_\d]*'
-    t.type = reservadas.get(t.value, 'ID')
+    t.type = reserved.get(t.value, 'ID')
     return t
     
 def t_CTE_I(t):
@@ -98,7 +98,7 @@ lex.lex()
 
 def p_programa(p):
 
-    p[0] = 'Programa compilado'
+    p[0] = 'Compiled Program'
 
 
 def p_empty(p):
