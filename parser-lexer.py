@@ -1,6 +1,7 @@
-import ply.lex as lex
-import ply.yacc as yacc
 import sys
+import ply as lex
+import ply.yacc as yacc
+
 import os
 
 ###############################################
@@ -29,7 +30,7 @@ reserved = {  # reserverd tokens
 
 tokens = [
     'CTE_I', 'CTE_F', 'CTE_STRING', 'CTE_CHAR', 'CTE_BOOLEAN', 'ID',
-    'MULT', 'DIV', 'SEMICOLON',
+    'MULT', 'DIV', 'SEMICOLON','COLON'
     'L_P', 'R_P', 'COMA',
     'L_B', 'R_B',
     'L_SB', 'R_SB',
@@ -44,6 +45,7 @@ t_PLUS = r'\+'
 t_MULT = r'\*'
 t_DIV = r'\/'
 t_MOD = r'\%'
+t_COLON = r'\:'
 t_SEMICOLON = r'\;'
 t_L_P = r'\('
 t_R_P = r'\)'
@@ -51,7 +53,7 @@ t_COMA = r'\,'
 t_L_B = r'\{'
 t_R_B = r'\}'
 t_L_SB = r'\['
-t_R_SB = r'\['
+t_R_SB = r'\]'
 t_AND = r'\&\&'
 t_OR = r'\|\|'
 t_EQ = r'\=\='
@@ -61,6 +63,7 @@ t_GREATERTHAN = r'\>'
 t_LESSTHAN = r'\<'
 t_DIFERENT = r'\!\='
 t_EQUAL = r'\='
+t_BITWISE = r'\&'
 # para ignorar caracteres:
 t_ignore = ' \t\r\n'
 
@@ -119,12 +122,36 @@ lexer = lex.lex()
 
 
 def p_program(p):
-    '''program : PROGRAM ID SEMICOLON g_var funcs main'''
+    '''program : PROGRAM ID COLON main
+                | PROGRAM ID COLON vars main
+                | PROGRAM ID COLON vars funcs main
+                | PROGRAM ID COLON funcs main '''
 
 
 
 def p_main(p):
     '''main : MAIN L_P params R_P var_declaration L_B statements R_B'''
+
+
+
+
+
+def p_vars(p):
+  '''
+  vars : VAR SEMICOLON
+        | VAR vars1 SEMICOLON
+  '''
+def p_vars1(p):
+  '''
+  vars1 : type COLON var_declaration
+        | type COLON var_declaration BITWISE vars1
+  '''
+
+
+def p_type(p):
+    '''type : INT 
+            | FLOAT 
+            | CHAR'''
 
 
 def p_g_var(p):
@@ -137,15 +164,22 @@ def p_funcs(p):
 
 
 def p_var_declaration(p):
-    '''var_declaration : VAR var1
-                        | empty'''
+    '''var_declaration : var_declaration1 COMA var_declaration
+                        | var_declaration1 '''
+
+def p_var_declaration1(p):
+  '''
+  var_declaration1 : ID
+                    | ID L_SB CTE_I R_SB
+                    | ID L_SB CTE_I R_SB L_SB CTE_I R_SB
+  ''' 
 
 def p_var1(p):
-    '''var1 : var_type id var2 SEMICOLON var4'''
+    '''var1 : var_type ID var2 SEMICOLON var4'''
 
 
 def p_var2(p):
-    '''var2 : COMA id var3
+    '''var2 : COMA ID var3
             | empty'''
 
 
@@ -173,10 +207,7 @@ def p_id2(p):
         | empty'''
 
 
-def p_type(p):
-    '''type : INT 
-            | FLOAT 
-            | CHAR'''
+
 
 
 def p_var_type(p):
@@ -219,7 +250,7 @@ def p_statement(p):
 
 
 def p_assignation(p):
-    '''assignation : id EQUAL expression SEMICOLON'''
+    '''assignation : ID EQUAL expression SEMICOLON'''
 
 
 def p_args(p):
@@ -290,7 +321,7 @@ def p_repetition_statement(p):
 
 
 def p_for_statement(p):
-    '''for_statement : FOR id EQUAL expression TO expression do_statement'''
+    '''for_statement : FOR ID EQUAL expression TO expression do_statement'''
 
 
 def p_while_statement(p):
