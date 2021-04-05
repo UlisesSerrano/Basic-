@@ -1,5 +1,5 @@
 import sys
-import ply as lex
+import ply.lex as lex
 import ply.yacc as yacc
 
 import os
@@ -30,13 +30,13 @@ reserved = {  # reserverd tokens
 
 tokens = [
     'CTE_I', 'CTE_F', 'CTE_STRING', 'CTE_CHAR', 'CTE_BOOLEAN', 'ID',
-    'MULT', 'DIV', 'SEMICOLON','COLON'
-    'L_P', 'R_P', 'COMA','BITWISE'
+    'MULT', 'DIV', 'SEMICOLON',
+    'L_P', 'R_P', 'COMA',
     'L_B', 'R_B',
     'L_SB', 'R_SB',
     'EQUAL', 'GREATERTHAN', 'LESSTHAN',
     'GREATERTHANEQ', 'LESSTHANEQ', 'EQ',
-    'DIFERENT', 'AND', 'OR', 'NOT',
+    'DIFERENT', 'AND', 'OR',
     'MINUS', 'PLUS', 'MOD'
 ] + list(reserved.values())
 
@@ -45,7 +45,6 @@ t_PLUS = r'\+'
 t_MULT = r'\*'
 t_DIV = r'\/'
 t_MOD = r'\%'
-t_COLON = r'\:'
 t_SEMICOLON = r'\;'
 t_L_P = r'\('
 t_R_P = r'\)'
@@ -63,7 +62,6 @@ t_GREATERTHAN = r'\>'
 t_LESSTHAN = r'\<'
 t_DIFERENT = r'\!\='
 t_EQUAL = r'\='
-t_BITWISE = r'\&'
 # para ignorar caracteres:
 t_ignore = ' \t\r\n'
 
@@ -85,19 +83,19 @@ def t_ID(t):
 
 
 def t_CTE_F(t):
-    r'[-+]?\d*\.\d+'
+    r'\d*\.\d+'
     t.value = float(t.value)
     return t
 
 
 def t_CTE_I(t):
-    r'0|[-+]?[1-9][0-9]*'
+    r'\d+'
     t.value = int(t.value)
     return t
 
-
 def t_CTE_STRING(t):
-    r'\'[\w\d\s\,. ]*\'|\"[\w\d\s\,. ]*\"'
+    r'"([^"\n]|(\\"))*"$'
+    print ("String: '%s'" % t.value)
     return t
 
 
@@ -107,27 +105,17 @@ def t_CTE_CHAR(t):
     return t
 
 
-def t_CTE_BOOLEAN(t):
-    r'(TRUE|FALSE)'
-    if t.value == 'TRUE':
-        t.value = True
-    else:
-        t.value = False
-    return t
-
-
 # el lexer
 # Un ejemplo para aplicar las reglas de : Programa Id DOS PUNTOS REGLA END.....
 lexer = lex.lex()
 
 
 def p_program(p):
-'''program : PROGRAM ID SEMICOLON g_var funcs main'''
+    '''program : PROGRAM ID SEMICOLON g_var funcs main'''
 
 
 def p_main(p):
     '''main : MAIN L_P params R_P var_declaration L_B statements R_B'''
-
 
 
 def p_type(p):
@@ -137,8 +125,8 @@ def p_type(p):
 
 
 def p_g_var(p):
-    '''g_var : var_declaration 
-            | empty'''
+    '''g_var : var_declaration'''
+
 
 def p_funcs(p):
     '''funcs : function funcs
@@ -146,36 +134,47 @@ def p_funcs(p):
 
 
 def p_var_declaration(p):
-    '''var_declaration : var_declaration1 COMA var_declaration
+    '''var_declaration : VAR var1
                         | empty'''
 
 
 def p_var1(p):
-    '''var1 : var_type id var2 SEMICOLON var4'''
+    '''var1 : var_type dec_id var2 SEMICOLON var4'''
 
 
 def p_var2(p):
-    '''var2 : COMA id var3
+    '''var2 : COMA dec_id var3
             | empty'''
 
 
 def p_var3(p):
-    '''var3 : var2
-            | empty'''
+    '''var3 : var2'''
 
 
 def p_var4(p):
     '''var4 : var1
+            | empty'''
+
+def p_dec_id(p):
+    '''dec_id : ID dec_id1'''
+
+
+def p_dec_id1(p):
+    '''dec_id1 : L_SB CTE_I R_SB dec_id2
+            | empty'''
+
+
+def p_dec_id2(p):
+    '''dec_id2 : L_SB CTE_I R_SB
         | empty'''
 
-
 def p_id(p):
-    'id : ID id1'
+    '''id : ID id1'''
 
 
 def p_id1(p):
     '''id1 : L_SB expression R_SB id2
-        | empty'''
+            | empty'''
 
 
 def p_id2(p):
@@ -183,15 +182,12 @@ def p_id2(p):
         | empty'''
 
 
-
-
-
 def p_var_type(p):
     '''var_type : type'''
 
 
 def p_function(p):
-    '''function : func_type FUNC ID L_P params R_P var_declaration L_B statements R_B'''
+    '''function : FUNC func_type ID L_P params R_P var_declaration L_B statements R_B'''
 
 
 def p_func_type(p):
@@ -320,28 +316,24 @@ def p_gexp(p):
     '''gexp : nexp op3aux'''
 
 
-
 def p_nexp(p):
     '''nexp : term op4aux'''
-    
 
 
 def p_term(p):
-   '''term : fact op5aux'''
-    
+    '''term : fact op5aux'''
 
 
 def p_fact(p):
     '''fact : ID fact1
             | L_P expression R_P
             | cte'''
-    
 
 
 def p_fact1(p):
     '''fact1 : L_P args R_P
-            | id1
-            | empty'''
+            | id1'''
+
 
 def p_cte(p):
     '''cte : CTE_I
@@ -352,13 +344,11 @@ def p_cte(p):
 def p_op1(p):
     '''op1 : OR expression
             | empty'''
-    
 
 
 def p_op2(p):
     '''op2 : AND texp
             | empty'''
-   
 
 
 def p_op3(p):
@@ -368,37 +358,32 @@ def p_op3(p):
             | GREATERTHANEQ
             | EQ
             | DIFERENT'''
-    
+
 
 def p_op3aux(p):
     '''op3aux : op3 gexp
             | empty'''
-    
 
 
 def p_op4(p):
     '''op4 : PLUS
             | MINUS'''
-    
 
 
 def p_op4aux(p):
     '''op4aux : op4 nexp
             | empty'''
-   
 
 
 def p_op5(p):
     '''op5 : MULT
         | DIV
         | MOD'''
-    
 
 
 def p_op5aux(p):
     '''op5aux : op5 term
             | empty'''
-    
 
 
 def p_empty(p):
