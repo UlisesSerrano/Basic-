@@ -1,9 +1,5 @@
 Created by PLY version 3.11 (http://www.dabeaz.com/ply)
 
-Unused terminals:
-
-    CTE_BOOLEAN
-
 Grammar
 
 Rule 0     S' -> program
@@ -100,7 +96,7 @@ Rule 90    op3 -> GREATERTHAN
 Rule 91    op3 -> GREATERTHANEQ
 Rule 92    op3 -> EQ
 Rule 93    op3 -> DIFERENT
-Rule 94    op3aux -> op3 gexp
+Rule 94    op3aux -> op3 nexp
 Rule 95    op3aux -> empty
 Rule 96    op4 -> PLUS
 Rule 97    op4 -> MINUS
@@ -118,7 +114,6 @@ Terminals, with rules where they appear
 AND                  : 86
 CHAR                 : 5
 COMA                 : 12 33 49 55 59
-CTE_BOOLEAN          : 
 CTE_CHAR             : 83
 CTE_F                : 82
 CTE_I                : 18 20 81
@@ -185,12 +180,12 @@ func_type            : 28
 funcs                : 1 7
 function             : 7
 g_var                : 1
-gexp                 : 72 94
+gexp                 : 72
 id                   : 31 45 68
 id1                  : 22 80
 id2                  : 23
 main                 : 1
-nexp                 : 73 98
+nexp                 : 73 94 98
 op1                  : 71
 op2                  : 72
 op3                  : 94
@@ -1054,7 +1049,7 @@ state 67
 state 68
 
     (73) gexp -> nexp . op3aux
-    (94) op3aux -> . op3 gexp
+    (94) op3aux -> . op3 nexp
     (95) op3aux -> . empty
     (88) op3 -> . LESSTHAN
     (89) op3 -> . LESSTHANEQ
@@ -2011,8 +2006,7 @@ state 107
 
 state 108
 
-    (94) op3aux -> op3 . gexp
-    (73) gexp -> . nexp op3aux
+    (94) op3aux -> op3 . nexp
     (74) nexp -> . term op4aux
     (75) term -> . fact op5aux
     (76) fact -> . ID fact1
@@ -2028,8 +2022,7 @@ state 108
     CTE_F           shift and go to state 75
     CTE_CHAR        shift and go to state 76
 
-    gexp                           shift and go to state 149
-    nexp                           shift and go to state 68
+    nexp                           shift and go to state 149
     term                           shift and go to state 69
     fact                           shift and go to state 70
     cte                            shift and go to state 73
@@ -2984,28 +2977,28 @@ state 148
 
 state 149
 
-    (94) op3aux -> op3 gexp .
+    (94) op3aux -> op3 nexp .
 
-    AND             reduce using rule 94 (op3aux -> op3 gexp .)
-    OR              reduce using rule 94 (op3aux -> op3 gexp .)
-    R_SB            reduce using rule 94 (op3aux -> op3 gexp .)
-    ID              reduce using rule 94 (op3aux -> op3 gexp .)
-    RETURN          reduce using rule 94 (op3aux -> op3 gexp .)
-    READ            reduce using rule 94 (op3aux -> op3 gexp .)
-    PRINT           reduce using rule 94 (op3aux -> op3 gexp .)
-    IF              reduce using rule 94 (op3aux -> op3 gexp .)
-    WHILE           reduce using rule 94 (op3aux -> op3 gexp .)
-    FOR             reduce using rule 94 (op3aux -> op3 gexp .)
-    L_P             reduce using rule 94 (op3aux -> op3 gexp .)
-    CTE_I           reduce using rule 94 (op3aux -> op3 gexp .)
-    CTE_F           reduce using rule 94 (op3aux -> op3 gexp .)
-    CTE_CHAR        reduce using rule 94 (op3aux -> op3 gexp .)
-    R_B             reduce using rule 94 (op3aux -> op3 gexp .)
-    R_P             reduce using rule 94 (op3aux -> op3 gexp .)
-    COMA            reduce using rule 94 (op3aux -> op3 gexp .)
-    SEMICOLON       reduce using rule 94 (op3aux -> op3 gexp .)
-    TO              reduce using rule 94 (op3aux -> op3 gexp .)
-    DO              reduce using rule 94 (op3aux -> op3 gexp .)
+    AND             reduce using rule 94 (op3aux -> op3 nexp .)
+    OR              reduce using rule 94 (op3aux -> op3 nexp .)
+    R_SB            reduce using rule 94 (op3aux -> op3 nexp .)
+    ID              reduce using rule 94 (op3aux -> op3 nexp .)
+    RETURN          reduce using rule 94 (op3aux -> op3 nexp .)
+    READ            reduce using rule 94 (op3aux -> op3 nexp .)
+    PRINT           reduce using rule 94 (op3aux -> op3 nexp .)
+    IF              reduce using rule 94 (op3aux -> op3 nexp .)
+    WHILE           reduce using rule 94 (op3aux -> op3 nexp .)
+    FOR             reduce using rule 94 (op3aux -> op3 nexp .)
+    L_P             reduce using rule 94 (op3aux -> op3 nexp .)
+    CTE_I           reduce using rule 94 (op3aux -> op3 nexp .)
+    CTE_F           reduce using rule 94 (op3aux -> op3 nexp .)
+    CTE_CHAR        reduce using rule 94 (op3aux -> op3 nexp .)
+    R_B             reduce using rule 94 (op3aux -> op3 nexp .)
+    R_P             reduce using rule 94 (op3aux -> op3 nexp .)
+    COMA            reduce using rule 94 (op3aux -> op3 nexp .)
+    SEMICOLON       reduce using rule 94 (op3aux -> op3 nexp .)
+    TO              reduce using rule 94 (op3aux -> op3 nexp .)
+    DO              reduce using rule 94 (op3aux -> op3 nexp .)
 
 
 state 150

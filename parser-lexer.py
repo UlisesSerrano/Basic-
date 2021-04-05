@@ -29,7 +29,7 @@ reserved = {  # reserverd tokens
 }
 
 tokens = [
-    'CTE_I', 'CTE_F', 'CTE_STRING', 'CTE_CHAR', 'CTE_BOOLEAN', 'ID',
+    'CTE_I', 'CTE_F', 'CTE_STRING', 'CTE_CHAR', 'ID',
     'MULT', 'DIV', 'SEMICOLON',
     'L_P', 'R_P', 'COMA',
     'L_B', 'R_B',
@@ -361,7 +361,7 @@ def p_op3(p):
 
 
 def p_op3aux(p):
-    '''op3aux : op3 gexp
+    '''op3aux : op3 nexp
             | empty'''
 
 
