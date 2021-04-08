@@ -125,7 +125,8 @@ def p_type(p):
 
 
 def p_g_var(p):
-    '''g_var : var_declaration'''
+    '''g_var : var_declaration
+            | empty'''
 
 
 def p_funcs(p):
@@ -313,11 +314,11 @@ def p_texp(p):
 
 
 def p_gexp(p):
-    '''gexp : nexp op3aux'''
+    '''gexp : mexp op3aux'''
 
 
-def p_nexp(p):
-    '''nexp : term op4aux'''
+def p_mexp(p):
+    '''mexp : term op4aux'''
 
 
 def p_term(p):
@@ -361,7 +362,7 @@ def p_op3(p):
 
 
 def p_op3aux(p):
-    '''op3aux : op3 nexp
+    '''op3aux : op3 mexp
             | empty'''
 
 
@@ -371,7 +372,7 @@ def p_op4(p):
 
 
 def p_op4aux(p):
-    '''op4aux : op4 nexp
+    '''op4aux : op4 mexp
             | empty'''
 
 
