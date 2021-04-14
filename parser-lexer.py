@@ -143,6 +143,7 @@ def p_var1(p):
     '''var1 : var_type dec_id var2 SEMICOLON var4'''
 
 
+
 def p_var2(p):
     '''var2 : COMA dec_id var3
             | empty'''
@@ -189,7 +190,6 @@ def p_var_type(p):
 
 def p_function(p):
     '''function : FUNC func_type ID L_P params R_P var_declaration L_B statements R_B'''
-
 
 def p_func_type(p):
     '''func_type : VOID
@@ -417,7 +417,6 @@ def usaArchivo():
             tok = lexer.token()
             if not tok:
                 break
-            print(tok)
         if (yacc.parse(info, tracking=True) == 'Compiled Program'):
             print("No syntax errors")
         else:

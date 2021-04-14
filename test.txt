@@ -38,7 +38,7 @@ main ( )
         }
     while ( i >= 0) do
         {  
-            write ("resultado" , Arreglo [ i ] , fact ( i +2) * valor) ;
+            write (Arreglo [ i ] , fact ( i +2) * valor) ;
             i = i - 1;
         }
 }
