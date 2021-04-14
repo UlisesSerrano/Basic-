@@ -93,9 +93,10 @@ def t_CTE_I(t):
     t.value = int(t.value)
     return t
 
+
 def t_CTE_STRING(t):
     r'"([^"\n]|(\\"))*"$'
-    print ("String: '%s'" % t.value)
+    print("String: '%s'" % t.value)
     return t
 
 
@@ -109,24 +110,53 @@ def t_CTE_CHAR(t):
 # Un ejemplo para aplicar las reglas de : Programa Id DOS PUNTOS REGLA END.....
 lexer = lex.lex()
 
+current_type = ''
+current_func = ''
+current_id = ''
+global_var_table = {}
+local_var_table = {}
+dir_func = {}
+context = 'global'
+param_types = []
+variable_counter = {'int': 0, 'float': 0, 'char': 0}
+
 
 def p_program(p):
     '''program : PROGRAM ID SEMICOLON g_var funcs main'''
+    global dir_func
+    print(dir_func)
 
 
 def p_main(p):
     '''main : MAIN L_P params R_P var_declaration L_B statements R_B'''
+    global local_var_table, param_types, variable_counter
+    current_func = 'main'
+    if current_func not in dir_func:
+        dir_func[current_func] = (
+            current_func, 'void', param_types, variable_counter)
+    else:
+        print('ERROR: Función declarada', current_func)
+
+    print(local_var_table)
+    local_var_table = {}
+    param_types = []
+    variable_counter = {'int': 0, 'float': 0, 'char': 0}
 
 
 def p_type(p):
-    '''type : INT 
-            | FLOAT 
+    '''type : INT
+            | FLOAT
             | CHAR'''
+    global current_type
+    current_type = p[1]
 
 
 def p_g_var(p):
-    '''g_var : var_declaration
-            | empty'''
+    '''g_var : var_declaration'''
+    global context, global_var_table, variable_counter
+    context = 'local'
+    variable_counter = {'int': 0, 'float': 0, 'char': 0}
+    print(global_var_table)
 
 
 def p_funcs(p):
@@ -143,7 +173,6 @@ def p_var1(p):
     '''var1 : var_type dec_id var2 SEMICOLON var4'''
 
 
-
 def p_var2(p):
     '''var2 : COMA dec_id var3
             | empty'''
@@ -157,8 +186,25 @@ def p_var4(p):
     '''var4 : var1
             | empty'''
 
+
 def p_dec_id(p):
     '''dec_id : ID dec_id1'''
+    global current_id, current_type, current_func, global_var_table, local_var_table, variable_counter
+    current_id = p[1]
+    if context == 'global':
+        if current_id not in global_var_table:
+            global_var_table[current_id] = (
+                current_id, current_type, 'address', ())
+            variable_counter[current_type] += 1
+        else:
+            print('ERROR: Variable declarada', current_id)
+    else:
+        if current_id not in local_var_table:
+            local_var_table[current_id] = (
+                current_id, current_type, 'address', ())
+            variable_counter[current_type] += 1
+        else:
+            print('ERROR: Variable declarada', current_id)
 
 
 def p_dec_id1(p):
@@ -169,6 +215,7 @@ def p_dec_id1(p):
 def p_dec_id2(p):
     '''dec_id2 : L_SB CTE_I R_SB
         | empty'''
+
 
 def p_id(p):
     '''id : ID id1'''
@@ -189,16 +236,44 @@ def p_var_type(p):
 
 
 def p_function(p):
-    '''function : FUNC func_type ID L_P params R_P var_declaration L_B statements R_B'''
+    '''function : FUNC func_type ID register_func L_P params R_P var_declaration L_B statements R_B'''
+    global current_func, param_types, variable_counter, local_var_table
+    dir_func[current_func]['param_types'] = param_types
+    dir_func[current_func]['variable_counter'] = variable_counter
+    print(local_var_table)
+    local_var_table = {}
+    param_types = []
+    variable_counter = {'int': 0, 'float': 0, 'char': 0}
+
+ 
+def p_register_func(p):
+    'register_func : '
+    global current_func, current_type
+    current_func = p[-1]
+    if current_func not in dir_func:
+        dir_func[current_func] = {'name': current_func, 'type': current_type }
+    else:
+        print('ERROR: Función declarada', current_func)
+
 
 def p_func_type(p):
     '''func_type : VOID
                 | type'''
+    global current_type
+    if p[1] != None:
+        current_type = p[1]
 
 
 def p_params(p):
-    '''params : var_type id params1
+    '''params : var_type param_type dec_id params1
             | empty'''
+
+
+def p_param_type(p):
+    'param_type : '
+    global param_types, current_type
+    if current_type in ['int', 'float', 'char']:
+        param_types.append(current_type)
 
 
 def p_params1(p):
@@ -417,10 +492,7 @@ def usaArchivo():
             tok = lexer.token()
             if not tok:
                 break
-        if (yacc.parse(info, tracking=True) == 'Compiled Program'):
-            print("No syntax errors")
-        else:
-            print("Syntax Error")
+        yacc.parse(info, tracking=True)
     except EOFError:
         print(EOFError)
 

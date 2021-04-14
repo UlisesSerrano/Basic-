@@ -5,7 +5,7 @@ var
     float valor;
     int Matriz[3][8];
 
-func int fact (int j)
+func int fact (int j, char w)
 var int i;
 { 
     i = j + (p - j*2+j) ;
