@@ -20,7 +20,6 @@ semantic_cube['int']['+']['float'] = 'float'
 semantic_cube['int']['-']['float'] = 'float'
 semantic_cube['int']['*']['float'] = 'float'
 semantic_cube['int']['/']['float'] = 'float'
-semantic_cube['int']['=']['float'] = 'float'
 semantic_cube['int']['%']['float'] = 'float'
 
 semantic_cube['int']['>']['float'] = 'int'
@@ -62,7 +61,7 @@ semantic_cube['char']['=']['char'] = 'char'
 semantic_cube['char']['==']['char'] = 'int'
 semantic_cube['char']['!=']['char'] = 'int'
 
-emantic_cube['int']['&&']['int'] = 'int'
-semantic_cube['int']['|&']['int'] = 'int' 
+semantic_cube['int']['&&']['int'] = 'int'
+semantic_cube['int']['||']['int'] = 'int' 
 
 
