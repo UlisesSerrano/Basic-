@@ -2,6 +2,7 @@ import sys
 import ply.lex as lex
 import ply.yacc as yacc
 from stack import Stack
+from semantic_cube import semantic_cube
 
 import os
 
@@ -130,6 +131,7 @@ elements_stack = Stack()
 jumps_stack = Stack()
 
 quadruples = []
+quad_counter = 0
 
 # Variable counter
 counter = {
@@ -179,6 +181,32 @@ address = {
     }
 }
 
+def generate_quadruple():   
+    global quadruples, quad_counter, address, counter, elements_stack, types_stack, operators_stack
+    right_op = elements_stack.pop()
+    right_type = types_stack.pop()
+    left_op = elements_stack.pop()
+    left_type = types_stack.pop()
+    op = operators_stack.pop()
+    result_type = semantic_cube[left_type][op][right_type]
+        
+    if result_type != None:
+        result = 0
+        result = address['temp'][result_type] + counter['temp'][result_type]
+        counter['temp'][result_type] += 1 
+        
+        print("op:", op)
+        print("leftOp:", left_op)
+        print("rightOp:", right_op)
+        print("result:", result)
+        quadruples.append((op,left_op,right_op,result))
+        quad_counter += 1;
+        
+        elements_stack.push(result)
+        types_stack.push(result_type)
+
+    else:
+        print("ERROR: Type mismatch")
 
 def p_program(p):
     '''program : PROGRAM ID SEMICOLON g_var funcs main'''
@@ -280,6 +308,8 @@ def p_dec_id2(p):
 
 def p_id(p):
     '''id : ID id1'''
+    global current_id
+    current_id = p[0]
 
 
 def p_id1(p):
@@ -379,6 +409,8 @@ def p_args2(p):
 def p_call_func(p):
     '''call_func :  ID L_P args R_P SEMICOLON'''
 
+def p_call_func_exp(p):
+    '''call_func_exp :  ID L_P args R_P'''
 
 def p_return_func(p):
     '''return_func : RETURN L_P expression R_P SEMICOLON'''
@@ -462,14 +494,11 @@ def p_term(p):
 
 
 def p_fact(p):
-    '''fact : ID  fact1
+    '''fact : id
+            | call_func_exp
             | L_P expression R_P
             | cte'''
-
-
-def p_fact1(p):
-    '''fact1 : L_P args R_P
-            | id1'''
+    print(current_id, current_func)
 
 
 def p_cte(p):
