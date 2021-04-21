@@ -150,7 +150,7 @@ counter = {
         "float": 0,
         "char": 0
     },
-    "const": {
+    "constant": {
         "int": 0,
         "float": 0,
         "char": 0
@@ -174,7 +174,7 @@ address = {
         "float": 21000,
         "char": 24000
     },
-    "const": {
+    "constant": {
         "int": 27000,
         "float": 30000,
         "char": 33000
@@ -212,8 +212,9 @@ def generate_quadruple():
 
 def p_program(p):
     '''program : PROGRAM ID SEMICOLON g_var funcs main'''
-    global dir_func
+    global dir_func, quadruples
     print(dir_func)
+    print(quadruples)
 
 
 def p_main(p):
@@ -392,9 +393,19 @@ def p_statement(p):
 
 def p_assignation(p):
     '''assignation : id id_quad EQUAL expression SEMICOLON'''
-    global operators_stack
-    operators_stack.push('=')
-    generate_quadruple()
+    global quadruples, quad_counter, address, counter, elements_stack, types_stack, operators_stack
+    right_op = elements_stack.pop()
+    right_type = types_stack.pop()
+    left_op = elements_stack.pop()
+    left_type = types_stack.pop()
+    result_type = semantic_cube[left_type]['='][right_type]
+
+    if result_type != None:
+        quadruples.append(('=', right_op, None, left_op))
+        quad_counter += 1
+
+    else:
+        print("ERROR: Type mismatch")
 
 
 def p_args(p):
@@ -499,32 +510,95 @@ def p_mexp(p):
 def p_term(p):
     '''term : fact generate_quad op5aux'''
 
-def p_generate_quad(p): 
+
+def p_generate_quad(p):
     '''generate_quad : '''
-    generate_quadruple()
+    global operators_stack
+    if not operators_stack.isEmpty() and operators_stack.peek() != '(':
+        generate_quadruple()
 
 
 def p_fact(p):
     '''fact : id id_quad
             | call_func_exp
-            | L_P expression R_P
+            | L_P add_fake expression R_P remove_fake
             | cte'''
-    global current_id, current_func
 
+def p_add_fake(p):
+    global operators_stack
+    operators_stack.push('(')
+
+def p_add_fake(p):
+    global operators_stack
+    operators_stack.pop
 
 def p_id_quad(p):
     '''
         id_quad :
     '''
-    global elements_stack, types_stack
-    elements_stack.push(current_id)
-    types_stack.push(current_type)
+    global elements_stack, types_stack, local_var_table, global_var_table
+    element = None
+    if current_id in local_var_table:
+        element = local_var_table[current_id][2]
+    elif current_id in global_var_table:
+        element = global_var_table[current_id][2]
+
+    if element != None:
+        elements_stack.push(element)
+        types_stack.push(current_type)
+    else:
+        print('ERROR: Undeclared variable')
 
 
 def p_cte(p):
-    '''cte : CTE_I
-            | CTE_F
-            | CTE_CHAR'''
+    '''cte : CTE_F add_cte_float
+            | CTE_I add_cte_int
+            | CTE_CHAR add_cte_char'''
+
+
+def p_add_cte_int(p):
+    '''add_cte_int : '''
+    global elements_stack, types_stack, constant_var_table, address, counter
+    cte = p[-1]
+    if cte not in constant_var_table:
+        constant_var_table[cte] = (
+            cte, 'int', address['constant']['int'] + counter['constant']['int'])
+        counter['constant']['int'] += 1
+
+    element = constant_var_table[cte][2]
+
+    elements_stack.push(element)
+    types_stack.push('int')
+
+
+def p_add_cte_float(p):
+    '''add_cte_float : '''
+    global elements_stack, types_stack, constant_var_table, address, counter
+    cte = p[-1]
+    if cte not in constant_var_table:
+        constant_var_table[current_id] = (
+            cte, 'float', address['constant']['float'] + counter['constant']['float'])
+        counter['constant']['float'] += 1
+
+    element = constant_var_table[cte][2]
+
+    elements_stack.push(element)
+    types_stack.push('float')
+
+
+def p_add_cte_char(p):
+    '''add_cte_char : '''
+    global elements_stack, types_stack, constant_var_table, address, counter
+    cte = p[-1]
+    if cte not in constant_var_table:
+        constant_var_table[current_id] = (
+            cte, 'char', address['constant']['char'] + counter['constant']['char'])
+        counter['constant']['char'] += 1
+
+    element = constant_var_table[cte][2]
+
+    elements_stack.push(element)
+    types_stack.push('char')
 
 
 def p_op1(p):

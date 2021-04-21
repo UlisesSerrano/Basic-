@@ -8,7 +8,7 @@ var
 func int fact (int j, char w)
 var int i;
 { 
-    i = j + (p - j+j) ;
+    i = j + 10;
 }
 
 main ( )
