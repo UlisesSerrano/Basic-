@@ -117,6 +117,7 @@ current_id = ''
 
 global_var_table = {}
 local_var_table = {}
+constant_var_table = {}
 dir_func = {}
 context = 'global'
 
@@ -126,8 +127,58 @@ variable_counter = {'int': 0, 'float': 0, 'char': 0}
 types_stack = Stack()
 operators_stack = Stack()
 elements_stack = Stack()
+jumps_stack = Stack()
 
 quadruples = []
+
+# Variable counter
+counter = {
+    "global": {
+        "int": 0,
+        "float": 0,
+        "char": 0
+    },
+    "local": {
+        "int": 0,
+        "float": 0,
+        "char": 0
+    },
+    "temp": {
+        "int": 0,
+        "float": 0,
+        "char": 0
+    },
+    "const": {
+        "int": 0,
+        "float": 0,
+        "char": 0
+    }
+}
+
+# Base address
+address = {
+    "global": {
+        "int": 1000,
+        "float": 4000,
+        "char": 7000
+    },
+    "local": {
+        "int": 10000,
+        "float": 13000,
+        "char": 16000
+    },
+    "temp": {
+        "int": 19000,
+        "float": 21000,
+        "char": 24000
+    },
+    "const": {
+        "int": 27000,
+        "float": 30000,
+        "char": 33000
+    }
+}
+
 
 def p_program(p):
     '''program : PROGRAM ID SEMICOLON g_var funcs main'''
@@ -197,20 +248,22 @@ def p_var4(p):
 
 def p_dec_id(p):
     '''dec_id : ID dec_id1'''
-    global current_id, current_type, current_func, global_var_table, local_var_table, variable_counter
+    global current_id, current_type, current_func, global_var_table, local_var_table, variable_counter, address, counter
     current_id = p[1]
     if context == 'global':
         if current_id not in global_var_table:
             global_var_table[current_id] = (
-                current_id, current_type, 'address', ())
+                current_id, current_type, address['global'][current_type] + counter['global'][current_type], ())
             variable_counter[current_type] += 1
+            counter['global'][current_type] += 1
         else:
             print('ERROR: Variable declarada', current_id)
     else:
         if current_id not in local_var_table:
             local_var_table[current_id] = (
-                current_id, current_type, 'address', ())
+                current_id, current_type, address['local'][current_type] + counter['local'][current_type], ())
             variable_counter[current_type] += 1
+            counter['local'][current_type] += 1
         else:
             print('ERROR: Variable declarada', current_id)
 
@@ -253,13 +306,13 @@ def p_function(p):
     param_types = []
     variable_counter = {'int': 0, 'float': 0, 'char': 0}
 
- 
+
 def p_register_func(p):
     'register_func : '
     global current_func, current_type
     current_func = p[-1]
     if current_func not in dir_func:
-        dir_func[current_func] = {'name': current_func, 'type': current_type }
+        dir_func[current_func] = {'name': current_func, 'type': current_type}
     else:
         print('ERROR: Función declarada', current_func)
 
@@ -409,7 +462,7 @@ def p_term(p):
 
 
 def p_fact(p):
-    '''fact : ID fact1
+    '''fact : ID  fact1
             | L_P expression R_P
             | cte'''
 
