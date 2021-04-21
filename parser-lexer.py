@@ -1,6 +1,7 @@
 import sys
 import ply.lex as lex
 import ply.yacc as yacc
+from stack import Stack
 
 import os
 
@@ -113,13 +114,20 @@ lexer = lex.lex()
 current_type = ''
 current_func = ''
 current_id = ''
+
 global_var_table = {}
 local_var_table = {}
 dir_func = {}
 context = 'global'
+
 param_types = []
 variable_counter = {'int': 0, 'float': 0, 'char': 0}
 
+types_stack = Stack()
+operators_stack = Stack()
+elements_stack = Stack()
+
+quadruples = []
 
 def p_program(p):
     '''program : PROGRAM ID SEMICOLON g_var funcs main'''
