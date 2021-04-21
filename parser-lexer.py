@@ -432,26 +432,20 @@ def p_call_func_exp(p):
 
 def p_return_func(p):
     '''return_func : RETURN L_P expression R_P SEMICOLON'''
-    global quadruples, quad_counter, elements_stack,
+    global quadruples, quad_counter, elements_stack
     element = elements_stack.pop()
         
-    if result_type != None:
-        quadruples.append(('return',None,None,element))
-        quad_counter += 1;
-    else:
-        print("ERROR: Type mismatch")
+    quadruples.append(('return',None,None,element))
+    quad_counter += 1;
 
 
 def p_read(p):
     '''read : READ L_P read_args R_P SEMICOLON'''
-    global quadruples, quad_counter, elements_stack,
+    global quadruples, quad_counter, elements_stack
     element = elements_stack.pop()
         
-    if result_type != None:
-        quadruples.append(('read',None,None,element))
-        quad_counter += 1;
-    else:
-        print("ERROR: Type mismatch")
+    quadruples.append(('read',None,None,element))
+    quad_counter += 1;
 
 
 def p_read_args(p):
@@ -465,14 +459,11 @@ def p_read_args1(p):
 
 def p_write(p):
     '''write : PRINT L_P write_args R_P SEMICOLON'''
-    global quadruples, quad_counter, elements_stack,
+    global quadruples, quad_counter, elements_stack
     element = elements_stack.pop()
         
-    if result_type != None:
-        quadruples.append(('print',None,None,element))
-        quad_counter += 1;
-    else:
-        print("ERROR: Type mismatch")
+    quadruples.append(('print',None,None,element))
+    quad_counter += 1;
    
 
 
