@@ -1,0 +1,17 @@
+program Ejemplo;
+var
+    int i, j, p;
+    int Arreglo[10];
+    float valor;
+    int Matriz[3][8];
+
+func int fact (int j, char w)
+var int i;
+{ 
+    i = j + (p - j+j) ;
+}
+
+main ( )
+{
+    read (p) ; 
+}

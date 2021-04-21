@@ -181,7 +181,8 @@ address = {
     }
 }
 
-def generate_quadruple():   
+
+def generate_quadruple():
     global quadruples, quad_counter, address, counter, elements_stack, types_stack, operators_stack
     right_op = elements_stack.pop()
     right_type = types_stack.pop()
@@ -189,24 +190,25 @@ def generate_quadruple():
     left_type = types_stack.pop()
     op = operators_stack.pop()
     result_type = semantic_cube[left_type][op][right_type]
-        
+
     if result_type != None:
         result = 0
         result = address['temp'][result_type] + counter['temp'][result_type]
-        counter['temp'][result_type] += 1 
-        
+        counter['temp'][result_type] += 1
+
         print("op:", op)
-        print("leftOp:", left_op)
-        print("rightOp:", right_op)
+        print("left:", left_op)
+        print("right:", right_op)
         print("result:", result)
-        quadruples.append((op,left_op,right_op,result))
-        quad_counter += 1;
-        
+        quadruples.append((op, left_op, right_op, result))
+        quad_counter += 1
+
         elements_stack.push(result)
         types_stack.push(result_type)
 
     else:
         print("ERROR: Type mismatch")
+
 
 def p_program(p):
     '''program : PROGRAM ID SEMICOLON g_var funcs main'''
@@ -309,7 +311,7 @@ def p_dec_id2(p):
 def p_id(p):
     '''id : ID id1'''
     global current_id
-    current_id = p[0]
+    current_id = p[1]
 
 
 def p_id1(p):
@@ -389,7 +391,10 @@ def p_statement(p):
 
 
 def p_assignation(p):
-    '''assignation : id EQUAL expression SEMICOLON'''
+    '''assignation : id id_quad EQUAL expression SEMICOLON'''
+    global operators_stack
+    operators_stack.push('=')
+    generate_quadruple()
 
 
 def p_args(p):
@@ -409,8 +414,10 @@ def p_args2(p):
 def p_call_func(p):
     '''call_func :  ID L_P args R_P SEMICOLON'''
 
+
 def p_call_func_exp(p):
     '''call_func_exp :  ID L_P args R_P'''
+
 
 def p_return_func(p):
     '''return_func : RETURN L_P expression R_P SEMICOLON'''
@@ -474,31 +481,44 @@ def p_do_statement(p):
 
 
 def p_expression(p):
-    '''expression : texp op1'''
+    '''expression : texp generate_quad op1'''
 
 
 def p_texp(p):
-    '''texp : gexp op2'''
+    '''texp : gexp generate_quad op2'''
 
 
 def p_gexp(p):
-    '''gexp : mexp op3aux'''
+    '''gexp : mexp generate_quad op3aux'''
 
 
 def p_mexp(p):
-    '''mexp : term op4aux'''
+    '''mexp : term generate_quad op4aux'''
 
 
 def p_term(p):
-    '''term : fact op5aux'''
+    '''term : fact generate_quad op5aux'''
+
+def p_generate_quad(p): 
+    '''generate_quad : '''
+    generate_quadruple()
 
 
 def p_fact(p):
-    '''fact : id
+    '''fact : id id_quad
             | call_func_exp
             | L_P expression R_P
             | cte'''
-    print(current_id, current_func)
+    global current_id, current_func
+
+
+def p_id_quad(p):
+    '''
+        id_quad :
+    '''
+    global elements_stack, types_stack
+    elements_stack.push(current_id)
+    types_stack.push(current_type)
 
 
 def p_cte(p):
@@ -510,11 +530,17 @@ def p_cte(p):
 def p_op1(p):
     '''op1 : OR expression
             | empty'''
+    global operators_stack
+    if p[1] != None:
+        operators_stack.push(p[1])
 
 
 def p_op2(p):
     '''op2 : AND texp
             | empty'''
+    global operators_stack
+    if p[1] != None:
+        operators_stack.push(p[1])
 
 
 def p_op3(p):
@@ -524,6 +550,8 @@ def p_op3(p):
             | GREATERTHANEQ
             | EQ
             | DIFERENT'''
+    global operators_stack
+    operators_stack.push(p[1])
 
 
 def p_op3aux(p):
@@ -534,6 +562,8 @@ def p_op3aux(p):
 def p_op4(p):
     '''op4 : PLUS
             | MINUS'''
+    global operators_stack
+    operators_stack.push(p[1])
 
 
 def p_op4aux(p):
@@ -545,6 +575,8 @@ def p_op5(p):
     '''op5 : MULT
         | DIV
         | MOD'''
+    global operators_stack
+    operators_stack.push(p[1])
 
 
 def p_op5aux(p):
@@ -570,13 +602,13 @@ def p_error(p):
 yacc.yacc()
 
 
-def usaArchivo():
+def readFile():
     try:
-        archivo = 'test.txt'
-        arch = open(archivo, 'r')
-        print("Filename used : " + archivo)
-        info = arch.read()
-        arch.close()
+        file_name = 'test2.txt'
+        file = open(file_name, 'r')
+        print("Filename used : " + file_name)
+        info = file.read()
+        file.close()
         lexer.input(info)
         while True:
             tok = lexer.token()
@@ -587,4 +619,4 @@ def usaArchivo():
         print(EOFError)
 
 
-usaArchivo()
+readFile()
