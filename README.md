@@ -8,3 +8,6 @@ Se crearon las estructuras para el directorio de funciones y las tablas de varia
 
 ## Tercer Avance
 Se generó el código para las expresiones y los estatutos lineales
+
+## Cuarto Avance
+Se generó el código para los estatuos no lineales (condiciones y ciclos)

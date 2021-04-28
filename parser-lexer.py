@@ -131,7 +131,6 @@ elements_stack = Stack()
 jumps_stack = Stack()
 
 quadruples = []
-quad_counter = 0
 
 # Variable counter
 counter = {
@@ -183,7 +182,7 @@ address = {
 
 
 def generate_quadruple():
-    global quadruples, quad_counter, address, counter, elements_stack, types_stack, operators_stack
+    global quadruples, address, counter, elements_stack, types_stack, operators_stack
     right_op = elements_stack.pop()
     right_type = types_stack.pop()
     left_op = elements_stack.pop()
@@ -200,14 +199,18 @@ def generate_quadruple():
         print("left:", left_op)
         print("right:", right_op)
         print("result:", result)
-        quadruples.append((op, left_op, right_op, result))
-        quad_counter += 1
+        quadruples.append([op, left_op, right_op, result])
 
         elements_stack.push(result)
         types_stack.push(result_type)
 
     else:
         print("ERROR: Type mismatch")
+
+
+def fill(jump, counter):
+    global quadruples
+    quadruples[jump][3] = counter
 
 
 def p_program(p):
@@ -225,11 +228,12 @@ def p_main(p):
         dir_func[current_func] = (
             current_func, 'void', param_types, variable_counter)
     else:
-        print('ERROR: Función declarada', current_func)
+        print('ERROR: Function already defined', current_func)
 
     print(local_var_table)
     local_var_table = {}
     param_types = []
+    counter['temp'] = {'int': 0, 'float': 0, 'char': 0}
     variable_counter = {'int': 0, 'float': 0, 'char': 0}
 
 
@@ -288,7 +292,7 @@ def p_dec_id(p):
             variable_counter[current_type] += 1
             counter['global'][current_type] += 1
         else:
-            print('ERROR: Variable declarada', current_id)
+            print('ERROR: Variable already defined', current_id)
     else:
         if current_id not in local_var_table:
             local_var_table[current_id] = (
@@ -296,7 +300,7 @@ def p_dec_id(p):
             variable_counter[current_type] += 1
             counter['local'][current_type] += 1
         else:
-            print('ERROR: Variable declarada', current_id)
+            print('ERROR: Variable already defined', current_id)
 
 
 def p_dec_id1(p):
@@ -347,7 +351,7 @@ def p_register_func(p):
     if current_func not in dir_func:
         dir_func[current_func] = {'name': current_func, 'type': current_type}
     else:
-        print('ERROR: Función declarada', current_func)
+        print('ERROR: Function already defined', current_func)
 
 
 def p_func_type(p):
@@ -393,7 +397,7 @@ def p_statement(p):
 
 def p_assignation(p):
     '''assignation : id id_quad EQUAL expression SEMICOLON'''
-    global quadruples, quad_counter, address, counter, elements_stack, types_stack, operators_stack
+    global quadruples, address, counter, elements_stack, types_stack, operators_stack
     right_op = elements_stack.pop()
     right_type = types_stack.pop()
     left_op = elements_stack.pop()
@@ -401,9 +405,7 @@ def p_assignation(p):
     result_type = semantic_cube[left_type]['='][right_type]
 
     if result_type != None:
-        quadruples.append(('=', right_op, None, left_op))
-        quad_counter += 1
-
+        quadruples.append(['=', right_op, None, left_op])
     else:
         print("ERROR: Type mismatch")
 
@@ -432,20 +434,18 @@ def p_call_func_exp(p):
 
 def p_return_func(p):
     '''return_func : RETURN L_P expression R_P SEMICOLON'''
-    global quadruples, quad_counter, elements_stack
+    global quadruples, elements_stack
     element = elements_stack.pop()
-        
-    quadruples.append(('return',None,None,element))
-    quad_counter += 1;
+
+    quadruples.append(['return', None, None, element])
 
 
 def p_read(p):
     '''read : READ L_P read_args R_P SEMICOLON'''
-    global quadruples, quad_counter, elements_stack
+    global quadruples, elements_stack
     element = elements_stack.pop()
-        
-    quadruples.append(('read',None,None,element))
-    quad_counter += 1;
+
+    quadruples.append(['read', None, None, element])
 
 
 def p_read_args(p):
@@ -459,12 +459,10 @@ def p_read_args1(p):
 
 def p_write(p):
     '''write : PRINT L_P write_args R_P SEMICOLON'''
-    global quadruples, quad_counter, elements_stack
+    global quadruples, elements_stack
     element = elements_stack.pop()
-        
-    quadruples.append(('print',None,None,element))
-    quad_counter += 1;
-   
+
+    quadruples.append(['print', None, None, element])
 
 
 def p_write_args(p):
@@ -482,12 +480,36 @@ def p_write_args2(p):
 
 
 def p_decision_statement(p):
-    '''decision_statement : IF L_P expression R_P L_B statements R_B decision_statement1'''
+    '''decision_statement : IF L_P expression R_P exp_type L_B statements R_B decision_statement1'''
+    global jumps_stack, quadruples
+    end = jumps_stack.pop()
+    fill(end, len(quadruples))
 
 
 def p_decision_statement1(p):
-    '''decision_statement1 : ELSE L_B statements R_B
+    '''decision_statement1 : ELSE else_jump L_B statements R_B
                             | empty'''
+
+
+def p_exp_type(p):
+    '''exp_type : '''
+    global types_stack, elements_stack, jumps_stack, quadruples
+    exp_type = types_stack.pop()
+    if exp_type == 'int':
+        result = elements_stack.pop()
+        quadruples.append(['gotoF', result, None, None])
+        jumps_stack.push(len(quadruples)-1)
+    else:
+        print('ERROR: Type mismatch')
+
+
+def p_else_jump(p):
+    '''else_jump : '''
+    global quadruples, jumps_stack
+    quadruples.append(['goto', None, None, None])
+    false = jumps_stack.pop()
+    jumps_stack.push(len(quadruples)-1)
+    fill(false, len(quadruples))
 
 
 def p_repetition_statement(p):
@@ -496,11 +518,42 @@ def p_repetition_statement(p):
 
 
 def p_for_statement(p):
-    '''for_statement : FOR id EQUAL expression TO expression do_statement'''
+    '''for_statement : FOR id id_quad EQUAL expression for_id TO breadcrumb expression exp_type do_statement'''
+    global jumps_stack, quadruples
+    end = jumps_stack.pop()
+    return_jump = jumps_stack.pop()
+    quadruples.append(['goto', None, None, return_jump])
+    fill(end, len(quadruples))
+
+
+def p_for_id(p):
+    '''for_id : '''
+    global quadruples, address, counter, elements_stack, types_stack, operators_stack
+    right_op = elements_stack.pop()
+    right_type = types_stack.pop()
+    left_op = elements_stack.pop()
+    left_type = types_stack.pop()
+    result_type = semantic_cube[left_type]['='][right_type]
+
+    if result_type != None:
+        quadruples.append(['=', right_op, None, left_op])
+    else:
+        print("ERROR: Type mismatch")
+
+
+def p_breadcrumb(p):
+    '''breadcrumb : '''
+    global jumps_stack, quadruples
+    jumps_stack.push(len(quadruples))
 
 
 def p_while_statement(p):
-    '''while_statement : WHILE L_P expression R_P do_statement'''
+    '''while_statement : WHILE L_P breadcrumb expression R_P exp_type do_statement'''
+    global jumps_stack, quadruples
+    end = jumps_stack.pop()
+    return_jump = jumps_stack.pop()
+    quadruples.append(['goto', None, None, return_jump])
+    fill(end, len(quadruples))
 
 
 def p_do_statement(p):
@@ -540,6 +593,7 @@ def p_fact(p):
             | L_P add_fake expression R_P remove_fake
             | cte'''
 
+
 def p_add_fake(p):
     '''add_fake : '''
     global operators_stack
@@ -550,6 +604,7 @@ def p_remove_fake(p):
     '''remove_fake : '''
     global operators_stack
     operators_stack.pop()
+
 
 def p_id_quad(p):
     '''
@@ -697,7 +752,7 @@ yacc.yacc()
 
 def readFile():
     try:
-        file_name = 'test2.txt'
+        file_name = 'test4.txt'
         file = open(file_name, 'r')
         print("Filename used : " + file_name)
         info = file.read()

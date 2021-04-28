@@ -1,0 +1,23 @@
+program Ejemplo;
+var
+    int i, j, p;
+    int Arreglo[10];
+    float valor;
+    int Matriz[3][8];
+
+func int fact (int j, char w)
+var int i, A, B, C, D;
+{ 
+    for i = 10 to i > 0 do {
+        if (A + B > D) {
+            A = B + 1;
+        }
+    }
+   
+    D = B + A * C;
+}
+
+main ( )
+{
+    read (p) ; 
+}
