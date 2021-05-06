@@ -1,6 +1,6 @@
 program Ejemplo;
 var
-    int i, j, p;
+    int i, j, p, k;
     int Arreglo[10];
     float valor;
     int Matriz[3][8];

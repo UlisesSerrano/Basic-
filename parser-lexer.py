@@ -115,15 +115,15 @@ lexer = lex.lex()
 current_type = ''
 current_func = ''
 current_id = ''
+current_for_id = ''
 
 global_var_table = {}
 local_var_table = {}
-constant_var_table = {}
+constant_var_table = {'1': (1, 'int', 27000)}
 dir_func = {}
 context = 'global'
 
 param_types = []
-variable_counter = {'int': 0, 'float': 0, 'char': 0}
 
 types_stack = Stack()
 operators_stack = Stack()
@@ -150,7 +150,7 @@ counter = {
         "char": 0
     },
     "constant": {
-        "int": 0,
+        "int": 1,
         "float": 0,
         "char": 0
     }
@@ -191,14 +191,9 @@ def generate_quadruple():
     result_type = semantic_cube[left_type][op][right_type]
 
     if result_type != None:
-        result = 0
         result = address['temp'][result_type] + counter['temp'][result_type]
         counter['temp'][result_type] += 1
 
-        print("op:", op)
-        print("left:", left_op)
-        print("right:", right_op)
-        print("result:", result)
         quadruples.append([op, left_op, right_op, result])
 
         elements_stack.push(result)
@@ -222,19 +217,19 @@ def p_program(p):
 
 def p_main(p):
     '''main : MAIN L_P params R_P var_declaration L_B statements R_B'''
-    global local_var_table, param_types, variable_counter
+    global local_var_table, param_types, counter, dir_func
     current_func = 'main'
     if current_func not in dir_func:
         dir_func[current_func] = (
-            current_func, 'void', param_types, variable_counter)
+            current_func, 'void', param_types, {'local': counter['local'], 'temp': counter['temp']})
     else:
         print('ERROR: Function already defined', current_func)
 
     print(local_var_table)
     local_var_table = {}
     param_types = []
+    counter['local'] = {'int': 0, 'float': 0, 'char': 0}
     counter['temp'] = {'int': 0, 'float': 0, 'char': 0}
-    variable_counter = {'int': 0, 'float': 0, 'char': 0}
 
 
 def p_type(p):
@@ -247,9 +242,8 @@ def p_type(p):
 
 def p_g_var(p):
     '''g_var : var_declaration'''
-    global context, global_var_table, variable_counter
+    global context, global_var_table
     context = 'local'
-    variable_counter = {'int': 0, 'float': 0, 'char': 0}
     print(global_var_table)
 
 
@@ -283,13 +277,12 @@ def p_var4(p):
 
 def p_dec_id(p):
     '''dec_id : ID dec_id1'''
-    global current_id, current_type, current_func, global_var_table, local_var_table, variable_counter, address, counter
+    global current_id, current_type, current_func, global_var_table, local_var_table, address, counter
     current_id = p[1]
     if context == 'global':
         if current_id not in global_var_table:
             global_var_table[current_id] = (
                 current_id, current_type, address['global'][current_type] + counter['global'][current_type], ())
-            variable_counter[current_type] += 1
             counter['global'][current_type] += 1
         else:
             print('ERROR: Variable already defined', current_id)
@@ -297,7 +290,6 @@ def p_dec_id(p):
         if current_id not in local_var_table:
             local_var_table[current_id] = (
                 current_id, current_type, address['local'][current_type] + counter['local'][current_type], ())
-            variable_counter[current_type] += 1
             counter['local'][current_type] += 1
         else:
             print('ERROR: Variable already defined', current_id)
@@ -334,24 +326,33 @@ def p_var_type(p):
 
 
 def p_function(p):
-    '''function : FUNC func_type ID register_func L_P params R_P var_declaration L_B statements R_B'''
-    global current_func, param_types, variable_counter, local_var_table
+    '''function : FUNC func_type ID register_func L_P params R_P var_declaration start_func L_B statements R_B'''
+    global current_func, param_types, local_var_table, counter
     dir_func[current_func]['param_types'] = param_types
-    dir_func[current_func]['variable_counter'] = variable_counter
+    dir_func[current_func]['variable_counter'] = {
+        'local': counter['local'], 'temp': counter['temp']}
     print(local_var_table)
     local_var_table = {}
+    quadruples.append(['ENDFunc', None, None, None])
     param_types = []
-    variable_counter = {'int': 0, 'float': 0, 'char': 0}
+    counter['local'] = {'int': 0, 'float': 0, 'char': 0}
+    counter['temp'] = {'int': 0, 'float': 0, 'char': 0}
 
 
 def p_register_func(p):
     'register_func : '
-    global current_func, current_type
+    global current_func, current_type, dir_func
     current_func = p[-1]
     if current_func not in dir_func:
         dir_func[current_func] = {'name': current_func, 'type': current_type}
     else:
         print('ERROR: Function already defined', current_func)
+
+
+def p_start_func(p):
+    'start_func : '
+    global current_func, dir_func, quadruples
+    dir_func[current_func]['start_quad'] = len(quadruples)
 
 
 def p_func_type(p):
@@ -519,21 +520,39 @@ def p_repetition_statement(p):
 
 def p_for_statement(p):
     '''for_statement : FOR id id_quad EQUAL expression for_id TO breadcrumb expression exp_type do_statement'''
-    global jumps_stack, quadruples
+    global jumps_stack, quadruples, local_var_table, global_var_table, constant_var_table, current_for_id
     end = jumps_stack.pop()
+    element = None
     return_jump = jumps_stack.pop()
+    if current_for_id in local_var_table:
+        element = local_var_table[current_for_id][2]
+        id_type = local_var_table[current_for_id][1]
+    elif current_for_id in global_var_table:
+        element = global_var_table[current_for_id][2]
+        id_type = global_var_table[current_for_id][1]
+
+    if element != None:
+        result_type = semantic_cube[id_type]['+']['int']
+        if result_type != None:
+            quadruples.append(
+                ['+', element, constant_var_table['1'][2], element])
+        else:
+            print("ERROR: Type mismatch")
+    else:
+        print('ERROR: Undeclared variable', current_for_id)
     quadruples.append(['goto', None, None, return_jump])
     fill(end, len(quadruples))
 
 
 def p_for_id(p):
     '''for_id : '''
-    global quadruples, address, counter, elements_stack, types_stack, operators_stack
+    global quadruples, address, counter, elements_stack, types_stack, operators_stack, current_id, current_for_id
     right_op = elements_stack.pop()
     right_type = types_stack.pop()
     left_op = elements_stack.pop()
     left_type = types_stack.pop()
     result_type = semantic_cube[left_type]['='][right_type]
+    current_for_id = current_id
 
     if result_type != None:
         quadruples.append(['=', right_op, None, left_op])
@@ -610,7 +629,7 @@ def p_id_quad(p):
     '''
         id_quad :
     '''
-    global elements_stack, types_stack, local_var_table, global_var_table
+    global elements_stack, types_stack, local_var_table, global_var_table, current_id
     element = None
     if current_id in local_var_table:
         element = local_var_table[current_id][2]
@@ -621,7 +640,7 @@ def p_id_quad(p):
         elements_stack.push(element)
         types_stack.push(current_type)
     else:
-        print('ERROR: Undeclared variable')
+        print('ERROR: Undeclared variable', current_id)
 
 
 def p_cte(p):
@@ -647,7 +666,7 @@ def p_add_cte_int(p):
 
 def p_add_cte_float(p):
     '''add_cte_float : '''
-    global elements_stack, types_stack, constant_var_table, address, counter
+    global elements_stack, types_stack, constant_var_table, address, counter, current_id
     cte = p[-1]
     if cte not in constant_var_table:
         constant_var_table[current_id] = (
@@ -752,7 +771,7 @@ yacc.yacc()
 
 def readFile():
     try:
-        file_name = 'test4.txt'
+        file_name = 'test1.txt'
         file = open(file_name, 'r')
         print("Filename used : " + file_name)
         info = file.read()

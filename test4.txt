@@ -5,7 +5,7 @@ var
     float valor;
     int Matriz[3][8];
 
-func int fact (int j, char w)
+func void fact (int j, char w)
 var int i, A, B, C, D;
 { 
     for i = 10 to i > 0 do {
