@@ -116,14 +116,16 @@ current_type = ''
 current_func = ''
 current_id = ''
 current_for_id = ''
+current_call = ''
 
 global_var_table = {}
 local_var_table = {}
-constant_var_table = {'1': (1, 'int', 27000)}
+constant_var_table = {1: (1, 'int', 27000)}
 dir_func = {}
 context = 'global'
 
 param_types = []
+k = 0  # Param counter for call_func
 
 types_stack = Stack()
 operators_stack = Stack()
@@ -220,8 +222,8 @@ def p_main(p):
     global local_var_table, param_types, counter, dir_func
     current_func = 'main'
     if current_func not in dir_func:
-        dir_func[current_func] = (
-            current_func, 'void', param_types, {'local': counter['local'], 'temp': counter['temp']})
+        dir_func[current_func] = {'name': current_func, 'type': 'void', 'param_types': param_types, 'variable_counter': {
+            'local': counter['local'], 'temp': counter['temp']}}
     else:
         print('ERROR: Function already defined', current_func)
 
@@ -326,7 +328,7 @@ def p_var_type(p):
 
 
 def p_function(p):
-    '''function : FUNC func_type ID register_func L_P params R_P var_declaration start_func L_B statements R_B'''
+    '''function : FUNC func_type ID register_func L_P params R_P add_params var_declaration start_func L_B statements R_B'''
     global current_func, param_types, local_var_table, counter
     dir_func[current_func]['param_types'] = param_types
     dir_func[current_func]['variable_counter'] = {
@@ -335,6 +337,7 @@ def p_function(p):
     local_var_table = {}
     quadruples.append(['ENDFunc', None, None, None])
     param_types = []
+    print(elements_stack.size(), types_stack.size())
     counter['local'] = {'int': 0, 'float': 0, 'char': 0}
     counter['temp'] = {'int': 0, 'float': 0, 'char': 0}
 
@@ -347,6 +350,12 @@ def p_register_func(p):
         dir_func[current_func] = {'name': current_func, 'type': current_type}
     else:
         print('ERROR: Function already defined', current_func)
+
+
+def p_add_params(p):
+    'add_params : '
+    global current_func, param_types, dir_func
+    dir_func[current_func]['param_types'] = param_types
 
 
 def p_start_func(p):
@@ -417,34 +426,82 @@ def p_args(p):
 
 
 def p_args1(p):
-    'args1 : expression args2'
+    'args1 : expression param_check args2'
 
+
+def p_param_check(p):
+    '''param_check : '''
+    global elements_stack, types_stack, k, dir_func, current_call
+    arg_element = elements_stack.peek()
+    arg_type = types_stack.peek()
+
+    if k < len(dir_func[current_call]['param_types']):
+        print(dir_func[current_call]['param_types'][k], arg_type)
+        if dir_func[current_call]['param_types'][k] == arg_type:
+            quadruples.append(['PARAM', arg_element, k, None])
+        else:
+            print('ERROR: Type mismatch on argument on call function', current_call)
+    else:
+        print('ERROR: Incorrect number of arguments', current_call)
 
 def p_args2(p):
-    '''args2 : COMA args1
+    '''args2 : COMA next_arg args1
             | empty'''
 
 
+def p_next_arg(p):
+    '''next_arg : '''
+    global k
+    k += 1
+
+
 def p_call_func(p):
-    '''call_func :  ID L_P args R_P SEMICOLON'''
+    '''call_func :  ID call_func_era L_P args R_P SEMICOLON'''
+    global current_call, dir_func, k
+    if k == (len(dir_func[current_call]['param_types'])-1):
+        quadruples.append(['GOSUB', current_call, None,
+                           dir_func[current_call]['start_quad']])
+    else:
+        print('ERROR: Missing arguments', k, len(
+            dir_func[current_call]['param_types'])-1)
 
 
 def p_call_func_exp(p):
-    '''call_func_exp :  ID L_P args R_P'''
+    '''call_func_exp :  ID call_func_era L_P args R_P'''
+    global current_call, dir_func, k
+    if k == (len(dir_func[current_call]['param_types'])-1):
+        quadruples.append(['GOSUB', current_call, None,
+                           dir_func[current_call]['start_quad']])
+    else:
+        print('ERROR: Missing arguments', k, len(
+            dir_func[current_call]['param_types'])-1)
+
+
+def p_call_func_era(p):
+    '''call_func_era : '''
+    global dir_func, quadruples, k, current_call
+    if p[-1] in dir_func:
+        current_call = p[-1]
+        quadruples.append(['ERA', current_call, None, None])
+        k = 0
+    else:
+        print('ERROR: Undeclared function', p[-1])
 
 
 def p_return_func(p):
     '''return_func : RETURN L_P expression R_P SEMICOLON'''
-    global quadruples, elements_stack
+    global quadruples, elements_stack, types_stack
     element = elements_stack.pop()
-
-    quadruples.append(['return', None, None, element])
-
+    if types_stack.pop() == dir_func[current_func]['type']:
+        quadruples.append(['return', None, None, element])
+    else:
+        print('ERROR: Return type mismatch')
 
 def p_read(p):
     '''read : READ L_P read_args R_P SEMICOLON'''
-    global quadruples, elements_stack
+    global quadruples, elements_stack, types_stack
     element = elements_stack.pop()
+    types_stack.pop()
 
     quadruples.append(['read', None, None, element])
 
@@ -460,9 +517,9 @@ def p_read_args1(p):
 
 def p_write(p):
     '''write : PRINT L_P write_args R_P SEMICOLON'''
-    global quadruples, elements_stack
+    global quadruples, elements_stack, types_stack
     element = elements_stack.pop()
-
+    types_stack.pop()
     quadruples.append(['print', None, None, element])
 
 
@@ -535,7 +592,7 @@ def p_for_statement(p):
         result_type = semantic_cube[id_type]['+']['int']
         if result_type != None:
             quadruples.append(
-                ['+', element, constant_var_table['1'][2], element])
+                ['+', element, constant_var_table[1][2], element])
         else:
             print("ERROR: Type mismatch")
     else:
@@ -669,7 +726,7 @@ def p_add_cte_float(p):
     global elements_stack, types_stack, constant_var_table, address, counter, current_id
     cte = p[-1]
     if cte not in constant_var_table:
-        constant_var_table[current_id] = (
+        constant_var_table[cte] = (
             cte, 'float', address['constant']['float'] + counter['constant']['float'])
         counter['constant']['float'] += 1
 
@@ -684,7 +741,7 @@ def p_add_cte_char(p):
     global elements_stack, types_stack, constant_var_table, address, counter
     cte = p[-1]
     if cte not in constant_var_table:
-        constant_var_table[current_id] = (
+        constant_var_table[cte] = (
             cte, 'char', address['constant']['char'] + counter['constant']['char'])
         counter['constant']['char'] += 1
 
@@ -771,7 +828,7 @@ yacc.yacc()
 
 def readFile():
     try:
-        file_name = 'test1.txt'
+        file_name = 'test5.txt'
         file = open(file_name, 'r')
         print("Filename used : " + file_name)
         info = file.read()
