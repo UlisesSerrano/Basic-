@@ -11,3 +11,6 @@ Se generó el código para las expresiones y los estatutos lineales
 
 ## Cuarto Avance
 Se generó el código para los estatuos no lineales (condiciones y ciclos)
+
+## Quinto Avance
+Se generó el código de funciones, quedó pendiente la lectura correcta de las expresiones de los parametros y regresar el valor de la función cuando no es void

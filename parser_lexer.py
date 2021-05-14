@@ -31,15 +31,14 @@ reserved = {  # reserverd tokens
 }
 
 tokens = [
-    'CTE_I', 'CTE_F', 'CTE_STRING', 'CTE_CHAR', 'ID',
-    'MULT', 'DIV', 'SEMICOLON',
+    'CTE_I', 'CTE_F', 'CTE_STRING', 'CTE_CHAR', 'ID', 'SEMICOLON',
     'L_P', 'R_P', 'COMA',
     'L_B', 'R_B',
     'L_SB', 'R_SB',
     'EQUAL', 'GREATERTHAN', 'LESSTHAN',
     'GREATERTHANEQ', 'LESSTHANEQ', 'EQ',
     'DIFERENT', 'AND', 'OR',
-    'MINUS', 'PLUS', 'MOD'
+    'MINUS', 'PLUS', 'MOD', 'MULT', 'DIV',
 ] + list(reserved.values())
 
 t_MINUS = r'\-'
@@ -97,7 +96,7 @@ def t_CTE_I(t):
 
 
 def t_CTE_STRING(t):
-    r'"([^"\n]|(\\"))*"$'
+    r'\"([^\\\n]|(\\.))*?\"'
     print("String: '%s'" % t.value)
     return t
 
@@ -202,7 +201,7 @@ def generate_quadruple():
         types_stack.push(result_type)
 
     else:
-        print("ERROR: Type mismatch")
+        print("ERROR: Type mismatch quad", right_op, op, left_op)
 
 
 def fill(jump, counter):
@@ -211,14 +210,20 @@ def fill(jump, counter):
 
 
 def p_program(p):
-    '''program : PROGRAM ID SEMICOLON g_var funcs main'''
+    '''program : PROGRAM ID main_quad SEMICOLON g_var funcs main'''
     global dir_func, quadruples
     print(dir_func)
     print(quadruples)
 
 
+def p_main_quad(p):
+    '''main_quad : '''
+    global quadruples
+    quadruples.append(['goto', None, None, None])
+
+
 def p_main(p):
-    '''main : MAIN L_P params R_P var_declaration L_B statements R_B'''
+    '''main : MAIN L_P params R_P var_declaration L_B main_start statements R_B'''
     global local_var_table, param_types, counter, dir_func
     current_func = 'main'
     if current_func not in dir_func:
@@ -232,6 +237,11 @@ def p_main(p):
     param_types = []
     counter['local'] = {'int': 0, 'float': 0, 'char': 0}
     counter['temp'] = {'int': 0, 'float': 0, 'char': 0}
+
+
+def p_main_start(p):
+    '''main_start : '''
+    fill(0, len(quadruples))
 
 
 def p_type(p):
@@ -337,17 +347,20 @@ def p_function(p):
     local_var_table = {}
     quadruples.append(['ENDFunc', None, None, None])
     param_types = []
-    print(elements_stack.size(), types_stack.size())
     counter['local'] = {'int': 0, 'float': 0, 'char': 0}
     counter['temp'] = {'int': 0, 'float': 0, 'char': 0}
 
 
 def p_register_func(p):
     'register_func : '
-    global current_func, current_type, dir_func
+    global current_func, current_type, dir_func, address, counter
     current_func = p[-1]
     if current_func not in dir_func:
         dir_func[current_func] = {'name': current_func, 'type': current_type}
+        if (current_type != 'void'):
+            global_var_table[current_func] = (
+                current_func, current_type, address['global'][current_type] + counter['global'][current_type], ())
+            counter['global'][current_type] += 1
     else:
         print('ERROR: Function already defined', current_func)
 
@@ -407,7 +420,7 @@ def p_statement(p):
 
 def p_assignation(p):
     '''assignation : id id_quad EQUAL expression SEMICOLON'''
-    global quadruples, address, counter, elements_stack, types_stack, operators_stack
+    global quadruples, address, counter, elements_stack, types_stack
     right_op = elements_stack.pop()
     right_type = types_stack.pop()
     left_op = elements_stack.pop()
@@ -417,7 +430,7 @@ def p_assignation(p):
     if result_type != None:
         quadruples.append(['=', right_op, None, left_op])
     else:
-        print("ERROR: Type mismatch")
+        print("ERROR: Type mismatch in assignation")
 
 
 def p_args(p):
@@ -426,23 +439,23 @@ def p_args(p):
 
 
 def p_args1(p):
-    'args1 : expression param_check args2'
+    'args1 : add_fake expression param_check remove_fake args2'
 
 
 def p_param_check(p):
     '''param_check : '''
     global elements_stack, types_stack, k, dir_func, current_call
-    arg_element = elements_stack.peek()
-    arg_type = types_stack.peek()
+    arg_element = elements_stack.pop()
+    arg_type = types_stack.pop()
 
     if k < len(dir_func[current_call]['param_types']):
-        print(dir_func[current_call]['param_types'][k], arg_type)
         if dir_func[current_call]['param_types'][k] == arg_type:
             quadruples.append(['PARAM', arg_element, k, None])
         else:
             print('ERROR: Type mismatch on argument on call function', current_call)
     else:
         print('ERROR: Incorrect number of arguments', current_call)
+
 
 def p_args2(p):
     '''args2 : COMA next_arg args1
@@ -457,7 +470,7 @@ def p_next_arg(p):
 
 def p_call_func(p):
     '''call_func :  ID call_func_era L_P args R_P SEMICOLON'''
-    global current_call, dir_func, k
+    global current_call, dir_func, k, quadruples
     if k == (len(dir_func[current_call]['param_types'])-1):
         quadruples.append(['GOSUB', current_call, None,
                            dir_func[current_call]['start_quad']])
@@ -472,6 +485,18 @@ def p_call_func_exp(p):
     if k == (len(dir_func[current_call]['param_types'])-1):
         quadruples.append(['GOSUB', current_call, None,
                            dir_func[current_call]['start_quad']])
+        if current_call in global_var_table:
+            func_var = global_var_table[current_call]
+            func_temp_add = address['temp'][func_var[1]] + \
+                counter['temp'][func_var[1]]
+            counter['temp'][func_var[1]] += 1
+
+            quadruples.append(['=', func_var[2], None, func_temp_add])
+
+            elements_stack.push(func_temp_add)
+            types_stack.push(func_var[1])
+        else:
+            print('ERROR: Cannot call void function on expresion', current_call)
     else:
         print('ERROR: Missing arguments', k, len(
             dir_func[current_call]['param_types'])-1)
@@ -490,12 +515,13 @@ def p_call_func_era(p):
 
 def p_return_func(p):
     '''return_func : RETURN L_P expression R_P SEMICOLON'''
-    global quadruples, elements_stack, types_stack
+    global quadruples, elements_stack, types_stack, global_var_table, current_func
     element = elements_stack.pop()
     if types_stack.pop() == dir_func[current_func]['type']:
         quadruples.append(['return', None, None, element])
     else:
         print('ERROR: Return type mismatch')
+
 
 def p_read(p):
     '''read : READ L_P read_args R_P SEMICOLON'''
@@ -507,20 +533,16 @@ def p_read(p):
 
 
 def p_read_args(p):
-    '''read_args : expression read_args1'''
+    '''read_args : add_fake expression remove_fake read_args1'''
 
 
 def p_read_args1(p):
-    '''read_args1 : COMA expression read_args1
+    '''read_args1 : COMA add_fake expression remove_fake read_args1
                 | empty'''
 
 
 def p_write(p):
     '''write : PRINT L_P write_args R_P SEMICOLON'''
-    global quadruples, elements_stack, types_stack
-    element = elements_stack.pop()
-    types_stack.pop()
-    quadruples.append(['print', None, None, element])
 
 
 def p_write_args(p):
@@ -533,8 +555,12 @@ def p_write_args1(p):
 
 
 def p_write_args2(p):
-    '''write_args2 : expression
-                | CTE_STRING'''
+    '''write_args2 : add_fake expression remove_fake
+                | CTE_STRING add_cte_string'''
+    global quadruples, elements_stack, types_stack
+    element = elements_stack.pop()
+    types_stack.pop()
+    quadruples.append(['print', None, None, element])
 
 
 def p_decision_statement(p):
@@ -603,7 +629,7 @@ def p_for_statement(p):
 
 def p_for_id(p):
     '''for_id : '''
-    global quadruples, address, counter, elements_stack, types_stack, operators_stack, current_id, current_for_id
+    global quadruples, address, counter, elements_stack, types_stack, current_id, current_for_id
     right_op = elements_stack.pop()
     right_type = types_stack.pop()
     left_op = elements_stack.pop()
@@ -614,7 +640,7 @@ def p_for_id(p):
     if result_type != None:
         quadruples.append(['=', right_op, None, left_op])
     else:
-        print("ERROR: Type mismatch")
+        print("ERROR: Type mismatch on loop id")
 
 
 def p_breadcrumb(p):
@@ -637,29 +663,57 @@ def p_do_statement(p):
 
 
 def p_expression(p):
-    '''expression : texp generate_quad op1'''
+    '''expression : texp generate_quad_1 op1'''
 
 
 def p_texp(p):
-    '''texp : gexp generate_quad op2'''
+    '''texp : gexp generate_quad_2 op2'''
 
 
 def p_gexp(p):
-    '''gexp : mexp generate_quad op3aux'''
+    '''gexp : mexp generate_quad_3 op3aux'''
 
 
 def p_mexp(p):
-    '''mexp : term generate_quad op4aux'''
+    '''mexp : term generate_quad_4 op4aux'''
 
 
 def p_term(p):
-    '''term : fact generate_quad op5aux'''
+    '''term : fact generate_quad_5 op5aux'''
 
 
-def p_generate_quad(p):
-    '''generate_quad : '''
+def p_generate_quad_1(p):
+    '''generate_quad_1 : '''
     global operators_stack
-    if not operators_stack.isEmpty() and operators_stack.peek() != '(':
+    if not operators_stack.is_empty() and operators_stack.peek() != '(' and operators_stack.peek() == '||':
+        generate_quadruple()
+
+
+def p_generate_quad_2(p):
+    '''generate_quad_2 : '''
+    global operators_stack
+    if not operators_stack.is_empty() and operators_stack.peek() != '(' and operators_stack.peek() == '&&':
+        generate_quadruple()
+
+
+def p_generate_quad_3(p):
+    '''generate_quad_3 : '''
+    global operators_stack
+    if not operators_stack.is_empty() and operators_stack.peek() != '(' and operators_stack.peek() in ['<', '>', '<=', '>=', '!=', '==']:
+        generate_quadruple()
+
+
+def p_generate_quad_4(p):
+    '''generate_quad_4 : '''
+    global operators_stack
+    if not operators_stack.is_empty() and operators_stack.peek() != '(' and operators_stack.peek() in ['+', '-']:
+        generate_quadruple()
+
+
+def p_generate_quad_5(p):
+    '''generate_quad_5 : '''
+    global operators_stack
+    if not operators_stack.is_empty() and operators_stack.peek() != '(' and operators_stack.peek() in ['*', '/', '%']:
         generate_quadruple()
 
 
@@ -688,22 +742,25 @@ def p_id_quad(p):
     '''
     global elements_stack, types_stack, local_var_table, global_var_table, current_id
     element = None
+    element_type = None
     if current_id in local_var_table:
         element = local_var_table[current_id][2]
+        element_type = local_var_table[current_id][1]
     elif current_id in global_var_table:
         element = global_var_table[current_id][2]
+        element_type = global_var_table[current_id][1]
 
     if element != None:
         elements_stack.push(element)
-        types_stack.push(current_type)
+        types_stack.push(element_type)
     else:
         print('ERROR: Undeclared variable', current_id)
 
 
 def p_cte(p):
-    '''cte : CTE_F add_cte_float
-            | CTE_I add_cte_int
-            | CTE_CHAR add_cte_char'''
+    '''cte : CTE_CHAR add_cte_char
+            | CTE_F add_cte_float
+            | CTE_I add_cte_int '''
 
 
 def p_add_cte_int(p):
@@ -723,7 +780,7 @@ def p_add_cte_int(p):
 
 def p_add_cte_float(p):
     '''add_cte_float : '''
-    global elements_stack, types_stack, constant_var_table, address, counter, current_id
+    global elements_stack, types_stack, constant_var_table, address, counter
     cte = p[-1]
     if cte not in constant_var_table:
         constant_var_table[cte] = (
@@ -750,21 +807,32 @@ def p_add_cte_char(p):
     elements_stack.push(element)
     types_stack.push('char')
 
+def p_add_cte_string(p):
+    '''add_cte_string : '''
+    global elements_stack, types_stack, constant_var_table, address, counter
+    cte = p[-1]
+    if cte not in constant_var_table:
+        constant_var_table[cte] = (
+            cte, 'char', address['constant']['char'] + counter['constant']['char'])
+        counter['constant']['char'] += 1
+
+    element = constant_var_table[cte][2]
+
+    elements_stack.push(element)
+    types_stack.push('char')
+
+def p_add_operator(p):
+    '''add_operator : '''
+    global operators_stack
+    operators_stack.push(p[-1])
 
 def p_op1(p):
-    '''op1 : OR expression
+    '''op1 : OR add_operator expression
             | empty'''
-    global operators_stack
-    if p[1] != None:
-        operators_stack.push(p[1])
-
 
 def p_op2(p):
-    '''op2 : AND texp
+    '''op2 : AND add_operator texp
             | empty'''
-    global operators_stack
-    if p[1] != None:
-        operators_stack.push(p[1])
 
 
 def p_op3(p):
@@ -818,17 +886,12 @@ def p_empty(p):
 def p_error(p):
     print("Syntax error on the Input", p)
 
-
-# analizador lexico
-
-
-# codigo Prueba para verificar que el analizador sirva
 yacc.yacc()
 
 
 def readFile():
     try:
-        file_name = 'test5.txt'
+        file_name = 'test2.txt'
         file = open(file_name, 'r')
         print("Filename used : " + file_name)
         info = file.read()
@@ -839,6 +902,14 @@ def readFile():
             if not tok:
                 break
         yacc.parse(info, tracking=True)
+        export = {
+            'dir_func': dir_func,
+            'quadruples': quadruples,
+            'constant_var_table': constant_var_table
+        }
+        with open(file_name + '.obj', 'w') as file1:
+            file1.write(str(export))
+
     except EOFError:
         print(EOFError)
 

@@ -9,11 +9,12 @@ var
 func int fact (int j, char w)
 var int i;
 { 
-    i = j + (p - j*j+j+w) ;
-     return ( j * fact(j-1, w));
+    i = j - i + j * (p - k / j) * i ;
+    return ( j * fact(j-1, r));
 }
 
 main ( )
 {
     read (p) ; 
+    print("a");
 }
