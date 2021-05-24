@@ -288,33 +288,49 @@ def p_var4(p):
 
 
 def p_dec_id(p):
-    '''dec_id : ID dec_id1'''
+    '''dec_id : ID add_id dec_id1'''
+
+
+def p_dec_id1(p):
+    '''dec_id1 : L_SB CTE_I set_array R_SB dec_id2
+            | empty'''
+
+
+def p_dec_id2(p):
+    '''dec_id2 : L_SB CTE_I set_array R_SB
+        | empty'''
+
+
+def p_add_id(p):
+    '''add_id : '''
     global current_id, current_type, current_func, global_var_table, local_var_table, address, counter
-    current_id = p[1]
+    current_id = p[-1]
     if context == 'global':
         if current_id not in global_var_table:
-            global_var_table[current_id] = (
-                current_id, current_type, address['global'][current_type] + counter['global'][current_type], ())
+            global_var_table[current_id] = [
+                current_id, current_type, address['global'][current_type] + counter['global'][current_type], []]
             counter['global'][current_type] += 1
         else:
             print('ERROR: Variable already defined', current_id)
     else:
         if current_id not in local_var_table:
-            local_var_table[current_id] = (
-                current_id, current_type, address['local'][current_type] + counter['local'][current_type], ())
+            local_var_table[current_id] = [
+                current_id, current_type, address['local'][current_type] + counter['local'][current_type], []]
             counter['local'][current_type] += 1
         else:
             print('ERROR: Variable already defined', current_id)
 
 
-def p_dec_id1(p):
-    '''dec_id1 : L_SB CTE_I R_SB dec_id2
-            | empty'''
-
-
-def p_dec_id2(p):
-    '''dec_id2 : L_SB CTE_I R_SB
-        | empty'''
+def p_set_array(p):
+    '''set_array : '''
+    global current_id, current_type, global_var_table, local_var_table, counter
+    size = p[-1]
+    if context == 'global':
+        global_var_table[current_id][3].append(size)
+        counter['global'][current_type] += size
+    else:
+        local_var_table[current_id][3].append(size)
+        counter['local'][current_type] += size
 
 
 def p_id(p):
@@ -359,7 +375,7 @@ def p_register_func(p):
         dir_func[current_func] = {'name': current_func, 'type': current_type}
         if (current_type != 'void'):
             global_var_table[current_func] = (
-                current_func, current_type, address['global'][current_type] + counter['global'][current_type], ())
+                current_func, current_type, address['global'][current_type] + counter['global'][current_type])
             counter['global'][current_type] += 1
     else:
         print('ERROR: Function already defined', current_func)
@@ -515,7 +531,7 @@ def p_call_func_era(p):
 
 def p_return_func(p):
     '''return_func : RETURN L_P expression R_P SEMICOLON'''
-    global quadruples, elements_stack, types_stack, global_var_table, current_func
+    global quadruples, elements_stack, types_stack, current_func
     element = elements_stack.pop()
     if types_stack.pop() == dir_func[current_func]['type']:
         quadruples.append(['return', None, None, element])
@@ -807,6 +823,7 @@ def p_add_cte_char(p):
     elements_stack.push(element)
     types_stack.push('char')
 
+
 def p_add_cte_string(p):
     '''add_cte_string : '''
     global elements_stack, types_stack, constant_var_table, address, counter
@@ -821,14 +838,17 @@ def p_add_cte_string(p):
     elements_stack.push(element)
     types_stack.push('char')
 
+
 def p_add_operator(p):
     '''add_operator : '''
     global operators_stack
     operators_stack.push(p[-1])
 
+
 def p_op1(p):
     '''op1 : OR add_operator expression
             | empty'''
+
 
 def p_op2(p):
     '''op2 : AND add_operator texp
@@ -885,6 +905,7 @@ def p_empty(p):
 
 def p_error(p):
     print("Syntax error on the Input", p)
+
 
 yacc.yacc()
 

@@ -14,3 +14,9 @@ Se generó el código para los estatuos no lineales (condiciones y ciclos)
 
 ## Quinto Avance
 Se generó el código de funciones, quedó pendiente la lectura correcta de las expresiones de los parametros y regresar el valor de la función cuando no es void
+
+## Sexto Avance
+Se corrigió el código de funciones y se comenzó con la implementación de la maquina virtual para estatutos lineales
+
+## Séptimo Avance
+Se comenzó con la generación de código de arreglos
