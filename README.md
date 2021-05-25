@@ -19,4 +19,4 @@ Se generó el código de funciones, quedó pendiente la lectura correcta de las 
 Se corrigió el código de funciones y se comenzó con la implementación de la maquina virtual para estatutos lineales
 
 ## Séptimo Avance
-Se comenzó con la generación de código de arreglos
+Se implentó la generación de código de arreglos. Queda pendiente la máquina virtual

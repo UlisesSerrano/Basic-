@@ -1,19 +1,20 @@
 program Ejemplo;
 var
-    int i, j, p;
+    int i, j, p, k;
     int Arreglo[10];
     float valor;
     int Matriz[3][8];
+    char r;
 
 func int fact (int j, char w)
 var int i;
 { 
-    i = j + 10;
+    i = j - i;
+    Matriz[i+j][Arreglo[i]*k] = i + j;
 }
 
 main ( )
 {
-    p = -10 + 5 / 2;
-    valor = 1 /2.1;
-    print (p, "a", valor) ; 
+    read (p) ; 
+    print("a");
 }

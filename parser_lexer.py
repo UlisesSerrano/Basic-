@@ -47,7 +47,7 @@ reserved = {  # reserverd tokens
 }
 
 tokens = [
-    'CTE_I', 'CTE_F', 'CTE_STRING', 'CTE_CHAR', 'ID', 'SEMICOLON',
+    'CTE_I', 'CTE_NEG_I', 'CTE_F', 'CTE_STRING', 'CTE_CHAR', 'ID', 'SEMICOLON',
     'L_P', 'R_P', 'COMA',
     'L_B', 'R_B',
     'L_SB', 'R_SB',
@@ -111,6 +111,12 @@ def t_CTE_I(t):
     return t
 
 
+def t_CTE_NEG_I(t):
+    r'-\d+'
+    t.value = int(t.value)
+    return t
+
+
 def t_CTE_STRING(t):
     r'\"([^\\\n]|(\\.))*?\"'
     print("String: '%s'" % t.value)
@@ -131,6 +137,7 @@ current_type = ''
 current_func = ''
 current_id = ''
 current_for_id = ''
+current_arr_id = ''
 current_call = ''
 
 global_var_table = {}
@@ -146,6 +153,7 @@ types_stack = Stack()
 operators_stack = Stack()
 elements_stack = Stack()
 jumps_stack = Stack()
+dim_stack = Stack()
 
 quadruples = []
 
@@ -170,7 +178,8 @@ counter = {
         "int": 1,
         "float": 0,
         "char": 0
-    }
+    },
+    "pointer": 0
 }
 
 # Base address
@@ -194,7 +203,8 @@ address = {
         "int": 27000,
         "float": 30000,
         "char": 33000
-    }
+    },
+    "pointer": 36000
 }
 
 
@@ -227,8 +237,9 @@ def fill(jump, counter):
 
 def p_program(p):
     '''program : PROGRAM ID main_quad SEMICOLON g_var funcs main'''
-    global dir_func, quadruples
+    global dir_func, quadruples, constant_var_table
     print(dir_func)
+    print(constant_var_table)
     print(quadruples)
 
 
@@ -350,19 +361,135 @@ def p_set_array(p):
 
 
 def p_id(p):
-    '''id : ID id1'''
+    '''id : ID set_id id1'''
+
+
+def p_set_id(p):
+    '''set_id : '''
     global current_id
-    current_id = p[1]
+    current_id = p[-1]
 
 
 def p_id1(p):
-    '''id1 : L_SB expression R_SB id2
+    '''id1 : verify_dim L_SB add_fake expression remove_fake verify_quad_1 R_SB id2 add_base
             | empty'''
 
 
 def p_id2(p):
-    '''id2 : L_SB expression R_SB
+    '''id2 : L_SB add_fake expression remove_fake verify_quad_2 R_SB
         | empty'''
+
+
+def p_verify_dim(p):
+    '''verify_dim : '''
+    global global_var_table, local_var_table, current_id, current_arr_id, dim_stack
+    current_arr_id = current_id
+    dim_stack.push({'id': current_arr_id, 'DIM': 1})
+    if current_arr_id in local_var_table:
+        if len(local_var_table[current_id][3]) == 0:
+            print(f'ERROR: Variable {current_id} has not dimensions')
+    elif current_arr_id in global_var_table:
+        if len(global_var_table[current_id][3]) == 0:
+            print(f'ERROR: Variable {current_id} has not dimensions')
+
+
+def p_verify_quad_1(p):
+    '''verify_quad_1 : '''
+    global global_var_table, local_var_table, elements_stack, quadruples, current_arr_id, dim_stack
+    dims = []
+    first_dim = 0
+    current_arr_id = dim_stack.peek()['id']
+    if current_arr_id in local_var_table:
+        dims = local_var_table[current_arr_id][3]
+        print(current_arr_id, dims)
+        first_dim = dims[0]
+        quadruples.append(['ver', elements_stack.peek(), None, first_dim])
+    elif current_arr_id in global_var_table:
+        dims = global_var_table[current_arr_id][3]
+        first_dim = dims[0]
+        quadruples.append(['ver', elements_stack.peek(), None, first_dim])
+
+    if len(dims) > 1:
+        element_op = elements_stack.pop()
+        element_type = types_stack.pop()
+        result_type = semantic_cube[element_type]['*']['int']
+
+        if result_type != None:
+            result = address['temp'][result_type] + \
+                counter['temp'][result_type]
+            counter['temp'][result_type] += 1
+
+            quadruples.append(['*', element_op, first_dim, result])
+
+            elements_stack.push(result)
+            types_stack.push(result_type)
+        else:
+            print("ERROR: Type mismatch quad", element_op, '*', first_dim)
+
+
+
+def p_verify_quad_2(p):
+    '''verify_quad_2 : '''
+    global global_var_table, local_var_table, elements_stack, quadruples, current_arr_id, dim_stack
+    dims = []
+    second_dim = 0
+    print(current_arr_id, dim_stack.elements())
+    current_arr_id = dim_stack.peek()['id']
+    print(current_arr_id)
+    if current_arr_id in local_var_table:
+        dims = local_var_table[current_arr_id][3]
+        second_dim = dims[1]
+        quadruples.append(['ver', elements_stack.peek(), None, second_dim])
+    elif current_arr_id in global_var_table:
+        dims = global_var_table[current_arr_id][3]
+        second_dim = dims[1]
+        quadruples.append(['ver', elements_stack.peek(), None, second_dim])
+
+    aux2 = elements_stack.pop()
+    type_aux2 = types_stack.pop()
+    aux1 = elements_stack.pop()
+    type_aux1 = types_stack.pop()
+    result_type = semantic_cube[type_aux2]['+'][type_aux1]
+
+    if result_type != None:
+        result = address['temp'][result_type] + counter['temp'][result_type]
+        counter['temp'][result_type] += 1
+
+        quadruples.append(['+', aux1, aux2, result])
+
+        elements_stack.push(result)
+        types_stack.push(result_type)
+    else:
+        print("ERROR: Type mismatch quad", aux1, '+', aux2)
+
+
+def p_add_base(p):
+    '''add_base : '''
+    global elements_stack, types_stack, address, counter, current_arr_id, global_var_table, local_var_table
+    element_op = elements_stack.pop()
+    element_type = types_stack.pop()
+    result_type = semantic_cube[element_type]['+']['int']
+
+    base_address = 0
+    if result_type != None:
+        result = address['pointer'] + counter['pointer']
+        counter['pointer'] += 1
+
+        if current_arr_id in local_var_table:
+            base_address = local_var_table[current_arr_id][2]
+        elif current_arr_id in global_var_table:
+            base_address = global_var_table[current_arr_id][2]
+
+        quadruples.append(['+', element_op, base_address, result])
+
+        elements_stack.push(result)
+        types_stack.push(result_type)
+    else:
+        print("ERROR: Type mismatch quad", element_op, '+', base_address)
+    
+    if not dim_stack.is_empty():
+        print(current_id)
+        dim_stack.pop()
 
 
 def p_var_type(p):
@@ -623,9 +750,9 @@ def p_else_jump(p):
     '''else_jump : '''
     global quadruples, jumps_stack
     quadruples.append(['goto', None, None, None])
-    false = jumps_stack.pop()
+    false_jump = jumps_stack.pop()
     jumps_stack.push(len(quadruples)-1)
-    fill(false, len(quadruples))
+    fill(false_jump, len(quadruples))
 
 
 def p_repetition_statement(p):
@@ -792,7 +919,8 @@ def p_id_quad(p):
 def p_cte(p):
     '''cte : CTE_CHAR add_cte_char
             | CTE_F add_cte_float
-            | CTE_I add_cte_int '''
+            | CTE_I add_cte_int
+            | CTE_NEG_I add_cte_int '''
 
 
 def p_add_cte_int(p):
@@ -928,7 +1056,7 @@ yacc.yacc()
 
 def readFile():
     try:
-        file_name = 'test2.txt'
+        file_name = 'test6.txt'
         file = open(file_name, 'r')
         print("Filename used : " + file_name)
         info = file.read()
@@ -954,232 +1082,232 @@ def readFile():
 readFile()
 
 
-example_text = '''
----------------------Python----------------------------------
-import kivy
-kivy.require('1.0.6') # replace with your current kivy version !
-from kivy.app import App
-from kivy.uix.button import Button
-class MyApp(App):
-    def build(self):
-        return Button(text='Hello World')
-if __name__ == '__main__':
-    MyApp().run()
-----------------------Java-----------------------------------
-public static byte toUnsignedByte(int intVal) {
-    byte byteVal;
-    return (byte)(intVal & 0xFF);
-}
----------------------kv lang---------------------------------
-#:kivy 1.0
-<YourWidget>:
-    canvas:
-        Color:
-            rgb: .5, .5, .5
-        Rectangle:
-            pos: self.pos
-            size: self.size
----------------------HTML------------------------------------
-<!-- Place this tag where you want the +1 button to render. -->
-<div class="g-plusone" data-annotation="inline" data-width="300"></div>
-<!-- Place this tag after the last +1 button tag. -->
-<script type="text/javascript">
-  (function() {
-    var po = document.createElement('script');
-    po.type = 'text/javascript';
-    po.async = true;
-    po.src = 'https://apis.google.com/js/plusone.js';
-    var s = document.getElementsByTagName('script')[0];
-    s.parentNode.insertBefore(po, s);
-  })();
-</script>
-----------------------Emacs key bindings---------------------
-This CodeInput inherits from EmacsBehavior, so you can use Emacs key bindings
-if you want! To try out Emacs key bindings, set the "Key bindings" option to
-"Emacs". Experiment with the shortcuts below on some of the text in this window
-(just be careful not to delete the cheat sheet before you have made note of the
-commands!)
-Shortcut           Description
---------           -----------
-Control + a        Move cursor to the beginning of the line
-Control + e        Move cursor to the end of the line
-Control + f        Move cursor one character to the right
-Control + b        Move cursor one character to the left
-Alt + f            Move cursor to the end of the word to the right
-Alt + b            Move cursor to the start of the word to the left
-Alt + Backspace    Delete text left of the cursor to the beginning of word
-Alt + d            Delete text right of the cursor to the end of the word
-Alt + w            Copy selection
-Control + w        Cut selection
-Control + y        Paste selection
+# example_text = '''
+# ---------------------Python----------------------------------
+# import kivy
+# kivy.require('1.0.6') # replace with your current kivy version !
+# from kivy.app import App
+# from kivy.uix.button import Button
+# class MyApp(App):
+#     def build(self):
+#         return Button(text='Hello World')
+# if __name__ == '__main__':
+#     MyApp().run()
+# ----------------------Java-----------------------------------
+# public static byte toUnsignedByte(int intVal) {
+#     byte byteVal;
+#     return (byte)(intVal & 0xFF);
+# }
+# ---------------------kv lang---------------------------------
+# #:kivy 1.0
+# <YourWidget>:
+#     canvas:
+#         Color:
+#             rgb: .5, .5, .5
+#         Rectangle:
+#             pos: self.pos
+#             size: self.size
+# ---------------------HTML------------------------------------
+# <!-- Place this tag where you want the +1 button to render. -->
+# <div class="g-plusone" data-annotation="inline" data-width="300"></div>
+# <!-- Place this tag after the last +1 button tag. -->
+# <script type="text/javascript">
+#   (function() {
+#     var po = document.createElement('script');
+#     po.type = 'text/javascript';
+#     po.async = true;
+#     po.src = 'https://apis.google.com/js/plusone.js';
+#     var s = document.getElementsByTagName('script')[0];
+#     s.parentNode.insertBefore(po, s);
+#   })();
+# </script>
+# ----------------------Emacs key bindings---------------------
+# This CodeInput inherits from EmacsBehavior, so you can use Emacs key bindings
+# if you want! To try out Emacs key bindings, set the "Key bindings" option to
+# "Emacs". Experiment with the shortcuts below on some of the text in this window
+# (just be careful not to delete the cheat sheet before you have made note of the
+# commands!)
+# Shortcut           Description
+# --------           -----------
+# Control + a        Move cursor to the beginning of the line
+# Control + e        Move cursor to the end of the line
+# Control + f        Move cursor one character to the right
+# Control + b        Move cursor one character to the left
+# Alt + f            Move cursor to the end of the word to the right
+# Alt + b            Move cursor to the start of the word to the left
+# Alt + Backspace    Delete text left of the cursor to the beginning of word
+# Alt + d            Delete text right of the cursor to the end of the word
+# Alt + w            Copy selection
+# Control + w        Cut selection
+# Control + y        Paste selection
 
-print(10*5);
-string name = input_s();
-print("String input: " + name);
-int i = input_i();
-print("Int input: ");
-print(i);
-float f = input_f();
-'''
-
-
-class Fnt_SpinnerOption(SpinnerOption):
-    pass
+# print(10*5);
+# string name = input_s();
+# print("String input: " + name);
+# int i = input_i();
+# print("Int input: ");
+# print(i);
+# float f = input_f();
+# '''
 
 
-class LoadDialog(Popup):
-
-    def load(self, path, selection):
-        self.choosen_file = [None, ]
-        self.choosen_file = selection
-        Window.title = selection[0][selection[0].rfind(os.sep) + 1:]
-        self.dismiss()
-
-    def cancel(self):
-        self.dismiss()
+# class Fnt_SpinnerOption(SpinnerOption):
+#     pass
 
 
-class SaveDialog(Popup):
+# class LoadDialog(Popup):
 
-    def save(self, path, selection):
-        _file = codecs.open(selection, 'w', encoding='utf8')
-        _file.write(self.text)
-        Window.title = selection[selection.rfind(os.sep) + 1:]
-        _file.close()
-        self.dismiss()
+#     def load(self, path, selection):
+#         self.choosen_file = [None, ]
+#         self.choosen_file = selection
+#         Window.title = selection[0][selection[0].rfind(os.sep) + 1:]
+#         self.dismiss()
 
-    def cancel(self):
-        self.dismiss()
-
-
-class CodeInputWithBindings(EmacsBehavior, CodeInput):
-
-    '''CodeInput with keybindings.
-    To add more bindings, add the behavior before CodeInput in the class
-    definition.
-    '''
-    pass
+#     def cancel(self):
+#         self.dismiss()
 
 
-class main(App):
+# class SaveDialog(Popup):
 
-    files = ListProperty([None, ])
+#     def save(self, path, selection):
+#         _file = codecs.open(selection, 'w', encoding='utf8')
+#         _file.write(self.text)
+#         Window.title = selection[selection.rfind(os.sep) + 1:]
+#         _file.close()
+#         self.dismiss()
 
-    def build(self):
-        b = BoxLayout(orientation='vertical')
-        languages = Spinner(
-            text='language',
-            values=sorted(['KvLexer', ] + list(lexers.LEXERS.keys())))
-
-        languages.bind(text=self.change_lang)
-
-        menu = BoxLayout(
-            size_hint_y=None,
-            height='15pt')
-        fnt_size = Spinner(
-            text='20',
-            values=list(map(str, list(range(15, 45, 5)))))
-        fnt_size.bind(text=self._update_size)
-
-        fonts = [
-            file for file in LabelBase._font_dirs_files
-            if file.endswith('.ttf')]
-
-        fnt_name = Spinner(
-            text='Courier New',
-            option_cls=Fnt_SpinnerOption,
-            values=fonts)
-        fnt_name.bind(text=self._update_font)
-        mnu_file = Spinner(
-            text='File',
-            values=('Open', 'SaveAs', 'Save', 'Close'))
-        mnu_file.bind(text=self._file_menu_selected)
-        key_bindings = Spinner(
-            text='Key bindings',
-            values=('Default key bindings', 'Emacs key bindings'))
-        key_bindings.bind(text=self._bindings_selected)
-
-        run_button = Button(text='Run')
-
-        menu.add_widget(mnu_file)
-        menu.add_widget(fnt_size)
-        menu.add_widget(run_button)
-        b.add_widget(menu)
-
-        self.codeinput = CodeInputWithBindings(
-            lexer=KivyLexer(),
-            font_size=20,
-            text=example_text,
-            key_bindings='default',
-        )
-        self.output = CodeInputWithBindings(
-            font_size=20,
-            text= "SECTION: OUTPUT\n",
-            foreground_color=(1,1,1,1),
-            background_color= (0,0,0,0.5),
-            key_bindings='default',
-        )
-        self.text_input = TextInput(foreground_color=(1,1,1,1),background_color=(0,0,0,0.25),text='Hello world', multiline=False)
-        self.text_input.bind(on_text_validate=self.on_enter)
-
-        b.add_widget(self.codeinput)
-        b.add_widget(self.text_input)
-        b.add_widget(self.output)
-
-        return b
-
-    def _update_size(self, instance, size):
-        self.codeinput.font_size = float(size)
-
-    def _update_font(self, instance, fnt_name):
-        instance.font_name = self.codeinput.font_name = fnt_name
-
-    def _file_menu_selected(self, instance, value):
-        if value == 'File':
-            return
-        instance.text = 'File'
-        if value == 'Open':
-            if not hasattr(self, 'load_dialog'):
-                self.load_dialog = LoadDialog()
-            self.load_dialog.open()
-            self.load_dialog.bind(choosen_file=self.setter('files'))
-        elif value == 'SaveAs':
-            if not hasattr(self, 'saveas_dialog'):
-                self.saveas_dialog = SaveDialog()
-            self.saveas_dialog.text = self.codeinput.text
-            self.saveas_dialog.open()
-        elif value == 'Save':
-            if self.files[0]:
-                _file = codecs.open(self.files[0], 'w', encoding='utf8')
-                _file.write(self.codeinput.text)
-                _file.close()
-        elif value == 'Close':
-            if self.files[0]:
-                self.codeinput.text = ''
-                Window.title = 'untitled'
-    def on_enter(self, instance):
-      self.stdin = instance.text
-      self.display_output(f'{self.stdin}\n')
-      self.resume_vm_execution()
-
-    def _bindings_selected(self, instance, value):
-        value = value.split(' ')[0]
-        self.codeinput.key_bindings = value.lower()
-
-    def on_files(self, instance, values):
-        if not values[0]:
-            return
-        _file = codecs.open(values[0], 'r', encoding='utf8')
-        self.codeinput.text = _file.read()
-        _file.close()
-
-    def change_lang(self, instance, z):
-        if z == 'KvLexer':
-            lx = KivyLexer()
-        else:
-            lx = lexers.get_lexer_by_name(lexers.LEXERS[z][2][0])
-        self.codeinput.lexer = lx
+#     def cancel(self):
+#         self.dismiss()
 
 
-if __name__ == '__main__':
-    main().run()
+# class CodeInputWithBindings(EmacsBehavior, CodeInput):
+
+#     '''CodeInput with keybindings.
+#     To add more bindings, add the behavior before CodeInput in the class
+#     definition.
+#     '''
+#     pass
+
+
+# class main(App):
+
+#     files = ListProperty([None, ])
+
+#     def build(self):
+#         b = BoxLayout(orientation='vertical')
+#         languages = Spinner(
+#             text='language',
+#             values=sorted(['KvLexer', ] + list(lexers.LEXERS.keys())))
+
+#         languages.bind(text=self.change_lang)
+
+#         menu = BoxLayout(
+#             size_hint_y=None,
+#             height='15pt')
+#         fnt_size = Spinner(
+#             text='20',
+#             values=list(map(str, list(range(15, 45, 5)))))
+#         fnt_size.bind(text=self._update_size)
+
+#         fonts = [
+#             file for file in LabelBase._font_dirs_files
+#             if file.endswith('.ttf')]
+
+#         fnt_name = Spinner(
+#             text='Courier New',
+#             option_cls=Fnt_SpinnerOption,
+#             values=fonts)
+#         fnt_name.bind(text=self._update_font)
+#         mnu_file = Spinner(
+#             text='File',
+#             values=('Open', 'SaveAs', 'Save', 'Close'))
+#         mnu_file.bind(text=self._file_menu_selected)
+#         key_bindings = Spinner(
+#             text='Key bindings',
+#             values=('Default key bindings', 'Emacs key bindings'))
+#         key_bindings.bind(text=self._bindings_selected)
+
+#         run_button = Button(text='Run')
+
+#         menu.add_widget(mnu_file)
+#         menu.add_widget(fnt_size)
+#         menu.add_widget(run_button)
+#         b.add_widget(menu)
+
+#         self.codeinput = CodeInputWithBindings(
+#             lexer=KivyLexer(),
+#             font_size=20,
+#             text=example_text,
+#             key_bindings='default',
+#         )
+#         self.output = CodeInputWithBindings(
+#             font_size=20,
+#             text= "SECTION: OUTPUT\n",
+#             foreground_color=(1,1,1,1),
+#             background_color= (0,0,0,0.5),
+#             key_bindings='default',
+#         )
+#         self.text_input = TextInput(foreground_color=(1,1,1,1),background_color=(0,0,0,0.25),text='Hello world', multiline=False)
+#         self.text_input.bind(on_text_validate=self.on_enter)
+
+#         b.add_widget(self.codeinput)
+#         b.add_widget(self.text_input)
+#         b.add_widget(self.output)
+
+#         return b
+
+#     def _update_size(self, instance, size):
+#         self.codeinput.font_size = float(size)
+
+#     def _update_font(self, instance, fnt_name):
+#         instance.font_name = self.codeinput.font_name = fnt_name
+
+#     def _file_menu_selected(self, instance, value):
+#         if value == 'File':
+#             return
+#         instance.text = 'File'
+#         if value == 'Open':
+#             if not hasattr(self, 'load_dialog'):
+#                 self.load_dialog = LoadDialog()
+#             self.load_dialog.open()
+#             self.load_dialog.bind(choosen_file=self.setter('files'))
+#         elif value == 'SaveAs':
+#             if not hasattr(self, 'saveas_dialog'):
+#                 self.saveas_dialog = SaveDialog()
+#             self.saveas_dialog.text = self.codeinput.text
+#             self.saveas_dialog.open()
+#         elif value == 'Save':
+#             if self.files[0]:
+#                 _file = codecs.open(self.files[0], 'w', encoding='utf8')
+#                 _file.write(self.codeinput.text)
+#                 _file.close()
+#         elif value == 'Close':
+#             if self.files[0]:
+#                 self.codeinput.text = ''
+#                 Window.title = 'untitled'
+#     def on_enter(self, instance):
+#       self.stdin = instance.text
+#       self.display_output(f'{self.stdin}\n')
+#       self.resume_vm_execution()
+
+#     def _bindings_selected(self, instance, value):
+#         value = value.split(' ')[0]
+#         self.codeinput.key_bindings = value.lower()
+
+#     def on_files(self, instance, values):
+#         if not values[0]:
+#             return
+#         _file = codecs.open(values[0], 'r', encoding='utf8')
+#         self.codeinput.text = _file.read()
+#         _file.close()
+
+#     def change_lang(self, instance, z):
+#         if z == 'KvLexer':
+#             lx = KivyLexer()
+#         else:
+#             lx = lexers.get_lexer_by_name(lexers.LEXERS[z][2][0])
+#         self.codeinput.lexer = lx
+
+
+# if __name__ == '__main__':
+#     main().run()
