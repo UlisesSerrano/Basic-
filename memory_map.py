@@ -9,7 +9,7 @@ class Memory:
     def get_value(self, address):
         if address in self.addresses:
             return self.addresses[address]
-        print("ERROR: Address not found", address)
+        print("ERROR: Address not found", address, self.addresses)
     
     def get_values(self):
         return self.addresses

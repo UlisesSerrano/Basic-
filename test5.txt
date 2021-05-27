@@ -10,7 +10,7 @@ func int fact (int j, char w)
 var int i;
 { 
     i = j - i + j * (p - k / j) * i ;
-    return ( j * fact(j-1, r));
+    return ( j * &fact(j - 1, r));
 }
 
 main ( )

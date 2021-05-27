@@ -3,20 +3,6 @@ import ply.lex as lex
 import ply.yacc as yacc
 from stack import Stack
 from semantic_cube import semantic_cube
-from kivy.app import App
-from kivy.extras.highlight import KivyLexer
-from kivy.uix.spinner import Spinner, SpinnerOption
-from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.codeinput import CodeInput
-from kivy.uix.behaviors import EmacsBehavior
-from kivy.uix.popup import Popup
-from kivy.properties import ListProperty
-from kivy.core.window import Window
-from kivy.core.text import LabelBase
-from pygments import lexers
-from kivy.uix.button import Button
-from kivy.uix.textinput import TextInput
-from kivy.uix.label import Label
 import codecs
 import os
 
@@ -54,7 +40,7 @@ tokens = [
     'EQUAL', 'GREATERTHAN', 'LESSTHAN',
     'GREATERTHANEQ', 'LESSTHANEQ', 'EQ',
     'DIFERENT', 'AND', 'OR',
-    'MINUS', 'PLUS', 'MOD', 'MULT', 'DIV',
+    'MINUS', 'PLUS', 'MOD', 'MULT', 'DIV', 'AMP'
 ] + list(reserved.values())
 
 t_MINUS = r'\-'
@@ -79,6 +65,7 @@ t_GREATERTHAN = r'\>'
 t_LESSTHAN = r'\<'
 t_DIFERENT = r'\!\='
 t_EQUAL = r'\='
+t_AMP = r'\&'
 # para ignorar caracteres:
 t_ignore = ' \t\r\n'
 
@@ -119,7 +106,6 @@ def t_CTE_NEG_I(t):
 
 def t_CTE_STRING(t):
     r'\"([^\\\n]|(\\.))*?\"'
-    print("String: '%s'" % t.value)
     return t
 
 
@@ -154,6 +140,7 @@ operators_stack = Stack()
 elements_stack = Stack()
 jumps_stack = Stack()
 dim_stack = Stack()
+for_id_stack = Stack()
 
 quadruples = []
 
@@ -260,6 +247,7 @@ def p_main(p):
         print('ERROR: Function already defined', current_func)
 
     print(local_var_table)
+    quadruples.append(['ENDFunc', None, None, None])
     local_var_table = {}
     param_types = []
     counter['local'] = {'int': 0, 'float': 0, 'char': 0}
@@ -350,7 +338,8 @@ def p_add_id(p):
 
 def p_set_array(p):
     '''set_array : '''
-    global current_id, current_type, global_var_table, local_var_table, counter
+    global current_id, current_type, global_var_table, local_var_table, constant_var_table, address, counter
+    cte = p[-1]
     size = p[-1]
     if context == 'global':
         global_var_table[current_id][3].append(size)
@@ -359,9 +348,14 @@ def p_set_array(p):
         local_var_table[current_id][3].append(size)
         counter['local'][current_type] += size
 
+    if cte not in constant_var_table:
+        constant_var_table[cte] = (
+            cte, 'int', address['constant']['int'] + counter['constant']['int'])
+        counter['constant']['int'] += 1
+
 
 def p_id(p):
-    '''id : ID set_id id1'''
+    '''id : ID set_id id_quad id1'''
 
 
 def p_set_id(p):
@@ -395,13 +389,12 @@ def p_verify_dim(p):
 
 def p_verify_quad_1(p):
     '''verify_quad_1 : '''
-    global global_var_table, local_var_table, elements_stack, quadruples, current_arr_id, dim_stack
+    global global_var_table, local_var_table, elements_stack, quadruples, current_arr_id, dim_stack, constant_var_table
     dims = []
     first_dim = 0
     current_arr_id = dim_stack.peek()['id']
     if current_arr_id in local_var_table:
         dims = local_var_table[current_arr_id][3]
-        print(current_arr_id, dims)
         first_dim = dims[0]
         quadruples.append(['ver', elements_stack.peek(), None, first_dim])
     elif current_arr_id in global_var_table:
@@ -419,7 +412,7 @@ def p_verify_quad_1(p):
                 counter['temp'][result_type]
             counter['temp'][result_type] += 1
 
-            quadruples.append(['*', element_op, first_dim, result])
+            quadruples.append(['*', element_op, constant_var_table[first_dim][2], result])
 
             elements_stack.push(result)
             types_stack.push(result_type)
@@ -430,12 +423,10 @@ def p_verify_quad_1(p):
 
 def p_verify_quad_2(p):
     '''verify_quad_2 : '''
-    global global_var_table, local_var_table, elements_stack, quadruples, current_arr_id, dim_stack
+    global global_var_table, local_var_table, elements_stack, quadruples, current_arr_id, dim_stack, constant_var_table
     dims = []
     second_dim = 0
-    print(current_arr_id, dim_stack.elements())
     current_arr_id = dim_stack.peek()['id']
-    print(current_arr_id)
     if current_arr_id in local_var_table:
         dims = local_var_table[current_arr_id][3]
         second_dim = dims[1]
@@ -465,7 +456,7 @@ def p_verify_quad_2(p):
 
 def p_add_base(p):
     '''add_base : '''
-    global elements_stack, types_stack, address, counter, current_arr_id, global_var_table, local_var_table
+    global elements_stack, types_stack, address, counter, current_arr_id, global_var_table, local_var_table, current_id
     element_op = elements_stack.pop()
     element_type = types_stack.pop()
     result_type = semantic_cube[element_type]['+']['int']
@@ -479,16 +470,21 @@ def p_add_base(p):
             base_address = local_var_table[current_arr_id][2]
         elif current_arr_id in global_var_table:
             base_address = global_var_table[current_arr_id][2]
+        
+        if base_address not in constant_var_table:
+            constant_var_table[base_address] = (
+                base_address, 'int', address['constant']['int'] + counter['constant']['int'])
+            counter['constant']['int'] += 1
 
-        quadruples.append(['+', element_op, base_address, result])
+        quadruples.append(['+', element_op, constant_var_table[base_address][2], result])
 
         elements_stack.push(result)
         types_stack.push(result_type)
+        current_id = current_arr_id
     else:
         print("ERROR: Type mismatch quad", element_op, '+', base_address)
     
     if not dim_stack.is_empty():
-        print(current_id)
         dim_stack.pop()
 
 
@@ -517,9 +513,10 @@ def p_register_func(p):
     if current_func not in dir_func:
         dir_func[current_func] = {'name': current_func, 'type': current_type}
         if (current_type != 'void'):
-            global_var_table[current_func] = (
-                current_func, current_type, address['global'][current_type] + counter['global'][current_type])
+            memory_address = address['global'][current_type] + counter['global'][current_type]
+            global_var_table[current_func] = [current_func, current_type, memory_address,[]]
             counter['global'][current_type] += 1
+            dir_func[current_func]['memory_address'] = memory_address
     else:
         print('ERROR: Function already defined', current_func)
 
@@ -578,7 +575,7 @@ def p_statement(p):
 
 
 def p_assignation(p):
-    '''assignation : id id_quad EQUAL expression SEMICOLON'''
+    '''assignation : id EQUAL expression SEMICOLON'''
     global quadruples, address, counter, elements_stack, types_stack
     right_op = elements_stack.pop()
     right_type = types_stack.pop()
@@ -603,13 +600,13 @@ def p_args1(p):
 
 def p_param_check(p):
     '''param_check : '''
-    global elements_stack, types_stack, k, dir_func, current_call
+    global elements_stack, types_stack, k, dir_func, current_call, counter
     arg_element = elements_stack.pop()
     arg_type = types_stack.pop()
 
     if k < len(dir_func[current_call]['param_types']):
         if dir_func[current_call]['param_types'][k] == arg_type:
-            quadruples.append(['PARAM', arg_element, k, None])
+            quadruples.append(['param', arg_element, k, current_call])
         else:
             print('ERROR: Type mismatch on argument on call function', current_call)
     else:
@@ -628,10 +625,10 @@ def p_next_arg(p):
 
 
 def p_call_func(p):
-    '''call_func :  ID call_func_era L_P args R_P SEMICOLON'''
+    '''call_func : AMP ID call_func_era L_P args R_P SEMICOLON'''
     global current_call, dir_func, k, quadruples
     if k == (len(dir_func[current_call]['param_types'])-1):
-        quadruples.append(['GOSUB', current_call, None,
+        quadruples.append(['goSub', current_call, None,
                            dir_func[current_call]['start_quad']])
     else:
         print('ERROR: Missing arguments', k, len(
@@ -639,10 +636,10 @@ def p_call_func(p):
 
 
 def p_call_func_exp(p):
-    '''call_func_exp :  ID call_func_era L_P args R_P'''
+    '''call_func_exp : AMP ID call_func_era L_P args R_P'''
     global current_call, dir_func, k
     if k == (len(dir_func[current_call]['param_types'])-1):
-        quadruples.append(['GOSUB', current_call, None,
+        quadruples.append(['goSub', current_call, None,
                            dir_func[current_call]['start_quad']])
         if current_call in global_var_table:
             func_var = global_var_table[current_call]
@@ -677,7 +674,7 @@ def p_return_func(p):
     global quadruples, elements_stack, types_stack, current_func
     element = elements_stack.pop()
     if types_stack.pop() == dir_func[current_func]['type']:
-        quadruples.append(['return', None, None, element])
+        quadruples.append(['return', None, current_func, element])
     else:
         print('ERROR: Return type mismatch')
 
@@ -761,11 +758,12 @@ def p_repetition_statement(p):
 
 
 def p_for_statement(p):
-    '''for_statement : FOR id id_quad EQUAL expression for_id TO breadcrumb expression exp_type do_statement'''
+    '''for_statement : FOR id for_id EQUAL expression for_id_quad TO breadcrumb expression exp_type do_statement'''
     global jumps_stack, quadruples, local_var_table, global_var_table, constant_var_table, current_for_id
     end = jumps_stack.pop()
     element = None
     return_jump = jumps_stack.pop()
+    current_for_id = for_id_stack.pop()
     if current_for_id in local_var_table:
         element = local_var_table[current_for_id][2]
         id_type = local_var_table[current_for_id][1]
@@ -785,16 +783,20 @@ def p_for_statement(p):
     quadruples.append(['goto', None, None, return_jump])
     fill(end, len(quadruples))
 
-
 def p_for_id(p):
     '''for_id : '''
+    global current_for_id, current_id
+    for_id_stack.push(current_id)
+    print('for_id', current_id)
+
+def p_for_id_quad(p):
+    '''for_id_quad : '''
     global quadruples, address, counter, elements_stack, types_stack, current_id, current_for_id
     right_op = elements_stack.pop()
     right_type = types_stack.pop()
     left_op = elements_stack.pop()
     left_type = types_stack.pop()
     result_type = semantic_cube[left_type]['='][right_type]
-    current_for_id = current_id
 
     if result_type != None:
         quadruples.append(['=', right_op, None, left_op])
@@ -877,8 +879,8 @@ def p_generate_quad_5(p):
 
 
 def p_fact(p):
-    '''fact : id id_quad
-            | call_func_exp
+    '''fact : call_func_exp
+            | id
             | L_P add_fake expression R_P remove_fake
             | cte'''
 
@@ -902,16 +904,20 @@ def p_id_quad(p):
     global elements_stack, types_stack, local_var_table, global_var_table, current_id
     element = None
     element_type = None
+    is_array = False
     if current_id in local_var_table:
         element = local_var_table[current_id][2]
         element_type = local_var_table[current_id][1]
+        is_array = False if len(local_var_table[current_id][3]) == 0 else True
     elif current_id in global_var_table:
         element = global_var_table[current_id][2]
         element_type = global_var_table[current_id][1]
+        is_array = False if len(global_var_table[current_id][3]) == 0 else True
 
     if element != None:
-        elements_stack.push(element)
-        types_stack.push(element_type)
+        if not is_array:
+            elements_stack.push(element)
+            types_stack.push(element_type)
     else:
         print('ERROR: Undeclared variable', current_id)
 
@@ -1011,7 +1017,7 @@ def p_op3(p):
 
 
 def p_op3aux(p):
-    '''op3aux : op3 mexp
+    '''op3aux : op3 gexp
             | empty'''
 
 
@@ -1056,7 +1062,7 @@ yacc.yacc()
 
 def readFile():
     try:
-        file_name = 'test6.txt'
+        file_name = 'patito_full.txt'
         file = open(file_name, 'r')
         print("Filename used : " + file_name)
         info = file.read()
@@ -1080,234 +1086,3 @@ def readFile():
 
 
 readFile()
-
-
-# example_text = '''
-# ---------------------Python----------------------------------
-# import kivy
-# kivy.require('1.0.6') # replace with your current kivy version !
-# from kivy.app import App
-# from kivy.uix.button import Button
-# class MyApp(App):
-#     def build(self):
-#         return Button(text='Hello World')
-# if __name__ == '__main__':
-#     MyApp().run()
-# ----------------------Java-----------------------------------
-# public static byte toUnsignedByte(int intVal) {
-#     byte byteVal;
-#     return (byte)(intVal & 0xFF);
-# }
-# ---------------------kv lang---------------------------------
-# #:kivy 1.0
-# <YourWidget>:
-#     canvas:
-#         Color:
-#             rgb: .5, .5, .5
-#         Rectangle:
-#             pos: self.pos
-#             size: self.size
-# ---------------------HTML------------------------------------
-# <!-- Place this tag where you want the +1 button to render. -->
-# <div class="g-plusone" data-annotation="inline" data-width="300"></div>
-# <!-- Place this tag after the last +1 button tag. -->
-# <script type="text/javascript">
-#   (function() {
-#     var po = document.createElement('script');
-#     po.type = 'text/javascript';
-#     po.async = true;
-#     po.src = 'https://apis.google.com/js/plusone.js';
-#     var s = document.getElementsByTagName('script')[0];
-#     s.parentNode.insertBefore(po, s);
-#   })();
-# </script>
-# ----------------------Emacs key bindings---------------------
-# This CodeInput inherits from EmacsBehavior, so you can use Emacs key bindings
-# if you want! To try out Emacs key bindings, set the "Key bindings" option to
-# "Emacs". Experiment with the shortcuts below on some of the text in this window
-# (just be careful not to delete the cheat sheet before you have made note of the
-# commands!)
-# Shortcut           Description
-# --------           -----------
-# Control + a        Move cursor to the beginning of the line
-# Control + e        Move cursor to the end of the line
-# Control + f        Move cursor one character to the right
-# Control + b        Move cursor one character to the left
-# Alt + f            Move cursor to the end of the word to the right
-# Alt + b            Move cursor to the start of the word to the left
-# Alt + Backspace    Delete text left of the cursor to the beginning of word
-# Alt + d            Delete text right of the cursor to the end of the word
-# Alt + w            Copy selection
-# Control + w        Cut selection
-# Control + y        Paste selection
-
-# print(10*5);
-# string name = input_s();
-# print("String input: " + name);
-# int i = input_i();
-# print("Int input: ");
-# print(i);
-# float f = input_f();
-# '''
-
-
-# class Fnt_SpinnerOption(SpinnerOption):
-#     pass
-
-
-# class LoadDialog(Popup):
-
-#     def load(self, path, selection):
-#         self.choosen_file = [None, ]
-#         self.choosen_file = selection
-#         Window.title = selection[0][selection[0].rfind(os.sep) + 1:]
-#         self.dismiss()
-
-#     def cancel(self):
-#         self.dismiss()
-
-
-# class SaveDialog(Popup):
-
-#     def save(self, path, selection):
-#         _file = codecs.open(selection, 'w', encoding='utf8')
-#         _file.write(self.text)
-#         Window.title = selection[selection.rfind(os.sep) + 1:]
-#         _file.close()
-#         self.dismiss()
-
-#     def cancel(self):
-#         self.dismiss()
-
-
-# class CodeInputWithBindings(EmacsBehavior, CodeInput):
-
-#     '''CodeInput with keybindings.
-#     To add more bindings, add the behavior before CodeInput in the class
-#     definition.
-#     '''
-#     pass
-
-
-# class main(App):
-
-#     files = ListProperty([None, ])
-
-#     def build(self):
-#         b = BoxLayout(orientation='vertical')
-#         languages = Spinner(
-#             text='language',
-#             values=sorted(['KvLexer', ] + list(lexers.LEXERS.keys())))
-
-#         languages.bind(text=self.change_lang)
-
-#         menu = BoxLayout(
-#             size_hint_y=None,
-#             height='15pt')
-#         fnt_size = Spinner(
-#             text='20',
-#             values=list(map(str, list(range(15, 45, 5)))))
-#         fnt_size.bind(text=self._update_size)
-
-#         fonts = [
-#             file for file in LabelBase._font_dirs_files
-#             if file.endswith('.ttf')]
-
-#         fnt_name = Spinner(
-#             text='Courier New',
-#             option_cls=Fnt_SpinnerOption,
-#             values=fonts)
-#         fnt_name.bind(text=self._update_font)
-#         mnu_file = Spinner(
-#             text='File',
-#             values=('Open', 'SaveAs', 'Save', 'Close'))
-#         mnu_file.bind(text=self._file_menu_selected)
-#         key_bindings = Spinner(
-#             text='Key bindings',
-#             values=('Default key bindings', 'Emacs key bindings'))
-#         key_bindings.bind(text=self._bindings_selected)
-
-#         run_button = Button(text='Run')
-
-#         menu.add_widget(mnu_file)
-#         menu.add_widget(fnt_size)
-#         menu.add_widget(run_button)
-#         b.add_widget(menu)
-
-#         self.codeinput = CodeInputWithBindings(
-#             lexer=KivyLexer(),
-#             font_size=20,
-#             text=example_text,
-#             key_bindings='default',
-#         )
-#         self.output = CodeInputWithBindings(
-#             font_size=20,
-#             text= "SECTION: OUTPUT\n",
-#             foreground_color=(1,1,1,1),
-#             background_color= (0,0,0,0.5),
-#             key_bindings='default',
-#         )
-#         self.text_input = TextInput(foreground_color=(1,1,1,1),background_color=(0,0,0,0.25),text='Hello world', multiline=False)
-#         self.text_input.bind(on_text_validate=self.on_enter)
-
-#         b.add_widget(self.codeinput)
-#         b.add_widget(self.text_input)
-#         b.add_widget(self.output)
-
-#         return b
-
-#     def _update_size(self, instance, size):
-#         self.codeinput.font_size = float(size)
-
-#     def _update_font(self, instance, fnt_name):
-#         instance.font_name = self.codeinput.font_name = fnt_name
-
-#     def _file_menu_selected(self, instance, value):
-#         if value == 'File':
-#             return
-#         instance.text = 'File'
-#         if value == 'Open':
-#             if not hasattr(self, 'load_dialog'):
-#                 self.load_dialog = LoadDialog()
-#             self.load_dialog.open()
-#             self.load_dialog.bind(choosen_file=self.setter('files'))
-#         elif value == 'SaveAs':
-#             if not hasattr(self, 'saveas_dialog'):
-#                 self.saveas_dialog = SaveDialog()
-#             self.saveas_dialog.text = self.codeinput.text
-#             self.saveas_dialog.open()
-#         elif value == 'Save':
-#             if self.files[0]:
-#                 _file = codecs.open(self.files[0], 'w', encoding='utf8')
-#                 _file.write(self.codeinput.text)
-#                 _file.close()
-#         elif value == 'Close':
-#             if self.files[0]:
-#                 self.codeinput.text = ''
-#                 Window.title = 'untitled'
-#     def on_enter(self, instance):
-#       self.stdin = instance.text
-#       self.display_output(f'{self.stdin}\n')
-#       self.resume_vm_execution()
-
-#     def _bindings_selected(self, instance, value):
-#         value = value.split(' ')[0]
-#         self.codeinput.key_bindings = value.lower()
-
-#     def on_files(self, instance, values):
-#         if not values[0]:
-#             return
-#         _file = codecs.open(values[0], 'r', encoding='utf8')
-#         self.codeinput.text = _file.read()
-#         _file.close()
-
-#     def change_lang(self, instance, z):
-#         if z == 'KvLexer':
-#             lx = KivyLexer()
-#         else:
-#             lx = lexers.get_lexer_by_name(lexers.LEXERS[z][2][0])
-#         self.codeinput.lexer = lx
-
-
-# if __name__ == '__main__':
-#     main().run()

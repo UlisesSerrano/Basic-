@@ -1,0 +1,24 @@
+program Ejemplo;
+var
+    int a[10];
+
+main ( )
+var int i, j, temp;
+{   
+    for i = 1 to i < 5 do {
+        a[i] = 5 - i;
+        print('a', a[i]);
+    }
+    for i = 1 to i < 5 do {
+        for j = i+1 to j < 5 do {
+            if (a[j] < a[i]) {
+                temp = a[i];
+                a[i] = a[j];
+                a[j] = temp;
+            }
+        }
+    }
+    for i = 1 to i < 5 do {
+        print('b', a[i]);
+    }
+}
