@@ -36,14 +36,16 @@ main ( )
     while ( i < 11) do
     { 
         Arreglo[i] = Arreglo[i] * &fact(Arreglo[i] - p);
-        Matriz[i][Arreglo[i + p] * p] = Arreglo[i];
+        Matriz[i][(Arreglo[i] * -1) % p] = Arreglo[i];
         i = i + 1;
     }
 
-    while ( i >= -1) do
+    i = i - 1;
+
+    while ( i >= 0) do
     {  
         print ("resultado", Arreglo [ i ] , &fact( i +2)) ;
-        print (Matriz[i][p*2 - i]) ;
+        print ("mat", Matriz[i][0]) ;
         i = i - 1;
     }
 }

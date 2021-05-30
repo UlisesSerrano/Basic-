@@ -1,0 +1,21 @@
+program Ejemplo;
+
+main ( )
+var 
+    int n, i;
+    float factorial;
+{
+    factorial = 1.0;
+    print("Enter a positive integer");
+    read(n);
+
+    if (n < 0) {
+        print("Error! Factorial of a negative number doesn't exist.");
+    }
+    else {
+        for i = 1 to i <= n do {
+            factorial = factorial * i;
+        }
+        print("Factorial of ", n, " = ", factorial);    
+    }
+}

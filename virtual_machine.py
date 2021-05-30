@@ -66,6 +66,8 @@ def get_result(left_op, op, right_op):
         return left_op * right_op
     elif(op == '/'):
         return left_op // right_op if isinstance(left_op, int) and isinstance(right_op, int) else left_op / right_op
+    elif(op == '%'):
+        return left_op % right_op
     elif(op == '<'):
         return left_op < right_op
     elif(op == '<='):
@@ -170,7 +172,7 @@ def run():
     def iver():
         global instruction_pointer
         value = get_value(first_element)
-        if value in range(0, third_element):
+        if value in range(third_element):
             instruction_pointer += 1
         else:
             print('ERROR: Index out of bounds', value, third_element, memories_stack.peek().get_values())
@@ -237,7 +239,7 @@ def run():
 
 
 # Compile program.
-file_name = 'patito_full.txt.obj'
+file_name = 'factorial_iter.txt.obj'
 with open(file_name, 'r') as file:
     #global dir_func, dir_quadruples
     file_data = eval(file.read())

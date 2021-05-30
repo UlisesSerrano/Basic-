@@ -1,0 +1,40 @@
+program Ejemplo;
+
+func void mat ()
+var
+    int a[3][2], b[2][3], r[3][3], row, col, inner;
+{ 
+    a[0][0] = 1;
+    a[0][1] = 4;
+    a[1][0] = 2;
+    a[1][1] = 5;
+    a[2][0] = 3;
+    a[2][1] = 6;
+
+    b[0][0] = 7;
+    b[0][1] = 8;
+    b[0][2] = 9;
+    b[1][0] = 10;
+    b[1][1] = 11;
+    b[1][2] = 12;
+
+    for row = 0 to row < 3 do {
+        for col = 0 to col < 3 do {
+            r[row][col] = 0;
+        }
+    }
+
+    for row = 0 to row < 3 do {
+        for col = 0 to col < 3 do {
+            for inner = 0 to inner < 2 do {
+                r[row][col] = r[row][col] + (a[row][inner] * b[inner][col]);
+            }
+            print(r[row][col]);
+        }
+    }
+}
+
+main ( )
+{
+    &mat();
+}
