@@ -1,3 +1,4 @@
+from parser_lexer import read_file
 import sys
 from utils.stack import Stack
 from utils.memory_map import Memory
@@ -272,9 +273,9 @@ def run():
 
 
 # Compile program.
-file_name = 'tests/factorial_iter.txt.obj'
-with open(file_name, 'r') as file:
-    # global dir_func, dir_quadruples
+file_name = 'tests/factorial_iter.txt'
+read_file(file_name)
+with open(file_name + '.obj', 'r') as file:
     file_data = eval(file.read())
     dir_func = file_data['dir_func']
     quadruples = file_data['quadruples']

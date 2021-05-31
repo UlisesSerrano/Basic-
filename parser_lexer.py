@@ -1079,9 +1079,9 @@ def p_error(p):
 yacc.yacc()
 
 
-def readFile():
+def read_file(file_name):
     try:
-        file_name = 'tests/factorial_iter.txt'
+        ## file_name = 'tests/factorial_iter.txt'
         file = open(file_name, 'r')
         print("Filename used : " + file_name)
         info = file.read()
@@ -1104,4 +1104,3 @@ def readFile():
         print(EOFError)
 
 
-readFile()
