@@ -3,18 +3,20 @@ var
     int i, j, p, k;
     int Arreglo[10];
     float valor;
-    int Matriz[3][8];
+    int Matriz[10][8];
     char r;
 
 func int fact (int j, char w)
 var int i;
 { 
-    i = j - i + j * (p - k / j) * i ;
-    return ( j * &fact(j - 1, r));
+    i = 1;
+    k = 1;
+    Arreglo[i] = 1;
+    Matriz[i+j][Arreglo[i]*k] = i + j;
+    return (j);
 }
 
 main ( )
 {
-    read (p) ; 
-    print("a");
+    print(&fact(2, 'a'));
 }

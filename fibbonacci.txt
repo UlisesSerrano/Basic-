@@ -7,16 +7,21 @@ var
     char r;
 
 func int fibbo (int j, char w)
-var int i, r;
+var int i, aux, fib;
 { 
-    r = 0;
+    aux = 1;
+    fib = 0;
     for i = 1 to i <= j do {
-        r = r + i;
+        print(fib);
+        aux = aux + fib;
+        fib = aux - fib;
     }
-    return (r);
+    return (fib);
 }
 
 main ( )
+var int r;
 {
-    print(&fibbo(5, 'a'));
+    read(r);
+    &fibbo(r, 'a');
 }

@@ -3,6 +3,7 @@
 <Fnt_SpinnerOption>:
     font_name: self.text
 
+
 <LoadDialog>:
     title: filechooser.path
     choosen_file: None
@@ -24,6 +25,16 @@
             Button:
                 text: "Load"
                 on_release: root.load(filechooser.path, filechooser.selection)
+# <P>:
+#     Label:
+#         text: "you pressed the button"
+#         size_hint: 0.6,0.2
+#         pos_hint: {'x': 0.2, 'top':1 } 
+
+#     Button:
+#         text: "you pressed the button"
+#         size_hint: 0.8,0.2
+#         pos_hint: {'x': 0.1, 'y':0.1 } 
 
 <SaveDialog>:
     text_input: text_input

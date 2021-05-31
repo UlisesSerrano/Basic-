@@ -9,11 +9,11 @@ var
 func int fact (int j, char w)
 var int i;
 { 
-    i = j + (p - j*2+j+w) ;
+    i = j + (p - j*2+j) ;
     if (j == 1)
         { return ( j ); }
     else
-        { return ( j * (fact(j-1, w))); }
+        { return ( j * (&fact(j - 1, w))); }
 }
 
 func void inicia (int y)
@@ -29,17 +29,16 @@ main ( )
 {
     read (p) ; 
     j =p *2;
-    inicia ( p * j  -  5) ;
     for i=0 to 9 do
-        { Arreglo [ i ] = Arreglo [ i ] * fact (Arreglo [ i ] - p, r) ; }
+        { Arreglo [ i ] = Arreglo [ i ] * &fact (Arreglo [ i ] - p, r) ; }
     for j=0 to 2 do
         {
         for k= 0 to 7 do
-            { Matriz[ j ][ k ] = Arreglo[ j+k- fact(p, r) + p*k ] * p + j; }
+            { Matriz[ j ][ k ] = Arreglo[ j+k- &fact(p, r) + p*k ] * p + j; }
         }
     while ( i >= 0) do
         {  
-            print (Arreglo [ i ] , fact ( i +2, r) * valor) ;
+            print (Arreglo [ i ] , &fact ( i +2, r) * valor) ;
             i = i - 1;
         }
 }
