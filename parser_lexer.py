@@ -194,6 +194,55 @@ address = {
     "pointer": 36000
 }
 
+def clear_parser():
+    global current_func,current_arr_id,current_call,current_id,current_for_id,current_type, global_var_table,local_var_table,constant_var_table,dir_func,context,k,types_stack,operators_stack,elements_stack,jumps_stack,dim_stack,for_id_stack,quadruples,counter
+    current_type = ''
+    current_func = ''
+    current_id = ''
+    current_for_id = ''
+    current_arr_id = ''
+    current_call = ''
+
+    global_var_table = {}
+    local_var_table = {}
+    constant_var_table = {1: (1, 'int', 27000)}
+    dir_func = {}
+    context = 'global'
+    counter = {
+        "global": {
+            "int": 0,
+            "float": 0,
+            "char": 0
+        },
+        "local": {
+            "int": 0,
+            "float": 0,
+            "char": 0
+        },
+        "temp": {
+            "int": 0,
+            "float": 0,
+            "char": 0
+        },
+        "constant": {
+            "int": 1,
+            "float": 0,
+            "char": 0
+        },
+        "pointer": 0
+    }
+
+    k = 0  # Param counter for call_func
+
+    types_stack = Stack()
+    operators_stack = Stack()
+    elements_stack = Stack()
+    jumps_stack = Stack()
+    dim_stack = Stack()
+    for_id_stack = Stack()
+
+    quadruples = []
+
 
 def generate_quadruple():
     global quadruples, address, counter, elements_stack, types_stack, operators_stack
@@ -1079,13 +1128,15 @@ def p_error(p):
 yacc.yacc()
 
 
-def read_file(file_name):
+def read_file(file_name='test2.txt'):
+    clear_parser()
     try:
-        ## file_name = 'tests/factorial_iter.txt'
         file = open(file_name, 'r')
         print("Filename used : " + file_name)
         info = file.read()
         file.close()
+        lexer = lex.lex(optimize=1)
+        yacc.yacc(optimize = 1)
         lexer.input(info)
         while True:
             tok = lexer.token()
@@ -1102,5 +1153,4 @@ def read_file(file_name):
 
     except EOFError:
         print(EOFError)
-
-
+    return file_name

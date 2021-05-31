@@ -1,3 +1,6 @@
+from os import read
+import sys
+from CompilerApp import CompilerApp
 from parser_lexer import read_file
 import sys
 from utils.stack import Stack
@@ -30,6 +33,12 @@ base_address = {
     "float": 13000,
     "char": 16000
 }
+
+def clear_virtual_machine():
+    global func_calls_stack, memories_stack
+    func_calls_stack = Stack()
+    memories_stack = Stack()
+ 
 
 
 def get_type(input_data):
@@ -114,8 +123,7 @@ def get_result(left_op, op, right_op):
         return 1 if left_op or right_op else 0
 
 
-def run():
-    instruction_pointer = 0
+def run(instruction_pointer=0):
     current_quad = quadruples[instruction_pointer]
     instruction = ''
     first_element = 0
@@ -178,19 +186,20 @@ def run():
     def iprint():
         global instruction_pointer
         print(get_value(third_element))
+        program.display_output(get_value(third_element),display_name="VM")
         instruction_pointer += 1
         return instruction_pointer
 
     def iread():
+        #value debera de ser igual a lo que se reciba en kivy y aqui puasar hata que se reciba un dato
         global instruction_pointer
-        value = input("Read: ")
-        value_type = get_type(value)
-        if check_range(third_element, value_type):
-            set_value(value, third_element)
-            instruction_pointer += 1
-        else:
-            print('ERROR: Invalid input type', value)
-            sys.exit()
+        if value := program.get_stdoutin():
+            value_type = get_type(value)
+            if check_range(third_element, value_type):
+                set_value(value, third_element)
+                instruction_pointer += 1
+            else:
+                print('ERROR: Invalid input type', value, third_element)
         return instruction_pointer
 
     def ireturn():
@@ -200,6 +209,7 @@ def run():
         memories_stack.pop()
         set_value(value, dir_func[current_func]['memory_address'])
         instruction_pointer = func_calls_stack.pop()
+        # program.display_output(value,display_name="Return")
         return instruction_pointer
 
     def iver():
@@ -209,7 +219,6 @@ def run():
             instruction_pointer += 1
         else:
             print('ERROR: Index out of bounds', value)
-            sys.exit()
         return instruction_pointer
 
     def iassign():
@@ -232,7 +241,6 @@ def run():
 
     def instruction_error():
         print('ERROR: Wrong instruction')
-        sys.exit()
 
     instruction_switch = {
         'goto': igoto,
@@ -267,21 +275,30 @@ def run():
         first_element = current_quad[1]
         second_element = current_quad[2]
         third_element = current_quad[3]
-
+        previous_instruction_pointer = instruction_pointer
         instruction_pointer = instruction_switch.get(
             instruction, instruction_error)()
+        if previous_instruction_pointer == instruction_pointer:
+            program.save_state(instruction_pointer)
+            break
 
 
-# Start program.
-file_name = 'tests/factorial_iter.txt'
-read_file(file_name)
-with open(file_name + '.obj', 'r') as file:
-    file_data = eval(file.read())
-    dir_func = file_data['dir_func']
-    quadruples = file_data['quadruples']
-    constant_var_table = file_data['constant_var_table']
-    for cte in constant_var_table:
-        global_program_memory.set_value(
-            constant_var_table[cte][0], constant_var_table[cte][2])
-    print(quadruples)
-    run()
+source_code = 'tests/factorial_iter.txt'
+def start():
+    global dir_func, quadruples, constant_var_table, program, source_code
+    read_file(source_code)
+    file_name = source_code + '.obj'
+
+    # Compile program.
+    with open(file_name, 'r') as file:
+        file_data = eval(file.read())
+        dir_func = file_data['dir_func']
+        quadruples = file_data['quadruples']
+        constant_var_table = file_data['constant_var_table']
+        for cte in constant_var_table:
+            global_program_memory.set_value(
+                constant_var_table[cte][0], constant_var_table[cte][2])
+        print(quadruples)
+
+program = CompilerApp(run_virtual_machine=run, clear_virtual_machine=clear_virtual_machine, source_code=source_code, vm_Data = start)
+program.run()

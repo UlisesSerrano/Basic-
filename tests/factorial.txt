@@ -19,5 +19,7 @@ var int i;
 
 main ( )
 {
-    print(&fact(5, 'a'));
+    read(j);
+	print("ab");
+    print(&fact(j, 'a'));
 }
