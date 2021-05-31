@@ -1,12 +1,7 @@
-import sys
 import ply.lex as lex
 import ply.yacc as yacc
-from stack import Stack
-from semantic_cube import semantic_cube
-import codecs
-import os
-
-import os
+from utils.stack import Stack
+from utils.semantic_cube import semantic_cube
 
 ###############################################
 # TOKENS
@@ -33,7 +28,7 @@ reserved = {  # reserverd tokens
 }
 
 tokens = [
-    'CTE_I', 'CTE_NEG_I', 'CTE_F', 'CTE_STRING', 'CTE_CHAR', 'ID', 'SEMICOLON',
+    'CTE_I', 'CTE_NEG_I', 'CTE_F', 'CTE_NEG_F','CTE_STRING', 'CTE_CHAR', 'ID', 'SEMICOLON',
     'L_P', 'R_P', 'COMA',
     'L_B', 'R_B',
     'L_SB', 'R_SB',
@@ -88,6 +83,11 @@ def t_ID(t):
 
 def t_CTE_F(t):
     r'\d*\.\d+'
+    t.value = float(t.value)
+    return t
+
+def t_CTE_NEG_F(t):
+    r'-\d*\.\d+'
     t.value = float(t.value)
     return t
 
@@ -263,7 +263,7 @@ def generate_quadruple():
         types_stack.push(result_type)
 
     else:
-        print("ERROR: Type mismatch quad", right_op, op, left_op)
+        print("ERROR: Type mismatch", right_op, op, left_op)
 
 
 def fill(jump, counter):
@@ -361,7 +361,7 @@ def p_dec_id1(p):
 
 
 def p_dec_id2(p):
-    '''dec_id2 : L_SB CTE_I set_array R_SB
+    '''dec_id2 : L_SB CTE_I set_array_2 R_SB
         | empty'''
 
 
@@ -396,6 +396,25 @@ def p_set_array(p):
     else:
         local_var_table[current_id][3].append(size)
         counter['local'][current_type] += size
+
+    if cte not in constant_var_table:
+        constant_var_table[cte] = (
+            cte, 'int', address['constant']['int'] + counter['constant']['int'])
+        counter['constant']['int'] += 1
+
+def p_set_array_2(p):
+    '''set_array_2 : '''
+    global current_id, current_type, global_var_table, local_var_table, constant_var_table, address, counter
+    cte = p[-1]
+    size = p[-1]
+    if context == 'global':
+        global_var_table[current_id][3].append(size)
+        prev_size = global_var_table[current_id][3][0]
+        counter['global'][current_type] += size * prev_size - prev_size - 1
+    else:
+        local_var_table[current_id][3].append(size)
+        prev_size = local_var_table[current_id][3][0]
+        counter['local'][current_type] += size * prev_size - prev_size - 1
 
     if cte not in constant_var_table:
         constant_var_table[cte] = (
@@ -461,12 +480,12 @@ def p_verify_quad_1(p):
                 counter['temp'][result_type]
             counter['temp'][result_type] += 1
 
-            quadruples.append(['*', element_op, constant_var_table[first_dim][2], result])
+            quadruples.append(['*', element_op, constant_var_table[dims[1]][2], result])
 
             elements_stack.push(result)
             types_stack.push(result_type)
         else:
-            print("ERROR: Type mismatch quad", element_op, '*', first_dim)
+            print("ERROR: Type mismatch", element_op, '*', dims[1])
 
 
 
@@ -500,7 +519,7 @@ def p_verify_quad_2(p):
         elements_stack.push(result)
         types_stack.push(result_type)
     else:
-        print("ERROR: Type mismatch quad", aux1, '+', aux2)
+        print("ERROR: Type mismatch", aux1, '+', aux2)
 
 
 def p_add_base(p):
@@ -531,7 +550,7 @@ def p_add_base(p):
         types_stack.push(result_type)
         current_id = current_arr_id
     else:
-        print("ERROR: Type mismatch quad", element_op, '+', base_address)
+        print("ERROR: Type mismatch", element_op, '+', base_address)
     
     if not dim_stack.is_empty():
         dim_stack.pop()
@@ -676,7 +695,7 @@ def p_next_arg(p):
 def p_call_func(p):
     '''call_func : AMP ID call_func_era L_P args R_P SEMICOLON'''
     global current_call, dir_func, k, quadruples
-    if k == (len(dir_func[current_call]['param_types'])-1):
+    if len(dir_func[current_call]['param_types']) == 0 or k == (len(dir_func[current_call]['param_types'])-1):
         quadruples.append(['goSub', current_call, None,
                            dir_func[current_call]['start_quad']])
     else:
@@ -687,7 +706,7 @@ def p_call_func(p):
 def p_call_func_exp(p):
     '''call_func_exp : AMP ID call_func_era L_P args R_P'''
     global current_call, dir_func, k
-    if k == (len(dir_func[current_call]['param_types'])-1):
+    if len(dir_func[current_call]['param_types']) == 0 or k == (len(dir_func[current_call]['param_types'])-1):
         quadruples.append(['goSub', current_call, None,
                            dir_func[current_call]['start_quad']])
         if current_call in global_var_table:
@@ -836,7 +855,6 @@ def p_for_id(p):
     '''for_id : '''
     global current_for_id, current_id
     for_id_stack.push(current_id)
-    print('for_id', current_id)
 
 def p_for_id_quad(p):
     '''for_id_quad : '''
@@ -974,6 +992,7 @@ def p_id_quad(p):
 def p_cte(p):
     '''cte : CTE_CHAR add_cte_char
             | CTE_F add_cte_float
+            | CTE_NEG_F add_cte_float
             | CTE_I add_cte_int
             | CTE_NEG_I add_cte_int '''
 
@@ -1109,7 +1128,7 @@ def p_error(p):
 yacc.yacc()
 
 
-def readFile(file_name='test2.txt'):
+def read_file(file_name='test2.txt'):
     clear_parser()
     try:
         file = open(file_name, 'r')

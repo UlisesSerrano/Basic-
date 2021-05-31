@@ -1,9 +1,12 @@
 from os import read
 import sys
-from stack import Stack
-from memory_map import Memory
 from CompilerApp import CompilerApp
-from parser_lexer import readFile
+from parser_lexer import read_file
+import sys
+from utils.stack import Stack
+from utils.memory_map import Memory
+from ast import literal_eval
+
 dir_func = {}
 quadruples = []
 constant_var_table = {}
@@ -38,6 +41,32 @@ def clear_virtual_machine():
  
 
 
+def get_type(input_data):
+    try:
+        return type(literal_eval(input_data))
+    except (ValueError, SyntaxError):
+        # A string, so return str
+        return str
+
+
+def check_range(address, value_type):
+    if value_type == type(1):
+        if address in range(1000, 4000) or address in range(10000, 13000):
+            return True
+        else:
+            return False
+    elif value_type == type(1.0):
+        if address in range(4000, 7000) or address in range(13000, 16000):
+            return True
+        else:
+            return False
+    elif value_type == type('a') or value_type == type(True):
+        if address in range(7000, 10000) or address in range(16000, 19000):
+            return True
+        else:
+            return False
+
+
 def get_memory_value(address):
     global global_program_memory
     if address >= GLOBAL_LIMIT and address < LOCAL_LIMIT:
@@ -47,7 +76,7 @@ def get_memory_value(address):
 
 
 def get_value(address):
-    if address in range(1000, 4000) or address in range(10000, 13000) or address in range(19000, 21000)  or address in range(27000, 30000):
+    if address in range(1000, 4000) or address in range(10000, 13000) or address in range(19000, 21000) or address in range(27000, 30000):
         return int(get_memory_value(address))
     elif address in range(4000, 7000) or address in range(13000, 16000) or address in range(21000, 24000) or address in range(30000, 33000):
         return float(get_memory_value(address))
@@ -74,6 +103,8 @@ def get_result(left_op, op, right_op):
         return left_op * right_op
     elif(op == '/'):
         return left_op // right_op if isinstance(left_op, int) and isinstance(right_op, int) else left_op / right_op
+    elif(op == '%'):
+        return left_op % right_op
     elif(op == '<'):
         return left_op < right_op
     elif(op == '<='):
@@ -141,7 +172,7 @@ def run(instruction_pointer=0):
         memories_stack.push(new_memory)
         instruction_pointer = third_element
         return instruction_pointer
-    
+
     def iEndFunc():
         global instruction_pointer, memories_stack
         if not memories_stack.is_empty():
@@ -149,7 +180,7 @@ def run(instruction_pointer=0):
         if not func_calls_stack.is_empty():
             instruction_pointer = func_calls_stack.pop()
         else:
-            instruction_pointer += 1     
+            instruction_pointer += 1
         return instruction_pointer
 
     def iprint():
@@ -163,10 +194,12 @@ def run(instruction_pointer=0):
         #value debera de ser igual a lo que se reciba en kivy y aqui puasar hata que se reciba un dato
         global instruction_pointer
         if value := program.get_stdoutin():
-            set_value(value, third_element)
-            instruction_pointer += 1
-        # program.display_output(value, display_name="VMRead")
-        print('read')
+            value_type = get_type(value)
+            if check_range(third_element, value_type):
+                set_value(value, third_element)
+                instruction_pointer += 1
+            else:
+                print('ERROR: Invalid input type', value, third_element)
         return instruction_pointer
 
     def ireturn():
@@ -178,21 +211,21 @@ def run(instruction_pointer=0):
         instruction_pointer = func_calls_stack.pop()
         # program.display_output(value,display_name="Return")
         return instruction_pointer
-    
+
     def iver():
         global instruction_pointer
         value = get_value(first_element)
-        if value in range(0, third_element):
+        if value in range(third_element):
             instruction_pointer += 1
         else:
-            print('ERROR: Index out of bounds', value, third_element, memories_stack.peek().get_values())
-            sys.exit()
+            print('ERROR: Index out of bounds', value)
         return instruction_pointer
 
     def iassign():
         global instruction_pointer
         first_value = get_value(first_element)
-        set_value(first_value, third_element if third_element < 36000 else get_memory_value(third_element))
+        set_value(first_value, third_element if third_element <
+                  36000 else get_memory_value(third_element))
         instruction_pointer += 1
         return instruction_pointer
 
@@ -208,7 +241,6 @@ def run(instruction_pointer=0):
 
     def instruction_error():
         print('ERROR: Wrong instruction')
-        sys.exit()
 
     instruction_switch = {
         'goto': igoto,
@@ -252,12 +284,10 @@ def run(instruction_pointer=0):
 
 
 
-source_code = 'test2.txt'
-sorce = 'for.txt'
-readFile(source_code)
+source_code = 'tests/factorial_iter.txt'
 def start():
     global dir_func, quadruples, constant_var_table, program, source_code
-    readFile(source_code)
+    read_file(source_code)
     file_name = source_code + '.obj'
 
     # Compile program.

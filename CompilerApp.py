@@ -1,7 +1,6 @@
 
 
 
-from parser_lexer import readFile
 from sys import stdin
 from kivy.app import App
 from pygments.lexers.agile import PythonLexer
@@ -39,7 +38,6 @@ class LoadDialog(Popup):
         self.choosen_file = selection
         Window.title = selection[0][selection[0].rfind(os.sep) + 1:]
         print(selection[-1])
-        readFile(file_name= selection[-1])
         self.file_name=selection[-1]
         self.current_code=open(selection[-1]).read()
         self.dismiss()
@@ -144,7 +142,7 @@ class CompilerApp(App):
             key_bindings='default',
         )
         
-        self.text_input_box = TextInput(foreground_color=(1,1,1,1),background_color=(0,0,0,0.25),text='Hello world', multiline=False)
+        self.text_input_box = TextInput(foreground_color=(1,1,1,1),background_color=(0,0,0,0.25),text='', multiline=False)
         self.text_input_box.bind(on_text_validate=self.on_enter)
 
         b.add_widget(self.codeinput)

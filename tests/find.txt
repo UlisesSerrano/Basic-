@@ -1,0 +1,24 @@
+program Ejemplo;
+
+func int find (int x)
+var
+    int a[10], i;
+{
+    for i = 0 to i < 10 do {
+        a[i] = i;
+    }
+
+    for i = 0 to i < 10 do {
+        if (a[i] == x){
+            return (1);
+        }
+    }
+    return (0);
+}
+
+main ( )
+var int x;
+{
+    read(x);
+    print(&find(x));
+}

@@ -1,0 +1,22 @@
+program Ejemplo;
+var
+    int i, j, p, k;
+
+func int fibbo (int j )
+{ 
+    if (j <= 0) {
+        return (0);
+    }
+    if (j == 1) {
+        return (1);
+    }
+
+    return (&fibbo(j - 1) + &fibbo(j - 2));
+}
+
+main ( )
+var int r;
+{
+    read(r);
+    print(&fibbo(r));
+}
