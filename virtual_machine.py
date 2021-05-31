@@ -1,6 +1,7 @@
 import sys
-from stack import Stack
-from memory_map import Memory
+from utils.stack import Stack
+from utils.memory_map import Memory
+from ast import literal_eval
 
 dir_func = {}
 quadruples = []
@@ -30,6 +31,32 @@ base_address = {
 }
 
 
+def get_type(input_data):
+    try:
+        return type(literal_eval(input_data))
+    except (ValueError, SyntaxError):
+        # A string, so return str
+        return str
+
+
+def check_range(address, value_type):
+    if value_type == type(1):
+        if address in range(1000, 4000) or address in range(10000, 13000):
+            return True
+        else:
+            return False
+    elif value_type == type(1.0):
+        if address in range(4000, 7000) or address in range(13000, 16000):
+            return True
+        else:
+            return False
+    elif value_type == type('a') or value_type == type(True):
+        if address in range(7000, 10000) or address in range(16000, 19000):
+            return True
+        else:
+            return False
+
+
 def get_memory_value(address):
     global global_program_memory
     if address >= GLOBAL_LIMIT and address < LOCAL_LIMIT:
@@ -39,7 +66,7 @@ def get_memory_value(address):
 
 
 def get_value(address):
-    if address in range(1000, 4000) or address in range(10000, 13000) or address in range(19000, 21000)  or address in range(27000, 30000):
+    if address in range(1000, 4000) or address in range(10000, 13000) or address in range(19000, 21000) or address in range(27000, 30000):
         return int(get_memory_value(address))
     elif address in range(4000, 7000) or address in range(13000, 16000) or address in range(21000, 24000) or address in range(30000, 33000):
         return float(get_memory_value(address))
@@ -136,7 +163,7 @@ def run():
         memories_stack.push(new_memory)
         instruction_pointer = third_element
         return instruction_pointer
-    
+
     def iEndFunc():
         global instruction_pointer, memories_stack
         if not memories_stack.is_empty():
@@ -144,7 +171,7 @@ def run():
         if not func_calls_stack.is_empty():
             instruction_pointer = func_calls_stack.pop()
         else:
-            instruction_pointer += 1     
+            instruction_pointer += 1
         return instruction_pointer
 
     def iprint():
@@ -156,8 +183,13 @@ def run():
     def iread():
         global instruction_pointer
         value = input("Read: ")
-        set_value(value, third_element)
-        instruction_pointer += 1
+        value_type = get_type(value)
+        if check_range(third_element, value_type):
+            set_value(value, third_element)
+            instruction_pointer += 1
+        else:
+            print('ERROR: Invalid input type', value, third_element)
+            sys.exit()
         return instruction_pointer
 
     def ireturn():
@@ -168,21 +200,22 @@ def run():
         set_value(value, dir_func[current_func]['memory_address'])
         instruction_pointer = func_calls_stack.pop()
         return instruction_pointer
-    
+
     def iver():
         global instruction_pointer
         value = get_value(first_element)
         if value in range(third_element):
             instruction_pointer += 1
         else:
-            print('ERROR: Index out of bounds', value, third_element, memories_stack.peek().get_values())
+            print('ERROR: Index out of bounds', value)
             sys.exit()
         return instruction_pointer
 
     def iassign():
         global instruction_pointer
         first_value = get_value(first_element)
-        set_value(first_value, third_element if third_element < 36000 else get_memory_value(third_element))
+        set_value(first_value, third_element if third_element <
+                  36000 else get_memory_value(third_element))
         instruction_pointer += 1
         return instruction_pointer
 
@@ -239,9 +272,9 @@ def run():
 
 
 # Compile program.
-file_name = 'factorial_iter.txt.obj'
+file_name = 'tests/factorial_iter.txt.obj'
 with open(file_name, 'r') as file:
-    #global dir_func, dir_quadruples
+    # global dir_func, dir_quadruples
     file_data = eval(file.read())
     dir_func = file_data['dir_func']
     quadruples = file_data['quadruples']

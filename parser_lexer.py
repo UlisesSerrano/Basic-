@@ -1,12 +1,7 @@
-import sys
 import ply.lex as lex
 import ply.yacc as yacc
-from stack import Stack
-from semantic_cube import semantic_cube
-import codecs
-import os
-
-import os
+from utils.stack import Stack
+from utils.semantic_cube import semantic_cube
 
 ###############################################
 # TOKENS
@@ -33,7 +28,7 @@ reserved = {  # reserverd tokens
 }
 
 tokens = [
-    'CTE_I', 'CTE_NEG_I', 'CTE_F', 'CTE_STRING', 'CTE_CHAR', 'ID', 'SEMICOLON',
+    'CTE_I', 'CTE_NEG_I', 'CTE_F', 'CTE_NEG_F','CTE_STRING', 'CTE_CHAR', 'ID', 'SEMICOLON',
     'L_P', 'R_P', 'COMA',
     'L_B', 'R_B',
     'L_SB', 'R_SB',
@@ -88,6 +83,11 @@ def t_ID(t):
 
 def t_CTE_F(t):
     r'\d*\.\d+'
+    t.value = float(t.value)
+    return t
+
+def t_CTE_NEG_F(t):
+    r'-\d*\.\d+'
     t.value = float(t.value)
     return t
 
@@ -214,7 +214,7 @@ def generate_quadruple():
         types_stack.push(result_type)
 
     else:
-        print("ERROR: Type mismatch quad", right_op, op, left_op)
+        print("ERROR: Type mismatch", right_op, op, left_op)
 
 
 def fill(jump, counter):
@@ -436,7 +436,7 @@ def p_verify_quad_1(p):
             elements_stack.push(result)
             types_stack.push(result_type)
         else:
-            print("ERROR: Type mismatch quad", element_op, '*', dims[1])
+            print("ERROR: Type mismatch", element_op, '*', dims[1])
 
 
 
@@ -470,7 +470,7 @@ def p_verify_quad_2(p):
         elements_stack.push(result)
         types_stack.push(result_type)
     else:
-        print("ERROR: Type mismatch quad", aux1, '+', aux2)
+        print("ERROR: Type mismatch", aux1, '+', aux2)
 
 
 def p_add_base(p):
@@ -501,7 +501,7 @@ def p_add_base(p):
         types_stack.push(result_type)
         current_id = current_arr_id
     else:
-        print("ERROR: Type mismatch quad", element_op, '+', base_address)
+        print("ERROR: Type mismatch", element_op, '+', base_address)
     
     if not dim_stack.is_empty():
         dim_stack.pop()
@@ -943,6 +943,7 @@ def p_id_quad(p):
 def p_cte(p):
     '''cte : CTE_CHAR add_cte_char
             | CTE_F add_cte_float
+            | CTE_NEG_F add_cte_float
             | CTE_I add_cte_int
             | CTE_NEG_I add_cte_int '''
 
@@ -1080,7 +1081,7 @@ yacc.yacc()
 
 def readFile():
     try:
-        file_name = 'factorial_iter.txt'
+        file_name = 'tests/factorial_iter.txt'
         file = open(file_name, 'r')
         print("Filename used : " + file_name)
         info = file.read()
