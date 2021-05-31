@@ -1,4 +1,4 @@
-program Ejemplo;
+program Sort;
 var
     int a[10];
 

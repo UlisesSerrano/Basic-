@@ -1,4 +1,4 @@
-program Ejemplo;
+program FOR;
 var
     int i, j, p, k;
     int Arreglo[10];
@@ -6,7 +6,7 @@ var
     int Matriz[10][8];
     char r;
 
-func int fibbo (int j, char w)
+func int for_loop (int j, char w)
 var int i, r;
 { 
     r = 0;
@@ -18,5 +18,5 @@ var int i, r;
 
 main ( )
 {
-    print(&fibbo(5, 'a'));
+    print(&for_loop(5, 'a'));
 }

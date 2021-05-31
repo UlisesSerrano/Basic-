@@ -1,4 +1,4 @@
-program Ejemplo;
+program Fibo_rec;
 var
     int i, j, p, k;
 

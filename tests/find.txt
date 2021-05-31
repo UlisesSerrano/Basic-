@@ -1,4 +1,4 @@
-program Ejemplo;
+program Find;
 
 func int find (int x)
 var

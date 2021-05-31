@@ -189,7 +189,7 @@ def run():
             set_value(value, third_element)
             instruction_pointer += 1
         else:
-            print('ERROR: Invalid input type', value, third_element)
+            print('ERROR: Invalid input type', value)
             sys.exit()
         return instruction_pointer
 
@@ -272,7 +272,7 @@ def run():
             instruction, instruction_error)()
 
 
-# Compile program.
+# Start program.
 file_name = 'tests/factorial_iter.txt'
 read_file(file_name)
 with open(file_name + '.obj', 'r') as file:
