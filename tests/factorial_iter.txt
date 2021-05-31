@@ -1,22 +1,21 @@
 program FACT_ITER;
-var
-    int i, j, p, k;
-    int Arreglo[10];
-    float valor;
-    int Matriz[10][8];
-    char r;
-
-func int fibbo (int j, char w)
-var int i, r;
-{ 
-    r = 0;
-    for i = 1 to i <= j do {
-        r = r + i;
-    }
-    return (r);
-}
 
 main ( )
+var 
+    int n, i;
+    float factorial;
 {
-    print(&fibbo(5, 'a'));
+    factorial = 1.0;
+    print("Enter a positive integer");
+    read(n);
+
+    if (n < 0) {
+        print("Error! Factorial of a negative number doesn't exist.");
+    }
+    else {
+        for i = 1 to i <= n do {
+            factorial = factorial * i;
+        }
+        print("Factorial of ", n, " = ", factorial);    
+    }
 }

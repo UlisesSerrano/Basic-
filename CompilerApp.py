@@ -1,34 +1,38 @@
 
 
-
 from sys import stdin
 from kivy.app import App
-from pygments.lexers.agile import PythonLexer
+from kivy.uix.scrollview import ScrollView
+from pygments.lexers.c_cpp import CppLexer
 from kivy.uix.spinner import Spinner, SpinnerOption
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.codeinput import CodeInput
 from kivy.uix.behaviors import EmacsBehavior
 from kivy.uix.popup import Popup
+from kivy.uix.label import Label
 from kivy.properties import ListProperty
 from kivy.core.window import Window
 from kivy.core.text import LabelBase
 from pygments import lexers
 from kivy.uix.button import Button
-from kivy.uix.textinput import TextInput
 from kivy.uix.label import Label
 from kivy.uix.floatlayout import FloatLayout
+from kivy.properties import StringProperty
+from kivy.properties import NumericProperty
 import codecs
 import os
-stdoutin= ['', '', '', '']
+stdoutin = ['', '', '', '']
 
 
-##Mobile Code
+# Mobile Code
 
 class Fnt_SpinnerOption(SpinnerOption):
     pass
 
+
 class P(FloatLayout):
     pass
+
 
 class LoadDialog(Popup):
     pass
@@ -38,8 +42,8 @@ class LoadDialog(Popup):
         self.choosen_file = selection
         Window.title = selection[0][selection[0].rfind(os.sep) + 1:]
         print(selection[-1])
-        self.file_name=selection[-1]
-        self.current_code=open(selection[-1]).read()
+        self.file_name = selection[-1]
+        self.current_code = open(selection[-1]).read()
         self.dismiss()
 
     def cancel(self):
@@ -60,6 +64,10 @@ class SaveDialog(Popup):
         self.dismiss()
 
 
+class ScrolllabelLabel(ScrollView):
+    text = StringProperty('')
+
+
 class CodeInputWithBindings(EmacsBehavior, CodeInput):
 
     '''CodeInput with keybindings.
@@ -72,8 +80,9 @@ class CodeInputWithBindings(EmacsBehavior, CodeInput):
 class CompilerApp(App):
 
     files = ListProperty([None, ])
+    b = BoxLayout(orientation='vertical')
 
-    def __init__(self, run_virtual_machine, clear_virtual_machine, source_code,vm_Data):
+    def __init__(self, run_virtual_machine, clear_virtual_machine, source_code, vm_Data):
         super().__init__()
         self.run_virtual_machine = run_virtual_machine
         self.clear_virtual_machine = clear_virtual_machine
@@ -81,14 +90,13 @@ class CompilerApp(App):
         self.vm_Data = vm_Data
         self.code = source_code
 
-    def save_state(instruction_pointer,instruction_erorr):
+    def save_state(instruction_pointer, instruction_erorr):
         return instruction_pointer
 
     def build(self):
-        b = BoxLayout(orientation='vertical')
         languages = Spinner(
             text='Courier New',
-            values=sorted(['PythonLexer', ] + list(lexers.LEXERS.keys())))
+            values=sorted(['CppLexer', ] + list(lexers.LEXERS.keys())))
 
         languages.bind(text=self.change_lang)
 
@@ -97,13 +105,13 @@ class CompilerApp(App):
             height='15pt')
         fnt_size = Spinner(
             text='20',
-            values=list(map(str, list(range(15, 45, 5)))))
+            values=list(map(str, list(range(10, 45, 5)))))
         fnt_size.bind(text=self._update_size)
 
         fonts = [
             file for file in LabelBase._font_dirs_files
             if file.endswith('.ttf')]
-        
+
         fnt_name = Spinner(
             text='Courier New',
             option_cls=Fnt_SpinnerOption,
@@ -119,48 +127,45 @@ class CompilerApp(App):
         key_bindings.bind(text=self._bindings_selected)
 
         run_button = Button(text='Run')
-        run_button.bind(on_press = self.compile)
-    
+        run_button.bind(on_press=self.compile)
+
         menu.add_widget(mnu_file)
         menu.add_widget(fnt_size)
         menu.add_widget(run_button)
-        b.add_widget(menu)
-
-
+        self.b.add_widget(menu)
 
         self.codeinput = CodeInputWithBindings(
-            lexer=PythonLexer(),
+            lexer=CppLexer(),
             font_size=20,
             text=self.current_code,
             key_bindings='default',
         )
-        self.output = CodeInputWithBindings(
-            font_size=20,
-            text= "SECTION: OUTPUT\n",
-            foreground_color=(1,1,1,1),
-            background_color= (0,0,0,0.5),
-            key_bindings='default',
+        self.output = ScrolllabelLabel(
+            text="SECTION: OUTPUT\n",
         )
-        
-        self.text_input_box = TextInput(foreground_color=(1,1,1,1),background_color=(0,0,0,0.25),text='', multiline=False)
+
+        self.text_input_box = CodeInputWithBindings(text='', multiline=False, height='0dp')
         self.text_input_box.bind(on_text_validate=self.on_enter)
+        self.text_input_box.size_hint_y = None
 
-        b.add_widget(self.codeinput)
-        b.add_widget(self.text_input_box)
-        b.add_widget(self.output)
+        self.b.add_widget(self.codeinput)
+        self.b.add_widget(self.text_input_box)
+        self.b.add_widget(self.output)
 
-        return b
+        return self.b
 
     def show_popup(Popup):
-        show= P()
-        popupWindow = Popup(title= "PopUp Window", content = show,size_hint=(None,None), size=(400,400))
+        show = P()
+        popupWindow = Popup(title="PopUp Window", content=show,
+                            size_hint=(None, None), size=(400, 400))
 
         popupWindow.open()
 
     def compile(self, instance):
         self.display_and_flush_everything()
         print("Running compiler...")
-        print(f'{10*"#"} current_code {10*"#"} {self.get_code()}\n{10*"#"} end_current_code {10*"#"}')
+        print(
+            f'{10*"#"} current_code {10*"#"} {self.get_code()}\n{10*"#"} end_current_code {10*"#"}')
         try:
             _file = codecs.open(self.code, 'w', encoding='utf8')
             _file.write(self.codeinput.text)
@@ -174,51 +179,27 @@ class CompilerApp(App):
             print(f"Error Caugth: {err}")
             stdoutin[2] += f"{str(err)}\n"
             self.display_and_flush_everything()
-        
-
-    # def run_vm(self):
-    #     print("Resuming execution after...")
-    #     try:
-    #         while (True):
-    #             if stdoutin[0] == '':
-    #                 print('Waiting for user nput on the graphical side.')
-    #                 return
-    #             else:
-    #                 # Breaks out of do while if it doesnt return an input op_code
-    #                 # If it gets here it means that vm ended execution
-    #                 print("ended Execution")
-    #                 break
-    #         pass
-    #     except KeyboardInterrupt:
-    #         return
-    #     except BaseException as err:
-    #         print(f"Error caught in vm: {err}")
-    #         stdoutin[2] += f"{str(err)}\n"
-        
-        # print(f"stdoutin: {stdoutin}\n")
-        # self.display_and_flush_everything()
-
 
     def get_code(self):
         return self.codeinput.text
 
     def get_stdout(self):
         return stdoutin[1]
-    
+
     def get_stdoutin(self):
+        self.text_input_box.size_hint_y = 1
         value = stdoutin[0]
         stdoutin[0] = ''
         return value
-    
+
     def get_stderr(self):
         return stdoutin[2]
 
-
     def display_and_flush_everything(self):
         self.display_output(self.get_stdout(), display_name='FLUSH')
-        self.display_output(self.get_stderr(), display_name='FLUSH') 
-        stdoutin[1] = stdoutin[2] = '' 
-        self.output.text += '\nBasic++\n'
+        self.display_output(self.get_stderr(), display_name='FLUSH')
+        stdoutin[1] = stdoutin[2] = ''
+        self.output.text = '\nBasic++\n'
 
     def _update_size(self, instance, size):
         self.codeinput.font_size = float(size)
@@ -227,22 +208,22 @@ class CompilerApp(App):
 
     def _update_font(self, instance, fnt_name):
         instance.font_name = self.codeinput.font_name = self.output_box.font_name = fnt_name
-    
-    def on_enter(self,instance):
-        #puedo agregar una condicion en la cual me condicione a que haya corrido el compilador para impirmir algo en kivy
+
+    def on_enter(self, instance):
+        # puedo agregar una condicion en la cual me condicione a que haya corrido el compilador para impirmir algo en kivy
         self.stdin = instance.text
-        self.display_output("\nBasic++\n", display_name='ON_ENTER')
         stdoutin[0] = self.stdin
+        self.text_input_box.size_hint_y = None
+        self.text_input_box.height = '0dp'
+        self.text_input_box.text = ''
         self.run_virtual_machine()
 
-        
     def display_output(self, message, display_name='STDOUT'):
         output = f'{message}'
         self.output.text += output
         if display_name == 'VM':
             self.output.text += '\n'
-        print(f'{display_name}: {output}') 
-      
+        print(f'{display_name}: {output}')
 
     def _file_menu_selected(self, instance, value):
         if value == 'File':
@@ -269,7 +250,6 @@ class CompilerApp(App):
                 self.codeinput.text = ''
                 Window.title = 'untitled'
 
-
     def _bindings_selected(self, instance, value):
         value = value.split(' ')[0]
         self.codeinput.key_bindings = value.lower()
@@ -281,10 +261,9 @@ class CompilerApp(App):
         self.codeinput.text = _file.read()
         _file.close()
 
-
     def change_lang(self, instance, z):
-        if z == 'PythonLexer':
-            lx = PythonLexer()
+        if z == 'CppLexer':
+            lx = CppLexer()
         else:
             lx = lexers.get_lexer_by_name(lexers.LEXERS[z][2][0])
         self.codeinput.lexer = lx
@@ -292,4 +271,3 @@ class CompilerApp(App):
 
 if __name__ == '__main__':
     CompilerApp().run()
-

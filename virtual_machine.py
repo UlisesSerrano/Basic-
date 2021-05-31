@@ -1,5 +1,3 @@
-from os import read
-import sys
 from CompilerApp import CompilerApp
 from parser_lexer import read_file
 import sys
@@ -194,6 +192,8 @@ def run(instruction_pointer=0):
         #value debera de ser igual a lo que se reciba en kivy y aqui puasar hata que se reciba un dato
         global instruction_pointer
         if value := program.get_stdoutin():
+            program.text_input_box.size_hint_y = None
+            program.text_input_box.height = '0dp'
             value_type = get_type(value)
             if check_range(third_element, value_type):
                 set_value(value, third_element)
@@ -209,7 +209,6 @@ def run(instruction_pointer=0):
         memories_stack.pop()
         set_value(value, dir_func[current_func]['memory_address'])
         instruction_pointer = func_calls_stack.pop()
-        # program.display_output(value,display_name="Return")
         return instruction_pointer
 
     def iver():
