@@ -171,7 +171,6 @@ class CompilerApp(App):
             _file.write(self.codeinput.text)
             _file.close()
             self.vm_Data()
-            self.run_virtual_machine()
 
         except KeyboardInterrupt:
             return

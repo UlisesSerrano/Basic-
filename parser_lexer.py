@@ -1,3 +1,4 @@
+from utils.compiler_error import CompilerError
 import ply.lex as lex
 import ply.yacc as yacc
 from utils.stack import Stack
@@ -73,6 +74,7 @@ def t_newline(t):
 def t_error(t):
     print("Illegal character '%s'" % t.value[0])
     t.lexer.skip(1)
+    raise CompilerError("Illegal character '%s'" % t.value[0])
 
 
 def t_ID(t):
@@ -264,6 +266,8 @@ def generate_quadruple():
 
     else:
         print("ERROR: Type mismatch", right_op, op, left_op)
+        raise CompilerError(f"ERROR: Type mismatch, {right_op}, {op}, {left_op}")
+        
 
 
 def fill(jump, counter):
@@ -294,6 +298,7 @@ def p_main(p):
             'local': counter['local'], 'temp': counter['temp']}}
     else:
         print('ERROR: Function already defined', current_func)
+        raise CompilerError(f'ERROR: Function already defined {current_func}')
 
     print(local_var_table)
     quadruples.append(['ENDFunc', None, None, None])
@@ -376,6 +381,8 @@ def p_add_id(p):
             counter['global'][current_type] += 1
         else:
             print('ERROR: Variable already defined', current_id)
+            raise CompilerError(f'ERROR: Variable already defined {current_id}')
+
     else:
         if current_id not in local_var_table:
             local_var_table[current_id] = [
@@ -383,6 +390,8 @@ def p_add_id(p):
             counter['local'][current_type] += 1
         else:
             print('ERROR: Variable already defined', current_id)
+            raise CompilerError(f'ERROR: Variable already defined {current_id}')
+
 
 
 def p_set_array(p):
@@ -450,9 +459,11 @@ def p_verify_dim(p):
     if current_arr_id in local_var_table:
         if len(local_var_table[current_id][3]) == 0:
             print(f'ERROR: Variable {current_id} has not dimensions')
+            raise CompilerError(f'ERROR: Variable {current_id} has not dimensions')
     elif current_arr_id in global_var_table:
         if len(global_var_table[current_id][3]) == 0:
             print(f'ERROR: Variable {current_id} has not dimensions')
+            raise CompilerError(f'ERROR: Variable {current_id} has not dimensions')
 
 
 def p_verify_quad_1(p):
@@ -486,6 +497,8 @@ def p_verify_quad_1(p):
             types_stack.push(result_type)
         else:
             print("ERROR: Type mismatch", element_op, '*', dims[1])
+            raise CompilerError(f"ERROR: Type mismatch {element_op}, '*', {dims[1]}")
+
 
 
 
@@ -520,6 +533,8 @@ def p_verify_quad_2(p):
         types_stack.push(result_type)
     else:
         print("ERROR: Type mismatch", aux1, '+', aux2)
+        raise CompilerError(f"ERROR: Type mismatch, {aux1}, '+', {aux2}")
+
 
 
 def p_add_base(p):
@@ -551,6 +566,7 @@ def p_add_base(p):
         current_id = current_arr_id
     else:
         print("ERROR: Type mismatch", element_op, '+', base_address)
+        raise CompilerError(f"ERROR: Type mismatch, {element_op}, '+', {base_address}")
     
     if not dim_stack.is_empty():
         dim_stack.pop()
@@ -587,6 +603,8 @@ def p_register_func(p):
             dir_func[current_func]['memory_address'] = memory_address
     else:
         print('ERROR: Function already defined', current_func)
+        raise CompilerError(f'ERROR: Function already defined {current_func}')
+
 
 
 def p_add_params(p):
@@ -655,6 +673,7 @@ def p_assignation(p):
         quadruples.append(['=', right_op, None, left_op])
     else:
         print("ERROR: Type mismatch in assignation")
+        raise CompilerError("ERROR: Type mismatch in assignation")
 
 
 def p_args(p):
@@ -677,8 +696,10 @@ def p_param_check(p):
             quadruples.append(['param', arg_element, k, current_call])
         else:
             print('ERROR: Type mismatch on argument on call function', current_call)
+            raise CompilerError(f'ERROR: Type mismatch on argument on call function {current_call}')
     else:
         print('ERROR: Incorrect number of arguments', current_call)
+        raise CompilerError(f'ERROR: Incorrect number of arguments {current_call}')
 
 
 def p_args2(p):
@@ -699,8 +720,10 @@ def p_call_func(p):
         quadruples.append(['goSub', current_call, None,
                            dir_func[current_call]['start_quad']])
     else:
+        r = len(dir_func[current_call]['param_types'])-1
         print('ERROR: Missing arguments', k, len(
             dir_func[current_call]['param_types'])-1)
+        raise CompilerError(f'ERROR: Missing arguments {k}, {r}')
 
 
 def p_call_func_exp(p):
@@ -721,9 +744,12 @@ def p_call_func_exp(p):
             types_stack.push(func_var[1])
         else:
             print('ERROR: Cannot call void function on expresion', current_call)
+            raise CompilerError(f'ERROR: Cannot call void function on expresion {current_call}')
     else:
+        r = len(dir_func[current_call]['param_types'])-1
         print('ERROR: Missing arguments', k, len(
             dir_func[current_call]['param_types'])-1)
+        raise CompilerError(f'ERROR: Missing arguments {k}, {r}')
 
 
 def p_call_func_era(p):
@@ -735,6 +761,7 @@ def p_call_func_era(p):
         k = 0
     else:
         print('ERROR: Undeclared function', p[-1])
+        raise CompilerError(f'ERROR: Undeclared function {p[-1]}')
 
 
 def p_return_func(p):
@@ -745,6 +772,7 @@ def p_return_func(p):
         quadruples.append(['return', None, current_func, element])
     else:
         print('ERROR: Return type mismatch')
+        raise CompilerError('ERROR: Return type mismatch')
 
 
 def p_read(p):
@@ -809,6 +837,7 @@ def p_exp_type(p):
         jumps_stack.push(len(quadruples)-1)
     else:
         print('ERROR: Type mismatch')
+        raise CompilerError("ERROR: Type mismatch on bool")
 
 
 def p_else_jump(p):
@@ -846,8 +875,10 @@ def p_for_statement(p):
                 ['+', element, constant_var_table[1][2], element])
         else:
             print("ERROR: Type mismatch")
+            raise CompilerError(f"ERROR: Type mismatch, {element}, '+', {constant_var_table[1][2]}")
     else:
         print('ERROR: Undeclared variable', current_for_id)
+        raise CompilerError(f'ERROR: Undeclared variable {current_for_id}')
     quadruples.append(['goto', None, None, return_jump])
     fill(end, len(quadruples))
 
@@ -869,6 +900,7 @@ def p_for_id_quad(p):
         quadruples.append(['=', right_op, None, left_op])
     else:
         print("ERROR: Type mismatch on loop id")
+        raise CompilerError("ERROR: Type mismatch on loop id")
 
 
 def p_breadcrumb(p):
@@ -987,6 +1019,7 @@ def p_id_quad(p):
             types_stack.push(element_type)
     else:
         print('ERROR: Undeclared variable', current_id)
+        raise CompilerError(f'ERROR: Undeclared variable {current_id}')
 
 
 def p_cte(p):
@@ -1123,6 +1156,7 @@ def p_empty(p):
 
 def p_error(p):
     print("Syntax error on the Input", p)
+    raise CompilerError(f"Syntax error on the Input {p}")
 
 
 yacc.yacc()

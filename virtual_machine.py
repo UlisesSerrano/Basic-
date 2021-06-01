@@ -1,3 +1,4 @@
+from utils.compiler_error import CompilerError
 from CompilerApp import CompilerApp
 from parser_lexer import read_file
 import sys
@@ -68,9 +69,15 @@ def check_range(address, value_type):
 def get_memory_value(address):
     global global_program_memory
     if address >= GLOBAL_LIMIT and address < LOCAL_LIMIT:
-        return memories_stack.peek().get_value(address)
+        try:
+            return memories_stack.peek().get_value(address)
+        except CompilerError as e:
+            program.display_output(str(e))
     else:
-        return global_program_memory.get_value(address)
+        try:
+            return global_program_memory.get_value(address)
+        except CompilerError as e:
+            program.display_output(str(e))
 
 
 def get_value(address):
@@ -288,19 +295,31 @@ def run(instruction_pointer=0):
 source_code = 'tests/factorial_iter.txt'
 def start():
     global dir_func, quadruples, constant_var_table, program, source_code
-    read_file(source_code)
-    file_name = source_code + '.obj'
+    compile_error = False
+    try:
+        # Compile program.
+        read_file(source_code)
+    except CompilerError as e:
+        program.display_output(str(e))
+        compile_error = True
 
-    # Compile program.
-    with open(file_name, 'r') as file:
-        file_data = eval(file.read())
-        dir_func = file_data['dir_func']
-        quadruples = file_data['quadruples']
-        constant_var_table = file_data['constant_var_table']
-        for cte in constant_var_table:
-            global_program_memory.set_value(
-                constant_var_table[cte][0], constant_var_table[cte][2])
-        print(quadruples)
+
+    # Execute program
+    if not compile_error:
+        file_name = source_code + '.obj'
+
+        with open(file_name, 'r') as file:
+            file_data = eval(file.read())
+            dir_func = file_data['dir_func']
+            quadruples = file_data['quadruples']
+            constant_var_table = file_data['constant_var_table']
+            for cte in constant_var_table:
+                global_program_memory.set_value(
+                    constant_var_table[cte][0], constant_var_table[cte][2])
+            print(quadruples)
+            run()
+    else:
+        program.display_output("\nFinish execution")
 
 program = CompilerApp(run_virtual_machine=run, clear_virtual_machine=clear_virtual_machine, source_code=source_code, vm_Data = start)
 program.run()
