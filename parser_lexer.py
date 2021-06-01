@@ -62,7 +62,6 @@ t_LESSTHAN = r'\<'
 t_DIFERENT = r'\!\='
 t_EQUAL = r'\='
 t_AMP = r'\&'
-# para ignorar caracteres:
 t_ignore = ' \t\r\n'
 
 
@@ -117,9 +116,10 @@ def t_CTE_CHAR(t):
     return t
 
 
-# el lexer
-# Un ejemplo para aplicar las reglas de : Programa Id DOS PUNTOS REGLA END.....
+# Lexer
 lexer = lex.lex()
+
+# Global compiler variables
 
 current_type = ''
 current_func = ''
@@ -137,12 +137,15 @@ context = 'global'
 param_types = []
 k = 0  # Param counter for call_func
 
+# Stacks for expresions
 types_stack = Stack()
 operators_stack = Stack()
 elements_stack = Stack()
+# Stacks for conditions and loops
 jumps_stack = Stack()
-dim_stack = Stack()
 for_id_stack = Stack()
+# Stack for arrays
+dim_stack = Stack()
 
 quadruples = []
 
@@ -196,6 +199,7 @@ address = {
     "pointer": 36000
 }
 
+# Clean the values of the global variables for new compilation
 def clear_parser():
     global current_func,current_arr_id,current_call,current_id,current_for_id,current_type, global_var_table,local_var_table,constant_var_table,dir_func,context,k,types_stack,operators_stack,elements_stack,jumps_stack,dim_stack,for_id_stack,quadruples,counter
     current_type = ''
@@ -245,7 +249,7 @@ def clear_parser():
 
     quadruples = []
 
-
+# Generate quadruble for expresion, using the corresponding stacks
 def generate_quadruple():
     global quadruples, address, counter, elements_stack, types_stack, operators_stack
     right_op = elements_stack.pop()
@@ -269,7 +273,7 @@ def generate_quadruple():
         raise CompilerError(f"ERROR: Type mismatch, {right_op}, {op}, {left_op}")
         
 
-
+# Fill the quadruple with the value from the jumps_stack
 def fill(jump, counter):
     global quadruples
     quadruples[jump][3] = counter
@@ -283,12 +287,13 @@ def p_program(p):
     print(quadruples)
 
 
+# Add goto to fill when code gets to main
 def p_main_quad(p):
     '''main_quad : '''
     global quadruples
     quadruples.append(['goto', None, None, None])
 
-
+# Register the main function in the functions directory
 def p_main(p):
     '''main : MAIN L_P params R_P var_declaration L_B main_start statements R_B'''
     global local_var_table, param_types, counter, dir_func
@@ -308,6 +313,7 @@ def p_main(p):
     counter['temp'] = {'int': 0, 'float': 0, 'char': 0}
 
 
+# Fill the goto main
 def p_main_start(p):
     '''main_start : '''
     fill(0, len(quadruples))
@@ -320,7 +326,7 @@ def p_type(p):
     global current_type
     current_type = p[1]
 
-
+# Change the var declaration context
 def p_g_var(p):
     '''g_var : var_declaration'''
     global context, global_var_table
@@ -369,7 +375,7 @@ def p_dec_id2(p):
     '''dec_id2 : L_SB CTE_I set_array_2 R_SB
         | empty'''
 
-
+# Add th variable to the variable table
 def p_add_id(p):
     '''add_id : '''
     global current_id, current_type, current_func, global_var_table, local_var_table, address, counter
@@ -393,7 +399,7 @@ def p_add_id(p):
             raise CompilerError(f'ERROR: Variable already defined {current_id}')
 
 
-
+# Set the first dimension of the id on the var table and add that number to the constant table
 def p_set_array(p):
     '''set_array : '''
     global current_id, current_type, global_var_table, local_var_table, constant_var_table, address, counter
@@ -411,6 +417,7 @@ def p_set_array(p):
             cte, 'int', address['constant']['int'] + counter['constant']['int'])
         counter['constant']['int'] += 1
 
+# Set the second dimension of the id on the var table and add that number to the constant table
 def p_set_array_2(p):
     '''set_array_2 : '''
     global current_id, current_type, global_var_table, local_var_table, constant_var_table, address, counter
@@ -434,7 +441,7 @@ def p_set_array_2(p):
 def p_id(p):
     '''id : ID set_id id_quad id1'''
 
-
+# Set the id that is reading
 def p_set_id(p):
     '''set_id : '''
     global current_id
@@ -451,6 +458,7 @@ def p_id2(p):
         | empty'''
 
 
+# Check if the variable has any dimensions
 def p_verify_dim(p):
     '''verify_dim : '''
     global global_var_table, local_var_table, current_id, current_arr_id, dim_stack
@@ -466,6 +474,7 @@ def p_verify_dim(p):
             raise CompilerError(f'ERROR: Variable {current_id} has not dimensions')
 
 
+# Add the verification quadruple and the operations to get the value in memory according to the dimension for the first dimension
 def p_verify_quad_1(p):
     '''verify_quad_1 : '''
     global global_var_table, local_var_table, elements_stack, quadruples, current_arr_id, dim_stack, constant_var_table
@@ -501,7 +510,7 @@ def p_verify_quad_1(p):
 
 
 
-
+# Add the verification quadruple and the operations to get the value in memory according to the dimension for the second dimension
 def p_verify_quad_2(p):
     '''verify_quad_2 : '''
     global global_var_table, local_var_table, elements_stack, quadruples, current_arr_id, dim_stack, constant_var_table
@@ -536,7 +545,7 @@ def p_verify_quad_2(p):
         raise CompilerError(f"ERROR: Type mismatch, {aux1}, '+', {aux2}")
 
 
-
+# Add base address to the pointer variable in memory
 def p_add_base(p):
     '''add_base : '''
     global elements_stack, types_stack, address, counter, current_arr_id, global_var_table, local_var_table, current_id
@@ -576,6 +585,7 @@ def p_var_type(p):
     '''var_type : type'''
 
 
+# Add function attributes to function in functions directory
 def p_function(p):
     '''function : FUNC func_type ID register_func L_P params R_P add_params var_declaration start_func L_B statements R_B'''
     global current_func, param_types, local_var_table, counter
@@ -589,7 +599,7 @@ def p_function(p):
     counter['local'] = {'int': 0, 'float': 0, 'char': 0}
     counter['temp'] = {'int': 0, 'float': 0, 'char': 0}
 
-
+# Add function to functions directory
 def p_register_func(p):
     'register_func : '
     global current_func, current_type, dir_func, address, counter
@@ -659,7 +669,7 @@ def p_statement(p):
                 | repetition_statement
                 | expression'''
 
-
+# Assignarion quadruple
 def p_assignation(p):
     '''assignation : id EQUAL expression SEMICOLON'''
     global quadruples, address, counter, elements_stack, types_stack
@@ -684,7 +694,7 @@ def p_args(p):
 def p_args1(p):
     'args1 : add_fake expression param_check remove_fake args2'
 
-
+# Check if the arguments match with the function params
 def p_param_check(p):
     '''param_check : '''
     global elements_stack, types_stack, k, dir_func, current_call, counter
@@ -712,7 +722,7 @@ def p_next_arg(p):
     global k
     k += 1
 
-
+# Call void function with gosub
 def p_call_func(p):
     '''call_func : AMP ID call_func_era L_P args R_P SEMICOLON'''
     global current_call, dir_func, k, quadruples
@@ -725,7 +735,7 @@ def p_call_func(p):
             dir_func[current_call]['param_types'])-1)
         raise CompilerError(f'ERROR: Missing arguments {k}, {r}')
 
-
+# Call function inside expression with gosub
 def p_call_func_exp(p):
     '''call_func_exp : AMP ID call_func_era L_P args R_P'''
     global current_call, dir_func, k
@@ -751,7 +761,7 @@ def p_call_func_exp(p):
             dir_func[current_call]['param_types'])-1)
         raise CompilerError(f'ERROR: Missing arguments {k}, {r}')
 
-
+# Add ERA quadruple
 def p_call_func_era(p):
     '''call_func_era : '''
     global dir_func, quadruples, k, current_call
@@ -763,7 +773,7 @@ def p_call_func_era(p):
         print('ERROR: Undeclared function', p[-1])
         raise CompilerError(f'ERROR: Undeclared function {p[-1]}')
 
-
+# Return statement with quad
 def p_return_func(p):
     '''return_func : RETURN L_P expression R_P SEMICOLON'''
     global quadruples, elements_stack, types_stack, current_func
@@ -774,7 +784,7 @@ def p_return_func(p):
         print('ERROR: Return type mismatch')
         raise CompilerError('ERROR: Return type mismatch')
 
-
+# Add read quadruple
 def p_read(p):
     '''read : READ L_P read_args R_P SEMICOLON'''
     global quadruples, elements_stack, types_stack
@@ -805,7 +815,7 @@ def p_write_args1(p):
     '''write_args1 : COMA write_args2 write_args1
                     | empty'''
 
-
+# Add print quadruple
 def p_write_args2(p):
     '''write_args2 : add_fake expression remove_fake
                 | CTE_STRING add_cte_string'''
@@ -814,7 +824,7 @@ def p_write_args2(p):
     types_stack.pop()
     quadruples.append(['print', None, None, element])
 
-
+# Fill the quad to jump in case of False
 def p_decision_statement(p):
     '''decision_statement : IF L_P expression R_P exp_type L_B statements R_B decision_statement1'''
     global jumps_stack, quadruples
@@ -826,7 +836,7 @@ def p_decision_statement1(p):
     '''decision_statement1 : ELSE else_jump L_B statements R_B
                             | empty'''
 
-
+# Check if the expression can be evaluated and add the gotoF
 def p_exp_type(p):
     '''exp_type : '''
     global types_stack, elements_stack, jumps_stack, quadruples
@@ -839,7 +849,7 @@ def p_exp_type(p):
         print('ERROR: Type mismatch')
         raise CompilerError("ERROR: Type mismatch on bool")
 
-
+# Add the goto in case the expresion is True
 def p_else_jump(p):
     '''else_jump : '''
     global quadruples, jumps_stack
@@ -853,7 +863,7 @@ def p_repetition_statement(p):
     '''repetition_statement : while_statement
                             | for_statement'''
 
-
+# Add one to the id for the next iteration
 def p_for_statement(p):
     '''for_statement : FOR id for_id EQUAL expression for_id_quad TO breadcrumb expression exp_type do_statement'''
     global jumps_stack, quadruples, local_var_table, global_var_table, constant_var_table, current_for_id
@@ -882,11 +892,13 @@ def p_for_statement(p):
     quadruples.append(['goto', None, None, return_jump])
     fill(end, len(quadruples))
 
+# Set the current for id
 def p_for_id(p):
     '''for_id : '''
     global current_for_id, current_id
     for_id_stack.push(current_id)
 
+# Assign the value to the for id
 def p_for_id_quad(p):
     '''for_id_quad : '''
     global quadruples, address, counter, elements_stack, types_stack, current_id, current_for_id
@@ -902,13 +914,13 @@ def p_for_id_quad(p):
         print("ERROR: Type mismatch on loop id")
         raise CompilerError("ERROR: Type mismatch on loop id")
 
-
+# Save the counter to reevalute te loop expresion
 def p_breadcrumb(p):
     '''breadcrumb : '''
     global jumps_stack, quadruples
     jumps_stack.push(len(quadruples))
 
-
+# Set the goto to check the while expresion again or end the loop
 def p_while_statement(p):
     '''while_statement : WHILE L_P breadcrumb expression R_P exp_type do_statement'''
     global jumps_stack, quadruples
@@ -941,6 +953,7 @@ def p_mexp(p):
 def p_term(p):
     '''term : fact generate_quad_5 op5aux'''
 
+# Generate quadruples for each type of expresion
 
 def p_generate_quad_1(p):
     '''generate_quad_1 : '''
@@ -983,19 +996,19 @@ def p_fact(p):
             | L_P add_fake expression R_P remove_fake
             | cte'''
 
-
+# Add fake bottom
 def p_add_fake(p):
     '''add_fake : '''
     global operators_stack
     operators_stack.push('(')
 
-
+# Add fake bottom
 def p_remove_fake(p):
     '''remove_fake : '''
     global operators_stack
     operators_stack.pop()
 
-
+# Add to the stacks the values for the expression quadruple generation
 def p_id_quad(p):
     '''
         id_quad :
@@ -1029,6 +1042,7 @@ def p_cte(p):
             | CTE_I add_cte_int
             | CTE_NEG_I add_cte_int '''
 
+# Add constants to the constant table
 
 def p_add_cte_int(p):
     '''add_cte_int : '''
@@ -1089,6 +1103,7 @@ def p_add_cte_string(p):
     elements_stack.push(element)
     types_stack.push('char')
 
+# Add the operator to the stack for the expresion quadruple generation
 
 def p_add_operator(p):
     '''add_operator : '''

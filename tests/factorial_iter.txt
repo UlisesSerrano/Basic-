@@ -2,7 +2,7 @@ program FACT_ITER;
 
 main ( )
 var 
-    int n, i;
+    int n, i, x;
     float factorial;
 	int Arreglo[2];
 	char w;
