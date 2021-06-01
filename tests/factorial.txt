@@ -4,7 +4,6 @@ var
     int Arreglo[10];
     float valor;
     int Matriz[10][8];
-    char r;
 
 func int fact (int j, char w)
 var int i;

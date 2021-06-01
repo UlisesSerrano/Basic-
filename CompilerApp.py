@@ -9,7 +9,6 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.codeinput import CodeInput
 from kivy.uix.behaviors import EmacsBehavior
 from kivy.uix.popup import Popup
-from kivy.uix.label import Label
 from kivy.properties import ListProperty
 from kivy.core.window import Window
 from kivy.core.text import LabelBase
@@ -22,7 +21,7 @@ from kivy.properties import NumericProperty
 import codecs
 import os
 stdoutin = ['', '', '', '']
-
+file_name = 'tests/factorial_iter.txt'
 
 # Mobile Code
 
@@ -38,11 +37,12 @@ class LoadDialog(Popup):
     pass
 
     def load(self, path, selection):
+        global file_name
         self.choosen_file = [None, ]
         self.choosen_file = selection
         Window.title = selection[0][selection[0].rfind(os.sep) + 1:]
         print(selection[-1])
-        self.code = selection[-1]
+        file_name = selection[-1]
         self.current_code = open(selection[-1]).read()
         self.dismiss()
 
@@ -160,12 +160,12 @@ class CompilerApp(App):
         print(
             f'{10*"#"} current_code {10*"#"} {self.get_code()}\n{10*"#"} end_current_code {10*"#"}')
         try:
-            print ('file_name',self.code)
-            _file = codecs.open(self.code, 'w', encoding='utf8')
+            source_code = file_name
+            _file = codecs.open(source_code, 'w', encoding='utf8')
             _file.write(self.codeinput.text)
             _file.close()
             self.clear_virtual_machine()
-            self.vm_Data()
+            self.vm_Data(code=source_code)
 
         except KeyboardInterrupt:
             return
@@ -210,7 +210,6 @@ class CompilerApp(App):
         self.text_input_box.size_hint_y = None
         self.text_input_box.height = '0dp'
         self.text_input_box.text = ''
-        self.display_and_flush_everything()
         self.run_virtual_machine()
 
     def display_output(self, message, display_name='STDOUT'):

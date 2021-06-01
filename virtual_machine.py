@@ -307,9 +307,10 @@ def run(instruction_pointer=0):
 
 
 source_code = 'tests/factorial_iter.txt'
-def start():
+def start(code):
     global dir_func, quadruples, constant_var_table, program, source_code
     compile_error = False
+    source_code = code
     try:
         # Compile program.
         read_file(source_code)
