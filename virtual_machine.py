@@ -32,6 +32,7 @@ base_address = {
     "char": 16000
 }
 
+# Set a clean state for virtual machine
 def clear_virtual_machine():
     global func_calls_stack, memories_stack, counter, dir_func, quadruples, constant_var_table, global_program_memory, new_memory, in_ERA
     dir_func = {}
@@ -49,7 +50,7 @@ def clear_virtual_machine():
     in_ERA = False
 
 
-
+# Get the input type
 def get_type(input_data):
     try:
         return type(literal_eval(input_data))
@@ -57,7 +58,7 @@ def get_type(input_data):
         # A string, so return str
         return str
 
-
+# Validate the input type 
 def check_range(address, value_type):
     if value_type == type(1):
         if address in range(1000, 4000) or address in range(10000, 13000):
@@ -75,7 +76,7 @@ def check_range(address, value_type):
         else:
             return False
 
-
+# Get value from memory map
 def get_memory_value(address):
     global global_program_memory, program
     value = ''
@@ -92,7 +93,7 @@ def get_memory_value(address):
     
     return value 
 
-
+# Get the value in the corresponding type
 def get_value(address):
     if address in range(1000, 4000) or address in range(10000, 13000) or address in range(19000, 21000) or address in range(27000, 30000):
         return int(get_memory_value(address))
@@ -103,7 +104,7 @@ def get_value(address):
     else:
         return get_value(get_memory_value(address))
 
-
+# Set the value in memory
 def set_value(value, address):
     global global_program_memory
     if address >= GLOBAL_LIMIT and address < LOCAL_LIMIT:
@@ -111,7 +112,7 @@ def set_value(value, address):
     else:
         global_program_memory.set_value(value, address)
 
-
+# Get result of the expresion
 def get_result(left_op, op, right_op):
     if(op == '+'):
         return left_op + right_op
@@ -140,7 +141,7 @@ def get_result(left_op, op, right_op):
     elif(op == '||'):
         return 1 if left_op or right_op else 0
 
-
+# Run the program, iterating through the quadruples list doing the corresponding instructions
 def run(instruction_pointer=0):
     current_quad = quadruples[instruction_pointer]
     instruction = ''
@@ -203,13 +204,11 @@ def run(instruction_pointer=0):
 
     def iprint():
         global instruction_pointer
-        # print(get_value(third_element))
         program.display_output(get_value(third_element),display_name="VM")
         instruction_pointer += 1
         return instruction_pointer
 
     def iread():
-        #value debera de ser igual a lo que se reciba en kivy y aqui puasar hata que se reciba un dato
         global instruction_pointer
         if value := program.get_stdoutin():
             program.text_input_box.size_hint_y = None
@@ -307,6 +306,7 @@ def run(instruction_pointer=0):
 
 
 source_code = 'tests/factorial_iter.txt'
+# Start the execution, compiling then executing the virtual machine
 def start(code):
     global dir_func, quadruples, constant_var_table, program, source_code
     compile_error = False
