@@ -234,11 +234,10 @@ class CompilerApp(App):
             self.saveas_dialog.text = self.codeinput.text
             self.saveas_dialog.open()
         elif value == 'Save':
-            if self.files[0]:
-                _file = codecs.open(self.files[0], 'w', encoding='utf8')
-                print(self.files[0])
-                _file.write(self.codeinput.text)
-                _file.close()
+            _file = codecs.open(file_name, 'w', encoding='utf8')
+            print(file_name)
+            _file.write(self.codeinput.text)
+            _file.close()
         elif value == 'Close':
             if self.files[0]:
                 self.codeinput.text = ''

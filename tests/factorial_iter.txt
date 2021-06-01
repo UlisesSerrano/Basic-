@@ -8,7 +8,6 @@ var
 	char w;
 {
     factorial = 1.0;
-    print("Enter a positive integer");
     read(n);
 
     if (n < 0) {
@@ -18,6 +17,7 @@ var
         for i = 1 to i <= n do {
             factorial = factorial * i;
         }
-        print("Factorial of ", n, " = ", factorial);    
+        print("Factorial of ", n, " = ", factorial); 
+   
     }
 }
