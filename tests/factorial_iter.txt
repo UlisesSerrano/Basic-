@@ -1,4 +1,4 @@
-program Fibo_iter;
+program FOR;
 var
     int i, j, p, k;
     int Arreglo[10];
@@ -6,22 +6,17 @@ var
     int Matriz[10][8];
     char r;
 
-func int fibbo (int j, char w)
-var int i, aux, fib;
+func int for_loop (int j, char w)
+var int i, r;
 { 
-    aux = 1;
-    fib = 0;
+    r = 0;
     for i = 1 to i <= j do {
-        print(fib);
-        aux = aux + fib;
-        fib = aux - fib;
+        r = r + i;
     }
-    return (fib);
+    return (r);
 }
 
 main ( )
-var int r;
 {
-    read(r);
-    &fibbo(r, 'a');
+    print(&for_loop(5, 'a'));
 }
