@@ -9,7 +9,7 @@ var
 func int fact (int j, char w)
 var int i;
 { 
-    if (j > 0) {
+    if (j > 0) {
         return (j * &fact(j - 1, w));
     } 
     else {
@@ -19,7 +19,5 @@ var int i;
 
 main ( )
 {
-    read(j);
-	print("ab");
-    print(&fact(j, 'a'));
+    print(&fact(5, 'a'));
 }

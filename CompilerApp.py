@@ -154,13 +154,6 @@ class CompilerApp(App):
 
         return self.b
 
-    def show_popup(Popup):
-        show = P()
-        popupWindow = Popup(title="PopUp Window", content=show,
-                            size_hint=(None, None), size=(400, 400))
-
-        popupWindow.open()
-
     def compile(self, instance):
         self.display_and_flush_everything()
         print("Running compiler...")
@@ -216,6 +209,7 @@ class CompilerApp(App):
         self.text_input_box.size_hint_y = None
         self.text_input_box.height = '0dp'
         self.text_input_box.text = ''
+        self.display_and_flush_everything()
         self.run_virtual_machine()
 
     def display_output(self, message, display_name='STDOUT'):

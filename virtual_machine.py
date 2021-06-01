@@ -183,7 +183,7 @@ def run(instruction_pointer=0):
 
     def iprint():
         global instruction_pointer
-        print(get_value(third_element))
+        # print(get_value(third_element))
         program.display_output(get_value(third_element),display_name="VM")
         instruction_pointer += 1
         return instruction_pointer
@@ -200,6 +200,7 @@ def run(instruction_pointer=0):
                 instruction_pointer += 1
             else:
                 print('ERROR: Invalid input type', value, third_element)
+                program.display_output(f'ERROR: Invalid input type: {value}')
         return instruction_pointer
 
     def ireturn():
@@ -218,6 +219,7 @@ def run(instruction_pointer=0):
             instruction_pointer += 1
         else:
             print('ERROR: Index out of bounds', value)
+            program.display_output(f'ERROR: Index out of bounds: {value}')
         return instruction_pointer
 
     def iassign():
@@ -240,6 +242,8 @@ def run(instruction_pointer=0):
 
     def instruction_error():
         print('ERROR: Wrong instruction')
+        program.display_output(f'ERROR: Wrong instruction')
+        
 
     instruction_switch = {
         'goto': igoto,
