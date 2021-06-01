@@ -1,6 +1,6 @@
+from utils.compiler_error import CompilerError
 from CompilerApp import CompilerApp
 from parser_lexer import read_file
-import sys
 from utils.stack import Stack
 from utils.memory_map import Memory
 from ast import literal_eval
@@ -33,10 +33,21 @@ base_address = {
 }
 
 def clear_virtual_machine():
-    global func_calls_stack, memories_stack
+    global func_calls_stack, memories_stack, counter, dir_func, quadruples, constant_var_table, global_program_memory, new_memory, in_ERA
+    dir_func = {}
+    quadruples = []
+    constant_var_table = {}
     func_calls_stack = Stack()
     memories_stack = Stack()
- 
+    counter = {
+        "int": 0,
+        "float": 0,
+        "char": 0
+    }
+    global_program_memory = Memory()
+    new_memory = Memory()
+    in_ERA = False
+
 
 
 def get_type(input_data):
@@ -66,11 +77,20 @@ def check_range(address, value_type):
 
 
 def get_memory_value(address):
-    global global_program_memory
+    global global_program_memory, program
+    value = ''
     if address >= GLOBAL_LIMIT and address < LOCAL_LIMIT:
-        return memories_stack.peek().get_value(address)
+        try:
+            value = memories_stack.peek().get_value(address)
+        except CompilerError as e:
+            program.display_output(str(e), display_name="VM")
     else:
-        return global_program_memory.get_value(address)
+        try:
+            value = global_program_memory.get_value(address)
+        except CompilerError as e:
+            program.display_output(str(e), display_name="VM")
+    
+    return value 
 
 
 def get_value(address):
@@ -200,7 +220,7 @@ def run(instruction_pointer=0):
                 instruction_pointer += 1
             else:
                 print('ERROR: Invalid input type', value, third_element)
-                program.display_output(f'ERROR: Invalid input type: {value}')
+                program.display_output(f'ERROR: Invalid input type: {value}', display_name="VM")
         return instruction_pointer
 
     def ireturn():
@@ -219,7 +239,7 @@ def run(instruction_pointer=0):
             instruction_pointer += 1
         else:
             print('ERROR: Index out of bounds', value)
-            program.display_output(f'ERROR: Index out of bounds: {value}')
+            program.display_output(f'ERROR: Index out of bounds: {value}', display_name="VM")
         return instruction_pointer
 
     def iassign():
@@ -242,8 +262,7 @@ def run(instruction_pointer=0):
 
     def instruction_error():
         print('ERROR: Wrong instruction')
-        program.display_output(f'ERROR: Wrong instruction')
-        
+        program.display_output(f'ERROR: Wrong instruction', display_name="VM")
 
     instruction_switch = {
         'goto': igoto,
@@ -279,8 +298,9 @@ def run(instruction_pointer=0):
         second_element = current_quad[2]
         third_element = current_quad[3]
         previous_instruction_pointer = instruction_pointer
-        instruction_pointer = instruction_switch.get(
-            instruction, instruction_error)()
+        
+        instruction_pointer = instruction_switch.get(instruction, instruction_error)()
+
         if previous_instruction_pointer == instruction_pointer:
             program.save_state(instruction_pointer)
             break
@@ -289,19 +309,31 @@ def run(instruction_pointer=0):
 source_code = 'tests/factorial_iter.txt'
 def start():
     global dir_func, quadruples, constant_var_table, program, source_code
-    read_file(source_code)
-    file_name = source_code + '.obj'
+    compile_error = False
+    try:
+        # Compile program.
+        read_file(source_code)
+    except CompilerError as e:
+        program.display_output(str(e), display_name="VM")
+        compile_error = True
 
-    # Compile program.
-    with open(file_name, 'r') as file:
-        file_data = eval(file.read())
-        dir_func = file_data['dir_func']
-        quadruples = file_data['quadruples']
-        constant_var_table = file_data['constant_var_table']
-        for cte in constant_var_table:
-            global_program_memory.set_value(
-                constant_var_table[cte][0], constant_var_table[cte][2])
-        print(quadruples)
+
+    # Execute program
+    if not compile_error:
+        file_name = source_code + '.obj'
+
+        with open(file_name, 'r') as file:
+            file_data = eval(file.read())
+            dir_func = file_data['dir_func']
+            quadruples = file_data['quadruples']
+            constant_var_table = file_data['constant_var_table']
+            for cte in constant_var_table:
+                global_program_memory.set_value(
+                    constant_var_table[cte][0], constant_var_table[cte][2])
+            print(quadruples)
+            run()
+    else:
+        program.display_output("\nFinish execution", display_name="VM")
 
 program = CompilerApp(run_virtual_machine=run, clear_virtual_machine=clear_virtual_machine, source_code=source_code, vm_Data = start)
 program.run()

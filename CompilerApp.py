@@ -42,8 +42,7 @@ class LoadDialog(Popup):
         self.choosen_file = selection
         Window.title = selection[0][selection[0].rfind(os.sep) + 1:]
         print(selection[-1])
-        self.code=selection[-1]
-        self.file_name = selection[-1]
+        self.code = selection[-1]
         self.current_code = open(selection[-1]).read()
         self.dismiss()
 
@@ -161,11 +160,12 @@ class CompilerApp(App):
         print(
             f'{10*"#"} current_code {10*"#"} {self.get_code()}\n{10*"#"} end_current_code {10*"#"}')
         try:
+            print ('file_name',self.code)
             _file = codecs.open(self.code, 'w', encoding='utf8')
             _file.write(self.codeinput.text)
             _file.close()
+            self.clear_virtual_machine()
             self.vm_Data()
-            self.run_virtual_machine()
 
         except KeyboardInterrupt:
             return
