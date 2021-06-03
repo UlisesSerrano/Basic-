@@ -144,6 +144,8 @@ elements_stack = Stack()
 # Stacks for conditions and loops
 jumps_stack = Stack()
 for_id_stack = Stack()
+# Stack for function calls
+func_call_stack = Stack()
 # Stack for arrays
 dim_stack = Stack()
 
@@ -700,6 +702,7 @@ def p_param_check(p):
     global elements_stack, types_stack, k, dir_func, current_call, counter
     arg_element = elements_stack.pop()
     arg_type = types_stack.pop()
+    current_call = func_call_stack.peek()
 
     if k < len(dir_func[current_call]['param_types']):
         if dir_func[current_call]['param_types'][k] == arg_type:
@@ -726,6 +729,7 @@ def p_next_arg(p):
 def p_call_func(p):
     '''call_func : AMP ID call_func_era L_P args R_P SEMICOLON'''
     global current_call, dir_func, k, quadruples
+    current_call = func_call_stack.peek()
     if len(dir_func[current_call]['param_types']) == 0 or k == (len(dir_func[current_call]['param_types'])-1):
         quadruples.append(['goSub', current_call, None,
                            dir_func[current_call]['start_quad']])
@@ -734,11 +738,13 @@ def p_call_func(p):
         print('ERROR: Missing arguments', k, len(
             dir_func[current_call]['param_types'])-1)
         raise CompilerError(f'ERROR: Missing arguments {k}, {r}')
+    func_call_stack.pop()
 
 # Call function inside expression with gosub
 def p_call_func_exp(p):
     '''call_func_exp : AMP ID call_func_era L_P args R_P'''
     global current_call, dir_func, k
+    current_call = func_call_stack.peek()
     if len(dir_func[current_call]['param_types']) == 0 or k == (len(dir_func[current_call]['param_types'])-1):
         quadruples.append(['goSub', current_call, None,
                            dir_func[current_call]['start_quad']])
@@ -760,6 +766,7 @@ def p_call_func_exp(p):
         print('ERROR: Missing arguments', k, len(
             dir_func[current_call]['param_types'])-1)
         raise CompilerError(f'ERROR: Missing arguments {k}, {r}')
+    func_call_stack.pop()
 
 # Add ERA quadruple
 def p_call_func_era(p):
@@ -767,6 +774,7 @@ def p_call_func_era(p):
     global dir_func, quadruples, k, current_call
     if p[-1] in dir_func:
         current_call = p[-1]
+        func_call_stack.push(current_call)
         quadruples.append(['ERA', current_call, None, None])
         k = 0
     else:

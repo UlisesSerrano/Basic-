@@ -5,6 +5,15 @@ var
     float valor;
     int Matriz[10][8];
 
+func int patito(int y) {
+	return (y*3);
+}
+
+func int pelos(int x) 
+{
+	return (&patito(x*2));
+}
+
 func int fact (int j, char w)
 var int i;
 { 
@@ -18,5 +27,7 @@ var int i;
 
 main ( )
 {
-    print(&fact(5, 'a'));
+    print(&fact(8, 'a'));
+	print(&pelos(2));
+	print(&pelos(3) + &fact(&pelos(1), 'a'));
 }
